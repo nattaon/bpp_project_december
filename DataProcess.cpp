@@ -41,10 +41,10 @@ PointCloudXYZRGB::Ptr DataProcess::GetCurrentDisplayPointCloud()
 
 PointCloudXYZRGB::Ptr DataProcess::GetAppliedRedPlanePointCloud()
 {
-	return applied_redplane_cloud;
+	return planeseg->applied_redplane_cloud;
 }
 PointCloudXYZRGB::Ptr DataProcess::GetRemovedPlanePointCloud()
 {
-	return removed_plane_cloud;
+	return planeseg->removed_plane_cloud;
 }
 

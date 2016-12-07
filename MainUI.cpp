@@ -333,7 +333,7 @@ void MainUI::ButtonApplyPlaneSegmentPressed()
 	}
 
 	double planethreshold = ui->in_plane_threshold->text().toDouble();
-	dataprocess->ApplyPlaneSegmentation(planethreshold, dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->planeseg->ApplyPlaneSegmentation(planethreshold, dataprocess->GetCurrentDisplayPointCloud());
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetAppliedRedPlanePointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetAppliedRedPlanePointCloud());
@@ -343,10 +343,27 @@ void MainUI::ButtonRemovePlanePressed()
 {
 	cout << "call ButtonRemovePlanePressed()" << endl;
 
-	dataprocess->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
+	
+	dataprocess->planeseg->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
+
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
+		dataprocess->planeseg->transformextract->position_OBB,
+		dataprocess->planeseg->transformextract->min_point_OBB,
+		dataprocess->planeseg->transformextract->max_point_OBB,
+		dataprocess->planeseg->transformextract->rotational_matrix_OBB,
+		"planeseg OBB"
+		);
+
+	viewerwindow->AddVectorDirectionWindowCloudViewer(
+		dataprocess->planeseg->transformextract->mass_center,
+		dataprocess->planeseg->transformextract->major_vector,
+		dataprocess->planeseg->transformextract->middle_vector,
+		dataprocess->planeseg->transformextract->minor_vector,
+		"planeseg ");
 
 }
 void MainUI::ButtonAlignPlaneToAxisCenterPressed()

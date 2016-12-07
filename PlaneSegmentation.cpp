@@ -3,10 +3,12 @@
 
 PlaneSegmentation::PlaneSegmentation()
 {
+	transformextract = new PointCloudTransformationExtraction();
 
 	before_applyplane_cloud.reset(new PointCloudXYZRGB);
 	applied_redplane_cloud.reset(new PointCloudXYZRGB);
 	removed_plane_cloud.reset(new PointCloudXYZRGB);
+	only_plane_cloud.reset(new PointCloudXYZRGB);
 }
 
 
@@ -67,14 +69,31 @@ void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 	extract.setInputCloud(tmp);
 	extract.setIndices(plane_inliers);
 
+	pcl::copyPointCloud(*cloud, *removed_plane_cloud);
+	pcl::copyPointCloud(*cloud, *only_plane_cloud);
 	//true:remove plane, flase:remove not plane
 	extract.setNegative(true);
-	extract.filter(*cloud);
+	extract.filter(*removed_plane_cloud);
 
-	pcl::copyPointCloud(*cloud, *removed_plane_cloud);
+	extract.setNegative(false);
+	extract.filter(*only_plane_cloud);
 
 }
 void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 {
+	if (!plane_inliers)
+	{
+		QMessageBox::information(0, QString("Remove plane outside"), QString("No plane data, Segment plane first"), QMessageBox::Ok);
+		return;
+	}
 
+	transformextract->CalculateTransformation(only_plane_cloud);
+	cout << "mass_center is \n" << transformextract->mass_center << endl;
+	cout << "major_vector is \n" << transformextract->major_vector << endl;
+	cout << "middle_vector is \n" << transformextract->middle_vector << endl;
+	cout << "minor_vector is \n" << transformextract->minor_vector << endl;
+	cout << "min_point_OBB is \n" << transformextract->min_point_OBB << endl;
+	cout << "max_point_OBB is \n" << transformextract->max_point_OBB << endl;
+	cout << "position_OBB is \n" << transformextract->position_OBB << endl;
+	cout << "rotational_matrix_OBB is \n" << transformextract->rotational_matrix_OBB << endl;
 }

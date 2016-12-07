@@ -2,17 +2,17 @@
 #define DATAPROCESS_H
 #include "SharedHeader.h"
 #include "PointCloudIO.h"
-#include "PointCloudProcess.h"
+#include "PointCloudOperation.h"
 #include "TextFileIO.h"
 
-class DataProcess:public PointCloudIO, public PointCloudProcess
+class DataProcess:public PointCloudIO, public PointCloudOperation
 {
 public:
     DataProcess();
 	~DataProcess();
 
 	//PointCloudIO *cloudio; // just declare, this not call PointCloudIO::PointCloudIO()
-	//PointCloudProcess *cloudprocess; // just declare, this not call PointCloudProcess::PointCloudProcess()
+	//PointCloudOperation *cloudprocess; // just declare, this not call PointCloudOperation::PointCloudOperation()
 	//TextFileIO *fileio; // just declare, this not call TextFileIO::TextFileIO()
 
 	PointCloudXYZRGB::Ptr GetKinectPointCloud();

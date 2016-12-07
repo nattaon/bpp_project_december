@@ -12,6 +12,16 @@ public:
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
 
+	void ClearPointCloudWindowCloudViewer();
+	void ClearShapeWindowCloudViewer();
+
+	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
+		PointTypeXYZRGB min_point_OBB, PointTypeXYZRGB max_point_OBB,
+		Eigen::Matrix3f rotational_matrix_OBB, string cloudname);
+	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
+		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
+		string cloudname);
+
 	
 
 private:
