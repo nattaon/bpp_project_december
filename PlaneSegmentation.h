@@ -2,9 +2,8 @@
 #define PLANESEGMENTATION_H
 #include "SharedHeader.h"
 #include "PointCloudTransformationExtraction.h"
-#include "PassthroughFilter.h"
 
-class PlaneSegmentation:public PassthroughFilter
+class PlaneSegmentation
 {
 public:
 	PlaneSegmentation();
@@ -19,7 +18,6 @@ public:
 	PointCloudXYZRGB::Ptr before_applyplane_cloud;
 	PointCloudXYZRGB::Ptr applied_redplane_cloud;
 	PointCloudXYZRGB::Ptr removed_plane_cloud;
-	PointCloudXYZRGB::Ptr removed_planeoutside_cloud;
 	PointCloudXYZRGB::Ptr only_plane_cloud;
 
 private:
