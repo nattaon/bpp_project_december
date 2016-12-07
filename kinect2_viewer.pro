@@ -16,12 +16,18 @@ SOURCES += \
     MainUI.cpp \
     Main.cpp \
     ViewerWindow.cpp \
-    DataProcess.cpp
+    DataProcess.cpp \
+    PointCloudIO.cpp \
+    PointCloudProcess.cpp \
+    TextFileIO.cpp
 
 HEADERS  += \
     MainUI.h \
     ViewerWindow.h \
-    DataProcess.h
+    DataProcess.h \
+    PointCloudIO.h \
+    PointCloudProcess.h \
+    TextFileIO.h
 
 FORMS    += \
     MainUI.ui

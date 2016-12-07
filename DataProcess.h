@@ -1,30 +1,28 @@
 #ifndef DATAPROCESS_H
 #define DATAPROCESS_H
 #include "SharedHeader.h"
-#include "KinectV2Connector.h"
+#include "PointCloudIO.h"
+#include "PointCloudProcess.h"
+#include "TextFileIO.h"
 
-class DataProcess
+class DataProcess:public PointCloudIO//, public PointCloudProcess
 {
 public:
     DataProcess();
 	~DataProcess();
-	void ConnectKinect();
-	void ReadKinectInput();
-	void DisconnectKinect();
+
+	//PointCloudIO *cloudio; // just declare, this not call PointCloudIO::PointCloudIO()
+	//PointCloudProcess *cloudprocess; // just declare, this not call PointCloudProcess::PointCloudProcess()
+	//TextFileIO *fileio; // just declare, this not call TextFileIO::TextFileIO()
+
 	PointCloudXYZRGB::Ptr GetKinectPointCloud();
 	cv::Mat GetKinectRGBImage();
-	void LoadPointCloud(string filename);
-	void SavePointCloud(string filename);
 	PointCloudXYZRGB::Ptr GetLoadedPointCloud();
 	
 
 private:
-	KinectV2Connector *kinect;
-	bool isKinectRunning;
+	PointCloudXYZRGB::Ptr removedplane_pointcloud;
 
-	PointCloudXYZRGB::Ptr rawpointcloud;
-	PointCloudXYZRGB::Ptr loadedpointcloud;
-	cv::Mat rawrgbimge;
 
 
 
