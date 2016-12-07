@@ -16,7 +16,7 @@ ViewerWindow::ViewerWindow()
 void ViewerWindow::SetDataProcess(DataProcess* d) {dataprocess = d;}
 
 
-void ViewerWindow::UpdateWindowCloudViewer(pcl::PointCloud<PointTypeXYZRGB>::Ptr pointcloud)
+void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 {
 	if (!window_view->updatePointCloud(pointcloud, "window_view"))
 	{

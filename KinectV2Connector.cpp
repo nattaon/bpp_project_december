@@ -208,7 +208,7 @@ void KinectV2Connector::get_depthframe()
 }
 
 
-void KinectV2Connector::mapping_pointcloud(pcl::PointCloud<PointTypeXYZRGB>::Ptr pointcloud)
+void KinectV2Connector::mapping_pointcloud(PointCloudXYZRGB::Ptr pointcloud)
 {
     //pcl::PointCloud<PointTypeXYZRGB>::Ptr pointcloud( new pcl::PointCloud<PointTypeXYZRGB>() );
     pointcloud->width = static_cast<uint32_t>( depthWidth );

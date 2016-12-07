@@ -9,7 +9,7 @@ public:
     ViewerWindow();
     void SetDataProcess(DataProcess* d);
 
-	void UpdateWindowCloudViewer(pcl::PointCloud<PointTypeXYZRGB>::Ptr pointcloud);
+	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
 
 	

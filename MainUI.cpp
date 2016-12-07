@@ -1,6 +1,6 @@
 #include "MainUI.h"
 
-#define POINTCLOUD_DIR "../"
+#define POINTCLOUD_DIR "../pcd_files"
 #define LISTCOLUMN 6
 
 
@@ -112,8 +112,10 @@ void MainUI::timerEvent(QTimerEvent *event)
 {
 	dataprocess->ReadKinectInput();
 
-	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetKinectPointCloud());
 	viewerwindow->UpdateWindowRGB(dataprocess->GetKinectRGBImage());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetKinectPointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetKinectPointCloud());
 
 	//ShowPointCloudSize();
 }
@@ -188,7 +190,9 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 	{
 		cout << filename.toStdString() << endl;
 		dataprocess->LoadPointCloud(filename.toStdString());
+
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLoadedPointCloud());
+		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLoadedPointCloud());
 	}
 	
 }
@@ -321,10 +325,29 @@ void MainUI::ButtonApplyVoxelGridPressed()
 void MainUI::ButtonApplyPlaneSegmentPressed()
 {
 	cout << "call ButtonApplyPlaneSegmentPressed()" << endl;
+	
+	//disconnect kinect first
+	if (timerId_kinect != 0)
+	{
+		ButtonDisconnectPressed();
+	}
+
+	double planethreshold = ui->in_plane_threshold->text().toDouble();
+	dataprocess->ApplyPlaneSegmentation(planethreshold, dataprocess->GetCurrentDisplayPointCloud());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetAppliedRedPlanePointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetAppliedRedPlanePointCloud());
+
 }
 void MainUI::ButtonRemovePlanePressed()
 {
 	cout << "call ButtonRemovePlanePressed()" << endl;
+
+	dataprocess->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
+
 }
 void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 {

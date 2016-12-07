@@ -5,7 +5,7 @@
 #include "PointCloudProcess.h"
 #include "TextFileIO.h"
 
-class DataProcess:public PointCloudIO//, public PointCloudProcess
+class DataProcess:public PointCloudIO, public PointCloudProcess
 {
 public:
     DataProcess();
@@ -18,10 +18,16 @@ public:
 	PointCloudXYZRGB::Ptr GetKinectPointCloud();
 	cv::Mat GetKinectRGBImage();
 	PointCloudXYZRGB::Ptr GetLoadedPointCloud();
+
+	void SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud);
+	PointCloudXYZRGB::Ptr GetCurrentDisplayPointCloud();
+
+	PointCloudXYZRGB::Ptr GetAppliedRedPlanePointCloud();
+	PointCloudXYZRGB::Ptr GetRemovedPlanePointCloud();
 	
 
 private:
-	PointCloudXYZRGB::Ptr removedplane_pointcloud;
+	PointCloudXYZRGB::Ptr currentdisplay_pointcloud;
 
 
 

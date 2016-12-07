@@ -17,7 +17,7 @@ public:
     ICoordinateMapper* get_coordinatemapper();
     cv::Mat get_colorframe(float COLORSCALE);
     void get_depthframe();
-    void mapping_pointcloud(pcl::PointCloud<PointTypeXYZRGB>::Ptr pointcloud);
+	void mapping_pointcloud(PointCloudXYZRGB::Ptr pointcloud);
 
 	template<class Interface>
 	inline void SafeRelease(Interface *& pInterfaceToRelease)
