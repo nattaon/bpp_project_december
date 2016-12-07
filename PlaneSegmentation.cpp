@@ -8,6 +8,7 @@ PlaneSegmentation::PlaneSegmentation()
 	before_applyplane_cloud.reset(new PointCloudXYZRGB);
 	applied_redplane_cloud.reset(new PointCloudXYZRGB);
 	removed_plane_cloud.reset(new PointCloudXYZRGB);
+	removed_planeoutside_cloud.reset(new PointCloudXYZRGB);
 	only_plane_cloud.reset(new PointCloudXYZRGB);
 }
 
@@ -96,4 +97,12 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 	cout << "max_point_OBB is \n" << transformextract->max_point_OBB << endl;
 	cout << "position_OBB is \n" << transformextract->position_OBB << endl;
 	cout << "rotational_matrix_OBB is \n" << transformextract->rotational_matrix_OBB << endl;
+
+
+	Filter(cloud, "x", transformextract->min_point_OBB.x, transformextract->max_point_OBB.x);
+	Filter(cloud, "y", transformextract->min_point_OBB.y, transformextract->max_point_OBB.y);
+	Filter(cloud, "z", transformextract->max_point_OBB.z, transformextract->max_point_OBB.z + 0.9);
+
+	pcl::copyPointCloud(*cloud, *removed_planeoutside_cloud);
+
 }

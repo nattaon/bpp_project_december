@@ -47,4 +47,8 @@ PointCloudXYZRGB::Ptr DataProcess::GetRemovedPlanePointCloud()
 {
 	return planeseg->removed_plane_cloud;
 }
+PointCloudXYZRGB::Ptr DataProcess::GetRemovedPlaneOutsidePointCloud()
+{
+	return planeseg->removed_planeoutside_cloud;
+}
 

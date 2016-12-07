@@ -345,10 +345,10 @@ void MainUI::ButtonRemovePlanePressed()
 
 	
 	dataprocess->planeseg->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
-	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetRemovedPlanePointCloud());
 
-	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
-	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
 
 	viewerwindow->AddBoundingBoxWindowCloudViewer(
 		dataprocess->planeseg->transformextract->position_OBB,

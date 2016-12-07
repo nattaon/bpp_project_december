@@ -24,7 +24,7 @@ public:
 
 	PointCloudXYZRGB::Ptr GetAppliedRedPlanePointCloud();
 	PointCloudXYZRGB::Ptr GetRemovedPlanePointCloud();
-	
+	PointCloudXYZRGB::Ptr GetRemovedPlaneOutsidePointCloud();
 
 private:
 	PointCloudXYZRGB::Ptr currentdisplay_pointcloud;
