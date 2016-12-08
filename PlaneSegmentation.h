@@ -22,7 +22,7 @@ public:
 	PointCloudXYZRGB::Ptr removed_planeoutside_cloud;
 	PointCloudXYZRGB::Ptr only_plane_cloud;
 
-private:
+//private:
 	pcl::PointIndices::Ptr plane_inliers;
 	pcl::ModelCoefficients::Ptr plane_coefficients;
 

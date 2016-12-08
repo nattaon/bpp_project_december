@@ -5,7 +5,7 @@
 #include "PointCloudOperation.h"
 #include "TextFileIO.h"
 
-class DataProcess:public PointCloudIO, public PointCloudOperation
+class DataProcess:public PointCloudIO, public PointCloudOperation, public TextFileIO
 {
 public:
     DataProcess();

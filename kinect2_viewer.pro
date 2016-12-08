@@ -20,7 +20,8 @@ SOURCES += \
     PointCloudIO.cpp \
     PointCloudProcess.cpp \
     TextFileIO.cpp \
-    PointCloudTransformationExtraction.cpp
+    PointCloudTransformationExtraction.cpp \
+    PlaneSegmentParameterIO.cpp
 
 HEADERS  += \
     MainUI.h \
@@ -29,7 +30,8 @@ HEADERS  += \
     PointCloudIO.h \
     PointCloudProcess.h \
     TextFileIO.h \
-    PointCloudTransformationExtraction.h
+    PointCloudTransformationExtraction.h \
+    PlaneSegmentParameterIO.h
 
 FORMS    += \
     MainUI.ui
