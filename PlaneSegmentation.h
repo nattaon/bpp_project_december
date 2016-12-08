@@ -10,6 +10,8 @@ public:
 	PlaneSegmentation();
 	~PlaneSegmentation();
 
+	bool isPlaneTransformCalculated;
+
 	PointCloudTransformationExtraction *transformextract;
 
 	void ApplyPlaneSegmentation(double plane_threshold, PointCloudXYZRGB::Ptr cloud);

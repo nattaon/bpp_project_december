@@ -3,6 +3,8 @@
 
 PlaneSegmentation::PlaneSegmentation()
 {
+	isPlaneTransformCalculated = false;
+
 	transformextract = new PointCloudTransformationExtraction();
 
 	before_applyplane_cloud.reset(new PointCloudXYZRGB);
@@ -89,6 +91,9 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 	}
 
 	transformextract->CalculateTransformation(only_plane_cloud);
+
+	isPlaneTransformCalculated = true;
+
 	cout << "mass_center is \n" << transformextract->mass_center << endl;
 	cout << "major_vector is \n" << transformextract->major_vector << endl;
 	cout << "middle_vector is \n" << transformextract->middle_vector << endl;

@@ -28,6 +28,8 @@ private:
 
 	void timerEvent(QTimerEvent *event);
 
+	bool isLoadPlaneParameter;
+
 private slots:
 
 	//top menu

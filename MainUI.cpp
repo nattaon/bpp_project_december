@@ -12,6 +12,8 @@ MainUI::MainUI(QWidget *parent) :
 
     ui->setupUi(this);
 	timerId_kinect = 0;
+
+	isLoadPlaneParameter = false;
 	
 	//top menu
 	///menu:viewer embedded
@@ -262,6 +264,8 @@ void MainUI::ButtonLoadPlaneParamPressed()
 		dataprocess->planeseg->transformextract->middle_vector,
 		dataprocess->planeseg->transformextract->minor_vector,
 		"planeseg ");
+
+	isLoadPlaneParameter = true;
 
 }
 void MainUI::ButtonSavePlaneParamPressed()
