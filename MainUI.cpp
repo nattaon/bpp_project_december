@@ -8,6 +8,8 @@ MainUI::MainUI(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainUI)
 {
+	cout << "MainUI::MainUI(QWidget *parent)" << endl;
+
     ui->setupUi(this);
 	timerId_kinect = 0;
 	
@@ -225,10 +227,67 @@ void MainUI::ButtonSaveCameraParamPressed()
 void MainUI::ButtonLoadPlaneParamPressed()
 {
 	cout << "call ButtonLoadPlaneParamPressed()" << endl;
+
+	QString filename = QFileDialog::getOpenFileName(this,
+		tr("Open plane transform parameter"), "../", tr("Text Files (*.txt)"));
+	if (filename.trimmed().isEmpty()) // no file selected
+	{
+		cout << "no file selected" << endl;
+		return;
+	}
+
+	dataprocess->planeparam->ReadPlaneTransformParameter(
+		filename.toStdString(),
+		dataprocess->planeseg->plane_coefficients,
+		dataprocess->planeseg->transformextract->mass_center,
+		dataprocess->planeseg->transformextract->major_vector,
+		dataprocess->planeseg->transformextract->middle_vector,
+		dataprocess->planeseg->transformextract->minor_vector,
+		dataprocess->planeseg->transformextract->min_point_OBB,
+		dataprocess->planeseg->transformextract->max_point_OBB,
+		dataprocess->planeseg->transformextract->position_OBB,
+		dataprocess->planeseg->transformextract->rotational_matrix_OBB);
+
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
+		dataprocess->planeseg->transformextract->position_OBB,
+		dataprocess->planeseg->transformextract->min_point_OBB,
+		dataprocess->planeseg->transformextract->max_point_OBB,
+		dataprocess->planeseg->transformextract->rotational_matrix_OBB,
+		"planeseg OBB"
+		);
+
+	viewerwindow->AddVectorDirectionWindowCloudViewer(
+		dataprocess->planeseg->transformextract->mass_center,
+		dataprocess->planeseg->transformextract->major_vector,
+		dataprocess->planeseg->transformextract->middle_vector,
+		dataprocess->planeseg->transformextract->minor_vector,
+		"planeseg ");
+
 }
 void MainUI::ButtonSavePlaneParamPressed()
 {
 	cout << "call ButtonSavePlaneParamPressed()" << endl;
+
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save plane transform parameter"), "../", tr("Text Files (*.txt)"));
+	if (filename.trimmed().isEmpty()) // no file selected
+	{
+		cout << "no file selected" << endl;
+		return;
+	}
+
+	dataprocess->planeparam->WritePlaneTransformParameter(
+		filename.toStdString(),
+		dataprocess->planeseg->plane_coefficients,
+		dataprocess->planeseg->transformextract->mass_center,
+		dataprocess->planeseg->transformextract->major_vector,
+		dataprocess->planeseg->transformextract->middle_vector,
+		dataprocess->planeseg->transformextract->minor_vector,
+		dataprocess->planeseg->transformextract->min_point_OBB,
+		dataprocess->planeseg->transformextract->max_point_OBB,
+		dataprocess->planeseg->transformextract->position_OBB,
+		dataprocess->planeseg->transformextract->rotational_matrix_OBB);
 }
 
 //items above tab
