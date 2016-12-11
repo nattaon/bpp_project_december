@@ -9,7 +9,6 @@ public:
 
     void WritePlaneTransformParameter(
         string filename,
-		pcl::ModelCoefficients::Ptr plane_coefficients,
         Eigen::Vector3f mass_center,
         Eigen::Vector3f major_vector,
         Eigen::Vector3f middle_vector,
@@ -22,7 +21,6 @@ public:
     //pass by reference, to return change of value
 	void ReadPlaneTransformParameter(
         string filename,
-		pcl::ModelCoefficients::Ptr &plane_coefficients,
         Eigen::Vector3f &mass_center,
         Eigen::Vector3f &major_vector,
         Eigen::Vector3f &middle_vector,

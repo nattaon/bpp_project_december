@@ -3,7 +3,7 @@
 
 PlaneSegmentation::PlaneSegmentation()
 {
-	isPlaneTransformCalculated = false;
+	SetHasPlaneTransformData(false);
 
 	transformextract = new PointCloudTransformationExtraction();
 
@@ -19,6 +19,16 @@ PlaneSegmentation::~PlaneSegmentation()
 {
 
 }
+void PlaneSegmentation::SetHasPlaneTransformData(bool value)
+{
+	isHasPlaneTransformData = value;
+}
+
+bool PlaneSegmentation::isPlaneTransformDataAvailable()
+{
+	return isHasPlaneTransformData;
+}
+
 
 void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointCloudXYZRGB::Ptr cloud)
 {
@@ -81,18 +91,15 @@ void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 	extract.setNegative(false);
 	extract.filter(*only_plane_cloud);
 
+
+
 }
-void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
+
+void PlaneSegmentation::CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud)
 {
-	if (!plane_inliers)
-	{
-		QMessageBox::information(0, QString("Remove plane outside"), QString("No plane data, Segment plane first"), QMessageBox::Ok);
-		return;
-	}
+	transformextract->CalculateTransformation(cloud); //only_plane_cloud
 
-	transformextract->CalculateTransformation(only_plane_cloud);
-
-	isPlaneTransformCalculated = true;
+	SetHasPlaneTransformData(true);
 
 	cout << "mass_center is \n" << transformextract->mass_center << endl;
 	cout << "major_vector is \n" << transformextract->major_vector << endl;
@@ -102,6 +109,22 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 	cout << "max_point_OBB is \n" << transformextract->max_point_OBB << endl;
 	cout << "position_OBB is \n" << transformextract->position_OBB << endl;
 	cout << "rotational_matrix_OBB is \n" << transformextract->rotational_matrix_OBB << endl;
+}
+
+
+void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
+{
+	if (!isPlaneTransformDataAvailable())
+	{
+		QMessageBox::information(0, QString("Remove plane outside"), QString("No plane transformation data. Please segment plane or load plane first"), QMessageBox::Ok);
+		return;
+	}
+	if (cloud->points.size()>0)
+	{
+		QMessageBox::information(0, QString("Remove plane outside"), QString("No pointcloud"), QMessageBox::Ok);
+		return;
+
+	}
 
 
 	Filter(cloud, "x", transformextract->min_point_OBB.x, transformextract->max_point_OBB.x);

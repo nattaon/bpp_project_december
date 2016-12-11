@@ -10,12 +10,15 @@ public:
 	PlaneSegmentation();
 	~PlaneSegmentation();
 
-	bool isPlaneTransformCalculated;
+
+	void SetHasPlaneTransformData(bool value);
+	bool isPlaneTransformDataAvailable();
 
 	PointCloudTransformationExtraction *transformextract;
 
 	void ApplyPlaneSegmentation(double plane_threshold, PointCloudXYZRGB::Ptr cloud);
 	void RemovePlane(PointCloudXYZRGB::Ptr cloud);
+	void CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud);
 	void RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud);
 
 	PointCloudXYZRGB::Ptr before_applyplane_cloud;
@@ -24,10 +27,11 @@ public:
 	PointCloudXYZRGB::Ptr removed_planeoutside_cloud;
 	PointCloudXYZRGB::Ptr only_plane_cloud;
 
-//private:
+private:
 	pcl::PointIndices::Ptr plane_inliers;
 	pcl::ModelCoefficients::Ptr plane_coefficients;
 
+	bool isHasPlaneTransformData;
 
 protected:
 

@@ -7,7 +7,6 @@ PlaneSegmentParameterIO::PlaneSegmentParameterIO()
 
 void PlaneSegmentParameterIO::WritePlaneTransformParameter(
     string filename,
-	pcl::ModelCoefficients::Ptr plane_coefficients,
     Eigen::Vector3f mass_center,
     Eigen::Vector3f major_vector,
     Eigen::Vector3f middle_vector,
@@ -91,7 +90,6 @@ void PlaneSegmentParameterIO::WritePlaneTransformParameter(
 //pass by reference, to return change of value
 void PlaneSegmentParameterIO::ReadPlaneTransformParameter(
     string filename,
-    pcl::ModelCoefficients::Ptr &plane_coefficients,
     Eigen::Vector3f &mass_center,
     Eigen::Vector3f &major_vector,
     Eigen::Vector3f &middle_vector,

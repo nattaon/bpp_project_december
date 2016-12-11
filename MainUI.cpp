@@ -240,7 +240,6 @@ void MainUI::ButtonLoadPlaneParamPressed()
 
 	dataprocess->planeparam->ReadPlaneTransformParameter(
 		filename.toStdString(),
-		dataprocess->planeseg->plane_coefficients,
 		dataprocess->planeseg->transformextract->mass_center,
 		dataprocess->planeseg->transformextract->major_vector,
 		dataprocess->planeseg->transformextract->middle_vector,
@@ -249,6 +248,17 @@ void MainUI::ButtonLoadPlaneParamPressed()
 		dataprocess->planeseg->transformextract->max_point_OBB,
 		dataprocess->planeseg->transformextract->position_OBB,
 		dataprocess->planeseg->transformextract->rotational_matrix_OBB);
+
+	dataprocess->planeseg->SetHasPlaneTransformData(true);
+
+	if (dataprocess->GetCurrentDisplayPointCloud()->size()>0)
+	{
+		dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
+		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
+		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+
+	}
+
 
 	viewerwindow->AddBoundingBoxWindowCloudViewer(
 		dataprocess->planeseg->transformextract->position_OBB,
@@ -265,7 +275,6 @@ void MainUI::ButtonLoadPlaneParamPressed()
 		dataprocess->planeseg->transformextract->minor_vector,
 		"planeseg ");
 
-	isLoadPlaneParameter = true;
 
 }
 void MainUI::ButtonSavePlaneParamPressed()
@@ -283,7 +292,6 @@ void MainUI::ButtonSavePlaneParamPressed()
 
 	dataprocess->planeparam->WritePlaneTransformParameter(
 		filename.toStdString(),
-		dataprocess->planeseg->plane_coefficients,
 		dataprocess->planeseg->transformextract->mass_center,
 		dataprocess->planeseg->transformextract->major_vector,
 		dataprocess->planeseg->transformextract->middle_vector,
@@ -408,25 +416,41 @@ void MainUI::ButtonRemovePlanePressed()
 
 	
 	dataprocess->planeseg->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
-	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetRemovedPlanePointCloud());
 
-	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
-	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+	if (dataprocess->planeseg->isPlaneTransformDataAvailable())
+	{
+		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
+		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
+	}
+	else
+	{
+		cout << "no planeparameter -> calculate plane param" << endl;
+		dataprocess->planeseg->CalculatePlaneTransformation(dataprocess->GetOnlyPlanePointCloud());
+		dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetRemovedPlanePointCloud());
 
-	viewerwindow->AddBoundingBoxWindowCloudViewer(
-		dataprocess->planeseg->transformextract->position_OBB,
-		dataprocess->planeseg->transformextract->min_point_OBB,
-		dataprocess->planeseg->transformextract->max_point_OBB,
-		dataprocess->planeseg->transformextract->rotational_matrix_OBB,
-		"planeseg OBB"
-		);
+		viewerwindow->AddBoundingBoxWindowCloudViewer(
+			dataprocess->planeseg->transformextract->position_OBB,
+			dataprocess->planeseg->transformextract->min_point_OBB,
+			dataprocess->planeseg->transformextract->max_point_OBB,
+			dataprocess->planeseg->transformextract->rotational_matrix_OBB,
+			"planeseg OBB"
+			);
 
-	viewerwindow->AddVectorDirectionWindowCloudViewer(
-		dataprocess->planeseg->transformextract->mass_center,
-		dataprocess->planeseg->transformextract->major_vector,
-		dataprocess->planeseg->transformextract->middle_vector,
-		dataprocess->planeseg->transformextract->minor_vector,
-		"planeseg ");
+		viewerwindow->AddVectorDirectionWindowCloudViewer(
+			dataprocess->planeseg->transformextract->mass_center,
+			dataprocess->planeseg->transformextract->major_vector,
+			dataprocess->planeseg->transformextract->middle_vector,
+			dataprocess->planeseg->transformextract->minor_vector,
+			"planeseg ");
+
+		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
+		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+	}
+
+
+
+
+
 
 }
 void MainUI::ButtonAlignPlaneToAxisCenterPressed()
