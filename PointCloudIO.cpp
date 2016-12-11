@@ -47,19 +47,19 @@ void PointCloudIO::LoadPointCloud(string filename)
 	}
 }
 
-void PointCloudIO::SavePointCloud(string filename)
+void PointCloudIO::SavePointCloud(string filename, PointCloudXYZRGB::Ptr cloud)
 {
-	if (raw_pointcloud->points.size() <= 0)
+	if (cloud->points.size() <= 0)
 	{
 		//QMessageBox::information(0, QString("Save pointcloud"), QString("No pointcloud from kinect to save"), QMessageBox::Ok);
-		cout << "No pointcloud from kinect to save." << endl;
+		cout << "No pointcloud to save." << endl;
 		return;
 	}
 
-	raw_pointcloud->width = raw_pointcloud->points.size();
-	raw_pointcloud->height = 1;
+	cloud->width = cloud->points.size();
+	cloud->height = 1;
 
-	pcl::io::savePCDFileBinary(filename, *raw_pointcloud); //save-load faster
+	pcl::io::savePCDFileBinary(filename, *cloud); //save-load faster
 
 
 }

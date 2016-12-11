@@ -17,7 +17,7 @@ PlaneSegmentation::PlaneSegmentation()
 
 PlaneSegmentation::~PlaneSegmentation()
 {
-
+	delete transformextract;
 }
 void PlaneSegmentation::SetHasPlaneTransformData(bool value)
 {
@@ -119,7 +119,7 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 		QMessageBox::information(0, QString("Remove plane outside"), QString("No plane transformation data. Please segment plane or load plane first"), QMessageBox::Ok);
 		return;
 	}
-	if (cloud->points.size()>0)
+	if (cloud->points.size()==0)
 	{
 		QMessageBox::information(0, QString("Remove plane outside"), QString("No pointcloud"), QMessageBox::Ok);
 		return;

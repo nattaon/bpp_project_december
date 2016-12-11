@@ -161,12 +161,12 @@ void MainUI::ButtonSavePointCloudFromViewerPressed()
 		if (timerId_kinect != 0)//kinect is running
 		{
 			killTimer(timerId_kinect); //stop grabber data from kinect
-			dataprocess->SavePointCloud(filename.toStdString());
+			dataprocess->SavePointCloud(filename.toStdString(), dataprocess->GetKinectPointCloud());
 			timerId_kinect = startTimer(100); // rerun kinect again
 		}
 		else
 		{
-			dataprocess->SavePointCloud(filename.toStdString());
+			dataprocess->SavePointCloud(filename.toStdString(), dataprocess->GetCurrentDisplayPointCloud());
 		}
 		
 	}
@@ -197,6 +197,7 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLoadedPointCloud());
 		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLoadedPointCloud());
+		cout << "GetCurrentDisplayPointCloudSize " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
 	}
 	
 }
@@ -253,6 +254,9 @@ void MainUI::ButtonLoadPlaneParamPressed()
 
 	if (dataprocess->GetCurrentDisplayPointCloud()->size()>0)
 	{
+
+		cout << "dataprocess->GetCurrentDisplayPointCloud()->size()>0" << endl;
+
 		dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
 		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
@@ -464,10 +468,34 @@ void MainUI::ButtonApplyOutlierPressed()
 void MainUI::ButtonShowClusterPressed()
 {
 	cout << "call ButtonShowClusterPressed()" << endl;
+
+	int pointcloudsize = dataprocess->GetCurrentDisplayPointCloud()->size();
+
+	if (pointcloudsize == 0)
+	{
+		cout << "no point cloud" << endl;
+		return;
+	}
+
+	double cluster_tolerance = ui->in_clusterextract_tolerance->text().toDouble();
+	int cluster_min_percentage = ui->in_clusterextract_min->text().toInt();
+	int cluster_max_percentage = ui->in_clusterextract_max->text().toInt();
+	int cluster_min_size = cluster_min_percentage*pointcloudsize / 100;
+	int cluster_max_size = cluster_max_percentage*pointcloudsize / 100;
+
+
+	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
+	dataprocess->clusterextract->ShowClusterInColor(dataprocess->GetCurrentDisplayPointCloud());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
+	//dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+
 }
 void MainUI::ButtonExtractClusterPressed()
 {
 	cout << "call ButtonExtractClusterPressed()" << endl;
+
+
 }
 
 

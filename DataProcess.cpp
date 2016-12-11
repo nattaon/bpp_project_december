@@ -34,10 +34,12 @@ void DataProcess::SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud)
 
 PointCloudXYZRGB::Ptr DataProcess::GetCurrentDisplayPointCloud()
 {
-
 	return currentdisplay_pointcloud;
 }
-
+int DataProcess::GetCurrentDisplayPointCloudSize()
+{
+	return currentdisplay_pointcloud->size();
+}
 
 PointCloudXYZRGB::Ptr DataProcess::GetAppliedRedPlanePointCloud()
 {
@@ -55,5 +57,12 @@ PointCloudXYZRGB::Ptr DataProcess::GetOnlyPlanePointCloud()
 {
 	return planeseg->only_plane_cloud;
 }
+PointCloudXYZRGB::Ptr DataProcess::GetColoredClusterPointCloud()
+{
+	return clusterextract->applied_colorcluster_cloud;
+}
+
+
+
 
 

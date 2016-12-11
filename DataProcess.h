@@ -21,11 +21,15 @@ public:
 
 	void SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud);
 	PointCloudXYZRGB::Ptr GetCurrentDisplayPointCloud();
+	int GetCurrentDisplayPointCloudSize();
 
 	PointCloudXYZRGB::Ptr GetAppliedRedPlanePointCloud();
 	PointCloudXYZRGB::Ptr GetRemovedPlanePointCloud();
 	PointCloudXYZRGB::Ptr GetRemovedPlaneOutsidePointCloud();
 	PointCloudXYZRGB::Ptr GetOnlyPlanePointCloud();
+	PointCloudXYZRGB::Ptr GetColoredClusterPointCloud();
+
+
 
 private:
 	PointCloudXYZRGB::Ptr currentdisplay_pointcloud;
