@@ -67,7 +67,7 @@ void ClusterExtraction::ShowClusterInColor(PointCloudXYZRGB::Ptr cloud)
 	cout << "array_cluster_cloud size" << array_cluster_cloud.size() << endl;
 }
 
-std::vector<PointCloudXYZRGB::Ptr> ClusterExtraction::ExtractCluster()
+std::vector<PointCloudXYZRGB::Ptr> ClusterExtraction::GetExtractCluster()
 {
 	return array_cluster_cloud;
 }

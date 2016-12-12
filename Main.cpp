@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 	HWND consoleWindow = GetConsoleWindow();
-	SetWindowPos(consoleWindow, 0, 600, 0, 600, 380, SWP_NOZORDER);
+	SetWindowPos(consoleWindow, 0, 1000, 0, 600, 380, SWP_NOZORDER);
 
 
 

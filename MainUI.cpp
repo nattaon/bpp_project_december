@@ -495,7 +495,10 @@ void MainUI::ButtonExtractClusterPressed()
 {
 	cout << "call ButtonExtractClusterPressed()" << endl;
 
-
+	dataprocess->SeparateContainerAndItems(dataprocess->clusterextract->GetExtractCluster());
+	dataprocess->CalculateContainerTransformation();
+	//cout << " check dataprocess->clusterextract->GetExtractCluster() size = " << dataprocess->clusterextract->GetExtractCluster().size() << endl;
+ 
 }
 
 

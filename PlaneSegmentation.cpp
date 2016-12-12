@@ -101,14 +101,9 @@ void PlaneSegmentation::CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud
 
 	SetHasPlaneTransformData(true);
 
-	cout << "mass_center is \n" << transformextract->mass_center << endl;
-	cout << "major_vector is \n" << transformextract->major_vector << endl;
-	cout << "middle_vector is \n" << transformextract->middle_vector << endl;
-	cout << "minor_vector is \n" << transformextract->minor_vector << endl;
-	cout << "min_point_OBB is \n" << transformextract->min_point_OBB << endl;
-	cout << "max_point_OBB is \n" << transformextract->max_point_OBB << endl;
-	cout << "position_OBB is \n" << transformextract->position_OBB << endl;
-	cout << "rotational_matrix_OBB is \n" << transformextract->rotational_matrix_OBB << endl;
+	transformextract->PrintTransformationData();
+
+
 }
 
 

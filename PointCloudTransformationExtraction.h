@@ -9,6 +9,7 @@ public:
     PointCloudTransformationExtraction();
 	void CalculateTransformation(PointCloudXYZRGB::Ptr cloud);
 	void CalculateWDH();
+	void PrintTransformationData();
 
 	Eigen::Vector3f mass_center;
 	Eigen::Vector3f major_vector, middle_vector, minor_vector;

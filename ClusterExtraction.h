@@ -1,6 +1,5 @@
 #ifndef CLUSTEREXTRACTION_H
 #define CLUSTEREXTRACTION_H
-
 #include "SharedHeader.h"
 
 class ClusterExtraction
@@ -15,7 +14,7 @@ public:
 		double cluster_tolerance, int cluster_min_size, int cluster_max_size);
 	void ShowClusterInColor(PointCloudXYZRGB::Ptr cloud);
 
-	vector<PointCloudXYZRGB::Ptr> ExtractCluster();
+	vector<PointCloudXYZRGB::Ptr> GetExtractCluster();
 
 	PointCloudXYZRGB::Ptr applied_colorcluster_cloud;
 

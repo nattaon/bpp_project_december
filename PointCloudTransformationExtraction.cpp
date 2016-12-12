@@ -31,4 +31,16 @@ void PointCloudTransformationExtraction::CalculateWDH()
 {
 
 }
+void PointCloudTransformationExtraction::PrintTransformationData()
+{
+	cout << "mass_center is \n" << mass_center << endl;
+	cout << "major_vector is \n" << major_vector << endl;
+	cout << "middle_vector is \n" << middle_vector << endl;
+	cout << "minor_vector is \n" << minor_vector << endl;
+	cout << "min_point_OBB is \n" << min_point_OBB << endl;
+	cout << "max_point_OBB is \n" << max_point_OBB << endl;
+	cout << "position_OBB is \n" << position_OBB << endl;
+	cout << "rotational_matrix_OBB is \n" << rotational_matrix_OBB << endl;
+}
+
 
