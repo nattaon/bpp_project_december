@@ -2077,7 +2077,7 @@
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>30</y>
+        <y>70</y>
         <width>131</width>
         <height>23</height>
        </rect>
@@ -2100,7 +2100,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>175</y>
+        <y>160</y>
         <width>91</width>
         <height>23</height>
        </rect>
@@ -2123,7 +2123,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>200</y>
+        <y>180</y>
         <width>91</width>
         <height>23</height>
        </rect>
@@ -2161,7 +2161,7 @@
        </font>
       </property>
       <property name="text">
-       <string>metre</string>
+       <string>m</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -2231,6 +2231,52 @@
 +when extract, remember each cluster centroid</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="bt_get_plane_transform">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>30</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Get plane transform</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_show_cluster_bb">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>200</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show bounding</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -2253,7 +2299,7 @@
      <rect>
       <x>10</x>
       <y>340</y>
-      <width>371</width>
+      <width>461</width>
       <height>191</height>
      </rect>
     </property>
@@ -2282,7 +2328,7 @@
      <bool>false</bool>
     </property>
     <property name="columnCount">
-     <number>6</number>
+     <number>12</number>
     </property>
     <attribute name="headerCascadingSectionResizes">
      <bool>false</bool>
@@ -2332,7 +2378,7 @@
     </column>
     <column>
      <property name="text">
-      <string>h</string>
+      <string>d</string>
      </property>
      <property name="font">
       <font>
@@ -2346,7 +2392,7 @@
     </column>
     <column>
      <property name="text">
-      <string>d</string>
+      <string>h</string>
      </property>
      <property name="font">
       <font>
@@ -2374,6 +2420,54 @@
     </column>
     <column>
      <property name="text">
+      <string>pos_x</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>pos_y</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>pos_z</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>rot_x</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>rot_y</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>rot_z</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
       <string>filename</string>
      </property>
      <property name="font">
@@ -2390,8 +2484,8 @@
    <widget class="QPushButton" name="bt_all_load">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>410</y>
+      <x>350</x>
+      <y>530</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2410,8 +2504,8 @@
    <widget class="QPushButton" name="bt_item_save">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>380</y>
+      <x>290</x>
+      <y>550</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2430,8 +2524,8 @@
    <widget class="QPushButton" name="bt_all_save">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>430</y>
+      <x>350</x>
+      <y>550</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2450,8 +2544,8 @@
    <widget class="QPushButton" name="bt_item_clearall">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>480</y>
+      <x>410</x>
+      <y>550</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2470,8 +2564,8 @@
    <widget class="QPushButton" name="bt_item_load">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>360</y>
+      <x>290</x>
+      <y>530</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2490,8 +2584,8 @@
    <widget class="QPushButton" name="bt_item_remove">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>460</y>
+      <x>410</x>
+      <y>530</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -2674,7 +2768,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Clear viewer</string>
+     <string>Clear viewer cloud</string>
     </property>
    </widget>
    <widget class="QLabel" name="text_cloudname">
@@ -2731,9 +2825,9 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>540</y>
-      <width>31</width>
-      <height>31</height>
+      <y>550</y>
+      <width>41</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -2747,7 +2841,7 @@
      <string>&gt;</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="in_bin_d">
+   <widget class="QLineEdit" name="in_bin_h">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -2792,7 +2886,7 @@
    <widget class="QPushButton" name="bt_binpacking">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>120</x>
       <y>540</y>
       <width>81</width>
       <height>31</height>
@@ -2821,7 +2915,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Bin size w*h*d (mm)</string>
+     <string>Bin size w*d*h (mm)</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -2830,10 +2924,10 @@
    <widget class="QPushButton" name="bt_order_previous">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>540</y>
-      <width>31</width>
-      <height>31</height>
+      <x>200</x>
+      <y>550</y>
+      <width>41</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -2847,7 +2941,7 @@
      <string>&lt;</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="in_bin_h">
+   <widget class="QLineEdit" name="in_bin_dd">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -2985,14 +3079,34 @@
    <widget class="QPushButton" name="bt_track_item_pos">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>540</y>
+      <x>200</x>
+      <y>530</y>
       <width>91</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>track item pos</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_clear_viewer_shape">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>50</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Clear viewer shape</string>
     </property>
    </widget>
   </widget>
@@ -3133,9 +3247,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_16"/>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

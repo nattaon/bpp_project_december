@@ -30,6 +30,8 @@ private:
 
 	bool isLoadPlaneParameter;
 
+	
+
 private slots:
 
 	//top menu
@@ -58,6 +60,7 @@ private slots:
 	void RadioButtonBBOBBSelected();		
 	void ButtonShowLoadedPointCloudPressed();
 	void ButtonClearViewerPointCloudPressed();	
+	void ButtonClearViewerShapePressed();
 	void ButtonUndoLastedPointCloudPressed();
 
 	//tab:viewer parameter
@@ -78,11 +81,13 @@ private slots:
 	//tab:segmentation
 	void ButtonApplyVoxelGridPressed();
 	void ButtonApplyPlaneSegmentPressed();
+	void ButtonGetPlaneTransformPressed();
 	void ButtonRemovePlanePressed();
 	void ButtonAlignPlaneToAxisCenterPressed();
 	void ButtonApplyOutlierPressed();
 	void ButtonShowClusterPressed();
 	void ButtonExtractClusterPressed();
+	void ButtonShowClusterPressed();
 	
 
 	//cluster list

@@ -22,7 +22,8 @@ public:
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
 
-	
+	void ToggleAxisONWindowCloudViewer();
+	void ToggleAxisOFFWindowCloudViewer();
 
 private:
     DataProcess *dataprocess;

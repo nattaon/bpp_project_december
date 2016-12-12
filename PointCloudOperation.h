@@ -21,8 +21,13 @@ public:
 	void CalculateContainerTransformation();
 	void CalculateItemsTransformation();
 
+	void MovePointCloudFromTo(PointCloudXYZRGB::Ptr cloud, PointTypeXYZRGB current_pos, PointTypeXYZRGB target_pos);
+	void RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
+		Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector,
+		Eigen::Matrix<float, 1, 3>  target_plane_normal_vector);
+
 private:
-	void CalculateTransformation();
+
 
 
 };

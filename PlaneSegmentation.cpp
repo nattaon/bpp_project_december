@@ -37,7 +37,7 @@ void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointClou
 	pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 	pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
 
-	// Create the segmentation object
+	// 1. find pointclouds index(inlier) which is locate in plane
 	pcl::SACSegmentation<PointTypeXYZRGB> seg;
 	seg.setOptimizeCoefficients(true);
 	seg.setModelType(pcl::SACMODEL_PLANE);
@@ -47,27 +47,45 @@ void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointClou
 	seg.setInputCloud(cloud);
 	seg.segment(*inliers, *coefficients);
 
+	plane_inliers = inliers;
+	plane_coefficients = coefficients;
+
+	transformextract->plane_coefficients_matrix(0) = plane_coefficients->values[0];
+	transformextract->plane_coefficients_matrix(1) = plane_coefficients->values[1];
+	transformextract->plane_coefficients_matrix(2) = plane_coefficients->values[2];
 
 	//cout << "coefficients : " << coefficients->values[0] << " " << coefficients->values[1] << " " << coefficients->values[2] << endl;
 
-	
-	{
-		// color plane to red
-		for (size_t i = 0; i < inliers->indices.size(); i++){
-			cloud->points[inliers->indices[i]].r = 255;
-			cloud->points[inliers->indices[i]].g = 0;
-			cloud->points[inliers->indices[i]].b = 0;
-		}
-	}
 
-	plane_inliers = inliers;
-	plane_coefficients = coefficients;
+	// 2. extract plane and not plane pointcloud from inlier
+	pcl::ExtractIndices<pcl::PointXYZRGB> extract;
+	extract.setInputCloud(cloud);
+	extract.setIndices(plane_inliers);
+
+	pcl::copyPointCloud(*cloud, *removed_plane_cloud);
+	pcl::copyPointCloud(*cloud, *only_plane_cloud);
+
+	//true:remove plane, flase:remove not plane
+	extract.setNegative(true);
+	extract.filter(*removed_plane_cloud);
+
+	extract.setNegative(false);
+	extract.filter(*only_plane_cloud);
+
+
+	// 3. color plane as red to input pointcloud
+	for (int i = 0; i < inliers->indices.size(); i++){
+		cloud->points[inliers->indices[i]].r = 255;
+		cloud->points[inliers->indices[i]].g = 0;
+		cloud->points[inliers->indices[i]].b = 0;
+	}
 
 	pcl::copyPointCloud(*cloud, *applied_redplane_cloud);
 
 }
 void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 {
+	/*
 	if (!plane_inliers)
 	{
 		QMessageBox::information(0, QString("Remove plane"), QString("No plane to remove, Segment plane first"), QMessageBox::Ok);
@@ -79,7 +97,8 @@ void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 
 	//filtering
 	pcl::ExtractIndices<pcl::PointXYZRGB> extract;
-	extract.setInputCloud(tmp);
+	//extract.setInputCloud(tmp);
+	extract.setInputCloud(cloud);
 	extract.setIndices(plane_inliers);
 
 	pcl::copyPointCloud(*cloud, *removed_plane_cloud);
@@ -90,14 +109,12 @@ void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 
 	extract.setNegative(false);
 	extract.filter(*only_plane_cloud);
-
-
-
+*/
 }
 
 void PlaneSegmentation::CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud)
 {
-	transformextract->CalculateTransformation(cloud); //only_plane_cloud
+	transformextract->CalculateTransformation(cloud,0.05); //only_plane_cloud
 
 	SetHasPlaneTransformData(true);
 
@@ -124,7 +141,7 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 
 	Filter(cloud, "x", transformextract->min_point_OBB.x, transformextract->max_point_OBB.x);
 	Filter(cloud, "y", transformextract->min_point_OBB.y, transformextract->max_point_OBB.y);
-	Filter(cloud, "z", transformextract->max_point_OBB.z, transformextract->max_point_OBB.z + 0.9);
+	Filter(cloud, "z", transformextract->min_point_OBB.z-0.5, transformextract->max_point_OBB.z + 1.5);
 
 	pcl::copyPointCloud(*cloud, *removed_planeoutside_cloud);
 

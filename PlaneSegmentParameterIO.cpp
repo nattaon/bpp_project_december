@@ -7,6 +7,7 @@ PlaneSegmentParameterIO::PlaneSegmentParameterIO()
 
 void PlaneSegmentParameterIO::WritePlaneTransformParameter(
     string filename,
+	Eigen::Matrix3f plane_coefficients_matrix,
     Eigen::Vector3f mass_center,
     Eigen::Vector3f major_vector,
     Eigen::Vector3f middle_vector,
@@ -23,11 +24,11 @@ void PlaneSegmentParameterIO::WritePlaneTransformParameter(
 
 	outfile
 		//writing plane_coefficients variable is not easy (need header value)
-/*		<< "//plane_coefficients" << endl
-		<< plane_coefficients->values[0] << " " 
-		<< plane_coefficients->values[1] << " " 
-		<< plane_coefficients->values[2] << endl
-		<< "//" << endl*/
+		<< "//plane_coefficients" << endl
+		<< plane_coefficients_matrix(0) << " "
+		<< plane_coefficients_matrix(1) << " "
+		<< plane_coefficients_matrix(2) << endl
+		<< "//" << endl
 
 		<< "//mass_center" << endl
 		<< mass_center(0) << " "
@@ -90,6 +91,7 @@ void PlaneSegmentParameterIO::WritePlaneTransformParameter(
 //pass by reference, to return change of value
 void PlaneSegmentParameterIO::ReadPlaneTransformParameter(
     string filename,
+	Eigen::Matrix3f &plane_coefficients_matrix,
     Eigen::Vector3f &mass_center,
     Eigen::Vector3f &major_vector,
     Eigen::Vector3f &middle_vector,
@@ -114,17 +116,16 @@ void PlaneSegmentParameterIO::ReadPlaneTransformParameter(
 	int index2 = 0;
 
 	//writing plane_coefficients variable is not easy (need header value)
-/*	pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 	getline(infile, sLine); //plane_coefficients
 	getline(infile, sLine);
 	index1 = sLine.find(" ");
 	index2 = sLine.find_last_of(" ");
-	coefficients->values[0] = stod(sLine.substr(0, index1));
-	coefficients->values[1] = stod(sLine.substr(index1, index2));
-	coefficients->values[2] = stod(sLine.substr(index2));
+	plane_coefficients_matrix(0) = stod(sLine.substr(0, index1));
+	plane_coefficients_matrix(1) = stod(sLine.substr(index1, index2));
+	plane_coefficients_matrix(2) = stod(sLine.substr(index2));
 	getline(infile, sLine);//
-	plane_coefficients = coefficients;
-	*/
+
+	
 
 	getline(infile, sLine); //mass_center
 	getline(infile, sLine);

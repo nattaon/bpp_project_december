@@ -7,10 +7,11 @@ class PointCloudTransformationExtraction:public VoxelGridFilter
 {
 public:
     PointCloudTransformationExtraction();
-	void CalculateTransformation(PointCloudXYZRGB::Ptr cloud);
+	void CalculateTransformation(PointCloudXYZRGB::Ptr cloud, double voxel_size);
 	void CalculateWDH();
 	void PrintTransformationData();
 
+	Eigen::Matrix3f plane_coefficients_matrix;
 	Eigen::Vector3f mass_center;
 	Eigen::Vector3f major_vector, middle_vector, minor_vector;
 	PointTypeXYZRGB min_point_OBB;

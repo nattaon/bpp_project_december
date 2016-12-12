@@ -9,6 +9,7 @@ public:
 
     void WritePlaneTransformParameter(
         string filename,
+		Eigen::Matrix3f plane_coefficients_matrix,
         Eigen::Vector3f mass_center,
         Eigen::Vector3f major_vector,
         Eigen::Vector3f middle_vector,
@@ -21,6 +22,7 @@ public:
     //pass by reference, to return change of value
 	void ReadPlaneTransformParameter(
         string filename,
+		Eigen::Matrix3f &plane_coefficients_matrix,
         Eigen::Vector3f &mass_center,
         Eigen::Vector3f &major_vector,
         Eigen::Vector3f &middle_vector,

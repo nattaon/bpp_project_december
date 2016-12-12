@@ -41,6 +41,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->radio_boundingbox_obb, SIGNAL(clicked()), this, SLOT(RadioButtonBBOBBSelected()));
 	connect(ui->bt_reloadcloud_to_viewer, SIGNAL(clicked()), this, SLOT(ButtonShowLoadedPointCloudPressed()));
 	connect(ui->bt_clear_viewer_pointcloud, SIGNAL(clicked()), this, SLOT(ButtonClearViewerPointCloudPressed()));
+	connect(ui->bt_clear_viewer_shape, SIGNAL(clicked()), this, SLOT(ButtonClearViewerShapePressed()));
 	connect(ui->bt_undo_last_operation, SIGNAL(clicked()), this, SLOT(ButtonUndoLastedPointCloudPressed()));
 	
 	//tab:viewer parameter
@@ -61,11 +62,13 @@ MainUI::MainUI(QWidget *parent) :
 	//tab:segmentation
 	connect(ui->bt_apply_voxelgrid, SIGNAL(clicked()), this, SLOT(ButtonApplyVoxelGridPressed()));
 	connect(ui->bt_apply_planesegment, SIGNAL(clicked()), this, SLOT(ButtonApplyPlaneSegmentPressed()));
+	connect(ui->bt_get_plane_transform, SIGNAL(clicked()), this, SLOT(ButtonGetPlaneTransformPressed()));
 	connect(ui->bt_apply_removeplane, SIGNAL(clicked()), this, SLOT(ButtonRemovePlanePressed()));
 	connect(ui->bt_setplane_align_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignPlaneToAxisCenterPressed()));
 	connect(ui->bt_apply_outlierremove, SIGNAL(clicked()), this, SLOT(ButtonApplyOutlierPressed()));
 	connect(ui->bt_show_cluster, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
 	connect(ui->bt_extract_cluster, SIGNAL(clicked()), this, SLOT(ButtonExtractClusterPressed()));
+	connect(ui->bt_show_cluster_bb, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
 
 	//cluster list
 	connect(ui->treeWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeItem(QTreeWidgetItem *)));
@@ -85,6 +88,9 @@ MainUI::MainUI(QWidget *parent) :
 	ui->treeWidget->header()->resizeSection(0, 40);
 	ui->treeWidget->header()->resizeSection(5, 90);
 	//myTreeWidget->headerView()->resizeSection(0 , 100);
+
+	
+
 }
 
 MainUI::~MainUI()
@@ -196,6 +202,8 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 		dataprocess->LoadPointCloud(filename.toStdString());
 
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLoadedPointCloud());
+		RadioButtonAxisONSelected();
+
 		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLoadedPointCloud());
 		cout << "GetCurrentDisplayPointCloudSize " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
 	}
@@ -241,6 +249,7 @@ void MainUI::ButtonLoadPlaneParamPressed()
 
 	dataprocess->planeparam->ReadPlaneTransformParameter(
 		filename.toStdString(),
+		dataprocess->planeseg->transformextract->plane_coefficients_matrix,
 		dataprocess->planeseg->transformextract->mass_center,
 		dataprocess->planeseg->transformextract->major_vector,
 		dataprocess->planeseg->transformextract->middle_vector,
@@ -296,6 +305,7 @@ void MainUI::ButtonSavePlaneParamPressed()
 
 	dataprocess->planeparam->WritePlaneTransformParameter(
 		filename.toStdString(),
+		dataprocess->planeseg->transformextract->plane_coefficients_matrix,
 		dataprocess->planeseg->transformextract->mass_center,
 		dataprocess->planeseg->transformextract->major_vector,
 		dataprocess->planeseg->transformextract->middle_vector,
@@ -309,11 +319,17 @@ void MainUI::ButtonSavePlaneParamPressed()
 //items above tab
 void MainUI::RadioButtonAxisONSelected()
 {
-	cout << "call RadioButtonAxisONSelected()" << endl;
+	//cout << "call RadioButtonAxisONSelected()" << endl;
+	viewerwindow->ToggleAxisONWindowCloudViewer();
+	ui->radio_axis_on->setChecked(true);
+	ui->radio_axis_off->setChecked(false);
 }
 void MainUI::RadioButtonAxisOFFSelected()
 {
-	cout << "call RadioButtonAxisOFFSelected()" << endl;
+	//cout << "call RadioButtonAxisOFFSelected()" << endl;
+	viewerwindow->ToggleAxisOFFWindowCloudViewer();
+	ui->radio_axis_on->setChecked(false);
+	ui->radio_axis_off->setChecked(true);
 }
 void MainUI::RadioButtonBBONSelected()
 {
@@ -338,7 +354,18 @@ void MainUI::ButtonShowLoadedPointCloudPressed()
 void MainUI::ButtonClearViewerPointCloudPressed()
 {
 	cout << "call ButtonClearViewerPointCloudPressed()" << endl;
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
+	viewerwindow->ToggleAxisOFFWindowCloudViewer();
+
 }	
+
+void MainUI::ButtonClearViewerShapePressed()
+{
+	cout << "call ButtonClearViewerShapePressed()" << endl;
+	viewerwindow->ClearShapeWindowCloudViewer();
+}
+
 void MainUI::ButtonUndoLastedPointCloudPressed()
 {
 	cout << "call ButtonUndoLastedPointCloudPressed()" << endl;
@@ -414,45 +441,47 @@ void MainUI::ButtonApplyPlaneSegmentPressed()
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetAppliedRedPlanePointCloud());
 
 }
+
+void MainUI::ButtonGetPlaneTransformPressed()
+{
+	cout << "call ButtonGetPlaneTransformPressed()" << endl;
+
+	dataprocess->planeseg->CalculatePlaneTransformation(dataprocess->GetOnlyPlanePointCloud());
+	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
+		dataprocess->planeseg->transformextract->position_OBB,
+		dataprocess->planeseg->transformextract->min_point_OBB,
+		dataprocess->planeseg->transformextract->max_point_OBB,
+		dataprocess->planeseg->transformextract->rotational_matrix_OBB,
+		"planeseg OBB"
+		);
+
+	viewerwindow->AddVectorDirectionWindowCloudViewer(
+		dataprocess->planeseg->transformextract->mass_center,
+		dataprocess->planeseg->transformextract->major_vector,
+		dataprocess->planeseg->transformextract->middle_vector,
+		dataprocess->planeseg->transformextract->minor_vector,
+		"planeseg ");
+
+}
+
 void MainUI::ButtonRemovePlanePressed()
 {
 	cout << "call ButtonRemovePlanePressed()" << endl;
 
-	
-	dataprocess->planeseg->RemovePlane(dataprocess->GetCurrentDisplayPointCloud());
+	int pointcloudsize = dataprocess->GetRemovedPlanePointCloud()->size();
 
-	if (dataprocess->planeseg->isPlaneTransformDataAvailable())
+	if (pointcloudsize == 0)
 	{
-		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
-		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
+		cout << "no plane segmentation pointcloud data" << endl;
+		return;
 	}
-	else
-	{
-		cout << "no planeparameter -> calculate plane param" << endl;
-		dataprocess->planeseg->CalculatePlaneTransformation(dataprocess->GetOnlyPlanePointCloud());
-		dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetRemovedPlanePointCloud());
-
-		viewerwindow->AddBoundingBoxWindowCloudViewer(
-			dataprocess->planeseg->transformextract->position_OBB,
-			dataprocess->planeseg->transformextract->min_point_OBB,
-			dataprocess->planeseg->transformextract->max_point_OBB,
-			dataprocess->planeseg->transformextract->rotational_matrix_OBB,
-			"planeseg OBB"
-			);
-
-		viewerwindow->AddVectorDirectionWindowCloudViewer(
-			dataprocess->planeseg->transformextract->mass_center,
-			dataprocess->planeseg->transformextract->major_vector,
-			dataprocess->planeseg->transformextract->middle_vector,
-			dataprocess->planeseg->transformextract->minor_vector,
-			"planeseg ");
-
-		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
-		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
-	}
-
-
-
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlanePointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlanePointCloud());
 
 
 
@@ -460,6 +489,36 @@ void MainUI::ButtonRemovePlanePressed()
 void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 {
 	cout << "call ButtonAlignPlaneToAxisCenterPressed()" << endl;
+
+	PointTypeXYZRGB target_pos;
+	target_pos.x = 0;
+	target_pos.y = 0;
+	target_pos.z = 0;
+
+	dataprocess->MovePointCloudFromTo(dataprocess->GetCurrentDisplayPointCloud(),
+		dataprocess->planeseg->transformextract->position_OBB,
+		target_pos);
+
+	Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector, target_plane_normal_vector;
+	//floor_plane_normal_vector[0] = dataprocess->planeseg->transformextract->plane_coefficients_matrix(0);
+	//floor_plane_normal_vector[1] = dataprocess->planeseg->transformextract->plane_coefficients_matrix(1);
+	//floor_plane_normal_vector[2] = dataprocess->planeseg->transformextract->plane_coefficients_matrix(2);
+
+	floor_plane_normal_vector[0] = dataprocess->planeseg->transformextract->minor_vector(0);
+	floor_plane_normal_vector[1] = dataprocess->planeseg->transformextract->minor_vector(1);
+	floor_plane_normal_vector[2] = dataprocess->planeseg->transformextract->minor_vector(2);
+
+	target_plane_normal_vector[0] = 0.0;
+	target_plane_normal_vector[1] = 1.0;//xz plane
+	target_plane_normal_vector[2] = 0.0;
+
+	dataprocess->RotatePointCloudAtAxis(dataprocess->GetCurrentDisplayPointCloud(),
+		floor_plane_normal_vector, target_plane_normal_vector);
+
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
+	viewerwindow->ClearShapeWindowCloudViewer();
+
 }
 void MainUI::ButtonApplyOutlierPressed()
 {
@@ -497,8 +556,50 @@ void MainUI::ButtonExtractClusterPressed()
 
 	dataprocess->SeparateContainerAndItems(dataprocess->clusterextract->GetExtractCluster());
 	dataprocess->CalculateContainerTransformation();
-	//cout << " check dataprocess->clusterextract->GetExtractCluster() size = " << dataprocess->clusterextract->GetExtractCluster().size() << endl;
- 
+	dataprocess->CalculateItemsTransformation();
+
+
+}
+
+void::MainUI::ButtonShowClusterPressed()
+{
+	// draw boundingbox+vector
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
+		dataprocess->container->transform->position_OBB,
+		dataprocess->container->transform->min_point_OBB,
+		dataprocess->container->transform->max_point_OBB,
+		dataprocess->container->transform->rotational_matrix_OBB,
+		"container OBB"
+		);
+
+	viewerwindow->AddVectorDirectionWindowCloudViewer(
+		dataprocess->container->transform->mass_center,
+		dataprocess->container->transform->major_vector,
+		dataprocess->container->transform->middle_vector,
+		dataprocess->container->transform->minor_vector,
+		"container vector ");
+
+
+
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+		viewerwindow->AddBoundingBoxWindowCloudViewer(
+			dataprocess->items[i].transform->position_OBB,
+			dataprocess->items[i].transform->min_point_OBB,
+			dataprocess->items[i].transform->max_point_OBB,
+			dataprocess->items[i].transform->rotational_matrix_OBB,
+			"items OBB " + i);
+
+		viewerwindow->AddVectorDirectionWindowCloudViewer(
+			dataprocess->items[i].transform->mass_center,
+			dataprocess->items[i].transform->major_vector,
+			dataprocess->items[i].transform->middle_vector,
+			dataprocess->items[i].transform->minor_vector,
+			"items vector " + i);
+	}
+
+
+
 }
 
 

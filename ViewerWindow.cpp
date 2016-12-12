@@ -64,3 +64,14 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
 }
 
+
+void ViewerWindow::ToggleAxisONWindowCloudViewer()
+{
+	window_view->addCoordinateSystem();
+	window_view->spinOnce();
+}
+void ViewerWindow::ToggleAxisOFFWindowCloudViewer()
+{
+	window_view->removeCoordinateSystem();
+	window_view->spinOnce();
+}
