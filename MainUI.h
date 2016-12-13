@@ -87,7 +87,7 @@ private slots:
 	void ButtonApplyOutlierPressed();
 	void ButtonShowClusterPressed();
 	void ButtonExtractClusterPressed();
-	void ButtonShowClusterPressed();
+	void ButtonShowClusterBBPressed();
 	
 
 	//cluster list
@@ -99,6 +99,7 @@ private slots:
 	void ButtonRemoveItemPressed();
 	void ButtonClearAllItemPressed();
 	void ButtonBinPackingPressed();
+	void ButtonShowPackingPressed();
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
 	void ButtonTrackItemPositionPressed();

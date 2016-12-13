@@ -68,7 +68,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_apply_outlierremove, SIGNAL(clicked()), this, SLOT(ButtonApplyOutlierPressed()));
 	connect(ui->bt_show_cluster, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
 	connect(ui->bt_extract_cluster, SIGNAL(clicked()), this, SLOT(ButtonExtractClusterPressed()));
-	connect(ui->bt_show_cluster_bb, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
+	connect(ui->bt_show_cluster_bb, SIGNAL(clicked()), this, SLOT(ButtonShowClusterBBPressed()));
 
 	//cluster list
 	connect(ui->treeWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeItem(QTreeWidgetItem *)));
@@ -79,6 +79,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_item_remove, SIGNAL(clicked()), this, SLOT(ButtonRemoveItemPressed()));
 	connect(ui->bt_item_clearall, SIGNAL(clicked()), this, SLOT(ButtonClearAllItemPressed()));
 	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonBinPackingPressed()));
+	connect(ui->bt_show_packing, SIGNAL(clicked()), this, SLOT(ButtonShowPackingPressed()));
 	connect(ui->bt_order_previous, SIGNAL(clicked()), this, SLOT(ButtonShowPrevPackingPressed()));
 	connect(ui->bt_order_next, SIGNAL(clicked()), this, SLOT(ButtonShowNextPackingPressed()));
 	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
@@ -86,7 +87,14 @@ MainUI::MainUI(QWidget *parent) :
 	
 	//resize tree column size	
 	ui->treeWidget->header()->resizeSection(0, 40);
-	ui->treeWidget->header()->resizeSection(5, 90);
+	for (int j = 1; j < 5; j++)
+	{
+		ui->treeWidget->header()->resizeSection(j, 50);
+	}
+	for (int j = 5; j < 12; j++)
+	{
+		ui->treeWidget->header()->resizeSection(j, 90);
+	}
 	//myTreeWidget->headerView()->resizeSection(0 , 100);
 
 	
@@ -202,7 +210,7 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 		dataprocess->LoadPointCloud(filename.toStdString());
 
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLoadedPointCloud());
-		RadioButtonAxisONSelected();
+		//RadioButtonAxisONSelected();
 
 		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLoadedPointCloud());
 		cout << "GetCurrentDisplayPointCloudSize " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
@@ -558,13 +566,45 @@ void MainUI::ButtonExtractClusterPressed()
 	dataprocess->CalculateContainerTransformation();
 	dataprocess->CalculateItemsTransformation();
 
+	ui->in_bin_w->setText(QString::number(dataprocess->container->width));
+	ui->in_bin_d->setText(QString::number(dataprocess->container->depth));
+	ui->in_bin_h->setText(QString::number(dataprocess->container->height));
 
+	for (int i = 0; i < dataprocess->items.size();i++)
+	{
+		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+
+		item->setText(0, QString::number(i+1));
+		item->setText(1, QString::number(dataprocess->items[i].width));
+		item->setText(2, QString::number(dataprocess->items[i].depth));
+		item->setText(3, QString::number(dataprocess->items[i].height));
+		item->setText(4, QString::number(dataprocess->items[i].object_pointcloud->size()));
+		item->setText(5, QString::number(dataprocess->items[i].transform->position_OBB.x));
+		item->setText(6, QString::number(dataprocess->items[i].transform->position_OBB.y));
+		item->setText(7, QString::number(dataprocess->items[i].transform->position_OBB.z));
+
+
+		item->setTextAlignment(0, Qt::AlignHCenter);
+		for (int j = 1; j < 5; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignRight);
+		}
+		for (int j = 5; j < 12; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignLeft);
+		}
+
+		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+		ui->treeWidget->addTopLevelItem(item);
+
+	}
 }
 
-void::MainUI::ButtonShowClusterPressed()
+void::MainUI::ButtonShowClusterBBPressed()
 {
 	// draw boundingbox+vector
-	viewerwindow->AddBoundingBoxWindowCloudViewer(
+/*	viewerwindow->AddBoundingBoxWindowCloudViewer(
 		dataprocess->container->transform->position_OBB,
 		dataprocess->container->transform->min_point_OBB,
 		dataprocess->container->transform->max_point_OBB,
@@ -579,7 +619,7 @@ void::MainUI::ButtonShowClusterPressed()
 		dataprocess->container->transform->minor_vector,
 		"container vector ");
 
-
+*/
 
 	for (int i = 0; i < dataprocess->items.size(); i++)
 	{
@@ -590,12 +630,13 @@ void::MainUI::ButtonShowClusterPressed()
 			dataprocess->items[i].transform->rotational_matrix_OBB,
 			"items OBB " + i);
 
-		viewerwindow->AddVectorDirectionWindowCloudViewer(
+		/*viewerwindow->AddVectorDirectionWindowCloudViewer(
 			dataprocess->items[i].transform->mass_center,
 			dataprocess->items[i].transform->major_vector,
 			dataprocess->items[i].transform->middle_vector,
 			dataprocess->items[i].transform->minor_vector,
 			"items vector " + i);
+			*/
 	}
 
 
@@ -636,6 +677,10 @@ void MainUI::ButtonBinPackingPressed()
 {
 	cout << "call ButtonBinPackingPressed()" << endl;
 }
+void MainUI::ButtonShowPackingPressed()
+{
+	cout << "call ButtonShowPackingPressed()" << endl;
+}
 void MainUI::ButtonShowPrevPackingPressed()
 {
 	cout << "call ButtonShowPrevPackingPressed()" << endl;
@@ -647,7 +692,36 @@ void MainUI::ButtonShowNextPackingPressed()
 void MainUI::ButtonTrackItemPositionPressed()
 {
 	cout << "call ButtonTrackItemPositionPressed()" << endl;
+
+	double red = 1.0;
+	double green = 1.0;
+	double blue = 1.0;
+
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+		/*viewerwindow->AddTextWindowCloudViewer(
+			dataprocess->items[i].transform->min_point_OBB,
+			dataprocess->items[i].transform->major_vector,
+			red, green, blue, "min",
+			"items min text " + i);
+
+		viewerwindow->AddTextWindowCloudViewer(
+			dataprocess->items[i].transform->max_point_OBB,
+			dataprocess->items[i].transform->major_vector,
+			red, green, blue, "max",
+			"items max text " + i);
+			*/
+
+		viewerwindow->AddSymbolWindowCloudViewer(
+			dataprocess->items[i].transform->position_OBB,
+			dataprocess->items[i].transform->min_point_OBB,
+			dataprocess->items[i].transform->max_point_OBB,
+			dataprocess->items[i].transform->mass_center,
+			dataprocess->items[i].transform->major_vector,
+			dataprocess->items[i].transform->middle_vector,
+			red, green, blue, "symbol " + i);
+
+		
+	}
 }
 	
-
-

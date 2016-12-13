@@ -21,6 +21,16 @@ public:
 	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
+	void AddTextWindowCloudViewer(PointTypeXYZRGB position_OBB, Eigen::Vector3f major_vector,
+		double r, double g, double b, string drawtext, string cloudname);
+	void AddSymbolWindowCloudViewer(
+		PointTypeXYZRGB position_OBB,
+		PointTypeXYZRGB min_point_OBB,
+		PointTypeXYZRGB max_point_OBB,
+		Eigen::Vector3f mass_center,
+		Eigen::Vector3f major_vector,
+		Eigen::Vector3f minor_vector,
+		double r, double g, double b, string cloudname);
 
 	void ToggleAxisONWindowCloudViewer();
 	void ToggleAxisOFFWindowCloudViewer();

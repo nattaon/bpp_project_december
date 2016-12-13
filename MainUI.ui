@@ -1650,7 +1650,7 @@
        </font>
       </property>
       <property name="text">
-       <string>0.005</string>
+       <string>0.003</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -2319,13 +2319,13 @@
      <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
     <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOff</enum>
+     <enum>Qt::ScrollBarAsNeeded</enum>
     </property>
     <property name="autoScrollMargin">
      <number>14</number>
     </property>
     <property name="itemsExpandable">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="columnCount">
      <number>12</number>
@@ -2844,7 +2844,7 @@
    <widget class="QLineEdit" name="in_bin_h">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>550</y>
       <width>30</width>
       <height>20</height>
@@ -2887,9 +2887,9 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>540</y>
+      <y>530</y>
       <width>81</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -2941,10 +2941,10 @@
      <string>&lt;</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="in_bin_dd">
+   <widget class="QLineEdit" name="in_bin_d">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>40</x>
       <y>550</y>
       <width>30</width>
       <height>20</height>
@@ -3109,6 +3109,19 @@
      <string>Clear viewer shape</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="bt_show_packing">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>550</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>show packing</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -3247,8 +3260,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_16"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_16"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
  </buttongroups>
