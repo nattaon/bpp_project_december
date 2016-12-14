@@ -8,7 +8,7 @@ ViewerWindow::ViewerWindow()
 	cvMoveWindow("kinect_rgb", 0, 0);
 
 	window_view.reset(new pcl::visualization::PCLVisualizer("window_view"));
-	window_view->setPosition(50,0);
+	window_view->setPosition(50,0);//window position
 	window_view->setBackgroundColor(0, 0, 0);
 	window_view->initCameraParameters();
 }
@@ -63,11 +63,19 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 	window_view->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, cloudname + " middle eigen vector");
 	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
 }
-void ViewerWindow::AddTextWindowCloudViewer(PointTypeXYZRGB position_OBB, Eigen::Vector3f major_vector, 
+void ViewerWindow::AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 	double r, double g, double b, string drawtext, string cloudname)
 {
-	window_view->addText3D(drawtext, position_OBB, 0.05, r, g, b, cloudname);
+	window_view->addText3D(drawtext, point_position, text_scale, r, g, b, cloudname);
 }
+
+void ViewerWindow::AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name)
+{
+	window_view->addSphere(point_position, radius, r, g, b, id_name);
+}
+
+
+
 void ViewerWindow::AddSymbolWindowCloudViewer(
 	PointTypeXYZRGB position_OBB, 
 	PointTypeXYZRGB min_point_OBB, 
@@ -115,6 +123,15 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	window_view->addLine(position_minor_plus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorplusline");
 }
 
+
+
+
+
+
+
+
+
+
 void ViewerWindow::ToggleAxisONWindowCloudViewer()
 {
 	window_view->addCoordinateSystem();
@@ -125,3 +142,49 @@ void ViewerWindow::ToggleAxisOFFWindowCloudViewer()
 	window_view->removeCoordinateSystem();
 	window_view->spinOnce();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+inline pcl::PointXYZRGB Eigen2PointXYZRGB(Eigen::Vector3f v, Eigen::Vector3f rgb) { pcl::PointXYZRGB p(rgb[0], rgb[1], rgb[2]); p.x = v[0]; p.y = v[1]; p.z = v[2]; return p; }
+
+pcl::PolygonMesh ViewerWindow::visualizerGetCameraMesh(const Eigen::Matrix3f& R, const Eigen::Vector3f& t, 
+	float r, float g, float b,
+	Eigen::Vector3f& vforward, Eigen::Vector3f& rgb)
+{
+	
+	double s = 0.01;
+	int	ipolygon[18] = { 0, 1, 2, 0, 3, 1, 0, 4, 3, 0, 2, 4, 3, 1, 4, 2, 4, 1 };
+
+	Eigen::Vector3f vright = R.row(0).normalized() * s;
+	Eigen::Vector3f vup = -R.row(1).normalized() * s;
+	vforward = R.row(2).normalized() * s;
+
+	rgb = Eigen::Vector3f(r, g, b);
+
+	pcl::PointCloud<pcl::PointXYZRGB> mesh_cld;
+	mesh_cld.push_back(Eigen2PointXYZRGB(t, rgb));
+	mesh_cld.push_back(Eigen2PointXYZRGB(t + vforward + vright / 2.0 + vup / 2.0, rgb));
+	mesh_cld.push_back(Eigen2PointXYZRGB(t + vforward + vright / 2.0 - vup / 2.0, rgb));
+	mesh_cld.push_back(Eigen2PointXYZRGB(t + vforward - vright / 2.0 + vup / 2.0, rgb));
+	mesh_cld.push_back(Eigen2PointXYZRGB(t + vforward - vright / 2.0 - vup / 2.0, rgb));
+
+	pcl::PolygonMesh pm;
+	pm.polygons.resize(6);
+	for (int i = 0; i<6; i++)
+		for (int _v = 0; _v<3; _v++)
+			pm.polygons[i].vertices.push_back(ipolygon[i * 3 + _v]);
+	pcl::toROSMsg(mesh_cld, pm.cloud);
+
+	return pm;
+}
+

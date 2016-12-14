@@ -30,6 +30,7 @@ private:
 
 	bool isLoadPlaneParameter;
 
+	void ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name);
 	
 
 private slots:

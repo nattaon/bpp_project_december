@@ -25,12 +25,17 @@ void PointCloudTransformationExtraction::CalculateTransformation(PointCloudXYZRG
 
 	//delete voxel;
 
+	mass_center_point.x = mass_center[0];
+	mass_center_point.y = mass_center[1];
+	mass_center_point.z = mass_center[2];
+
+	pcl::getMinMax3D(*cloud, min3d_point, max3d_point);
+
+
+
 }
 
-void PointCloudTransformationExtraction::CalculateWDH()
-{
 
-}
 void PointCloudTransformationExtraction::PrintTransformationData()
 {
 	cout << "mass_center is \n" << mass_center << endl;
@@ -41,6 +46,8 @@ void PointCloudTransformationExtraction::PrintTransformationData()
 	cout << "max_point_OBB is \n" << max_point_OBB << endl;
 	cout << "position_OBB is \n" << position_OBB << endl;
 	cout << "rotational_matrix_OBB is \n" << rotational_matrix_OBB << endl;
+	cout << "min3d_point is \n" << min3d_point << endl;
+	cout << "max3d_point is \n" << max3d_point << endl;
 }
 
 

@@ -21,8 +21,11 @@ public:
 	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
-	void AddTextWindowCloudViewer(PointTypeXYZRGB position_OBB, Eigen::Vector3f major_vector,
+	void AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 		double r, double g, double b, string drawtext, string cloudname);
+	void AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name);
+
+
 	void AddSymbolWindowCloudViewer(
 		PointTypeXYZRGB position_OBB,
 		PointTypeXYZRGB min_point_OBB,
@@ -34,6 +37,10 @@ public:
 
 	void ToggleAxisONWindowCloudViewer();
 	void ToggleAxisOFFWindowCloudViewer();
+
+	pcl::PolygonMesh visualizerGetCameraMesh(const Eigen::Matrix3f& R, const Eigen::Vector3f& t, 
+		float r, float g, float b,
+		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
 private:
     DataProcess *dataprocess;

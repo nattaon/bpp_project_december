@@ -47,7 +47,7 @@ void PointCloudOperation::SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr
 		{
 			ObjectTransformationData *item = new ObjectTransformationData();
 			pcl::copyPointCloud(*extract_cluster_cloud[i], *item->object_pointcloud);
-			items.push_back(*item);
+			items.push_back(item);
 		}
 
 	}
@@ -74,10 +74,10 @@ void PointCloudOperation::CalculateItemsTransformation()
 	{
 		cout << "item " << i << endl;
 
-		items[i].transform->CalculateTransformation(items[i].object_pointcloud, 0.01);
-		items[i].transform->PrintTransformationData();
+		items[i]->transform->CalculateTransformation(items[i]->object_pointcloud, 0.01);
+		items[i]->transform->PrintTransformationData();
 
-		items[i].CalculateWDH();
+		items[i]->CalculateWDH();
 		cout << endl;
 
 	}

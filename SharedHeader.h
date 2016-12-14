@@ -30,6 +30,7 @@
 
 // Point Cloud Library
 #include <pcl/common/common_headers.h> 
+#include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/common/transforms.h>
 
@@ -62,6 +63,7 @@
 
 //#include <pcl/recognition/cg/geometric_consistency.h>
 //#include <pcl/recognition/cg/hough_3d.h>
+#include <pcl/ros/conversions.h>
 
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>

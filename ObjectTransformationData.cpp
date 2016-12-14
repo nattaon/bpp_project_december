@@ -9,7 +9,8 @@ ObjectTransformationData::ObjectTransformationData()
 
 void ObjectTransformationData::CalculateWDH()
 {
-	width = (transform->max_point_OBB.x - transform->min_point_OBB.x)*1000;
-	depth = (transform->max_point_OBB.y - transform->min_point_OBB.y)*1000;
-	height = (transform->max_point_OBB.z - transform->min_point_OBB.z*1000);
+	width = (transform->max3d_point.x - transform->min3d_point.x) * 1000;
+	depth = (transform->max3d_point.z - transform->min3d_point.z) * 1000;
+	height = (transform->max3d_point.y) * 1000;
+	//height = (transform->mass_center_point.y) * 1000;
 }

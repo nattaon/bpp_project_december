@@ -15,7 +15,7 @@ public:
 	ClusterExtraction *clusterextract;
 
 	ObjectTransformationData *container;
-	vector<ObjectTransformationData> items;
+	vector<ObjectTransformationData*> items;
 
 	void SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr> extract_cluster_cloud);
 	void CalculateContainerTransformation();

@@ -59,7 +59,7 @@ PointCloudXYZRGB::Ptr DataProcess::GetOnlyPlanePointCloud()
 }
 PointCloudXYZRGB::Ptr DataProcess::GetColoredClusterPointCloud()
 {
-	return clusterextract->applied_colorcluster_cloud;
+	return clusterextract->color_cluster_cloud;
 }
 
 

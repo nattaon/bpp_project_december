@@ -89,11 +89,11 @@ MainUI::MainUI(QWidget *parent) :
 	ui->treeWidget->header()->resizeSection(0, 40);
 	for (int j = 1; j < 5; j++)
 	{
-		ui->treeWidget->header()->resizeSection(j, 50);
+		ui->treeWidget->header()->resizeSection(j, 40);
 	}
 	for (int j = 5; j < 12; j++)
 	{
-		ui->treeWidget->header()->resizeSection(j, 90);
+		ui->treeWidget->header()->resizeSection(j, 80);
 	}
 	//myTreeWidget->headerView()->resizeSection(0 , 100);
 
@@ -552,10 +552,45 @@ void MainUI::ButtonShowClusterPressed()
 
 
 	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
-	dataprocess->clusterextract->ShowClusterInColor(dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->clusterextract->ExtractCluster(dataprocess->GetCurrentDisplayPointCloud());
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
 	//dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
+
+
+
+}
+inline pcl::PointXYZRGB Eigen2PointXYZRGB(Eigen::Vector3f v) 
+{ 
+	pcl::PointXYZRGB p; 
+	p.x = v[0]; p.y = v[1]; p.z = v[2]; 
+	return p; 
+}
+void MainUI::ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name)
+{
+	//position_OBB
+	viewerwindow->AddSphereWindowCloudViewer(obj->transform->position_OBB, 0.01,
+		1.0, 0, 0, " obb" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(obj->transform->position_OBB, 0.01,
+		1.0, 1.0, 1.0, "obb" + id_name, " text obb" + id_name);
+
+	//mass_center_point
+	viewerwindow->AddSphereWindowCloudViewer(obj->transform->mass_center_point, 0.01,
+		0, 1.0, 0, " mass" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(obj->transform->mass_center_point, 0.01,
+		1.0, 1.0, 1.0, "mass" + id_name, " text mass" + id_name);
+	
+	//min_point_OBB
+	viewerwindow->AddSphereWindowCloudViewer(obj->transform->min3d_point, 0.01,
+		0, 0, 1.0, " min"+ id_name);
+	viewerwindow->AddTextWindowCloudViewer(obj->transform->min3d_point, 0.01,
+		1.0, 1.0, 1.0, "min"+ id_name,  "text min"+ id_name);
+
+	//max_point_OBB
+	viewerwindow->AddSphereWindowCloudViewer(obj->transform->max3d_point, 0.01,
+		0, 0, 1.0, " max"+ id_name);
+	viewerwindow->AddTextWindowCloudViewer(obj->transform->max3d_point, 0.01,
+		1.0, 1.0, 1.0, "max"+ id_name, " text max"+ id_name);
 
 }
 void MainUI::ButtonExtractClusterPressed()
@@ -563,25 +598,28 @@ void MainUI::ButtonExtractClusterPressed()
 	cout << "call ButtonExtractClusterPressed()" << endl;
 
 	dataprocess->SeparateContainerAndItems(dataprocess->clusterextract->GetExtractCluster());
+	
 	dataprocess->CalculateContainerTransformation();
-	dataprocess->CalculateItemsTransformation();
-
+	ShowMinMaxCenterPoint(dataprocess->container, "container");
 	ui->in_bin_w->setText(QString::number(dataprocess->container->width));
 	ui->in_bin_d->setText(QString::number(dataprocess->container->depth));
 	ui->in_bin_h->setText(QString::number(dataprocess->container->height));
 
+	dataprocess->CalculateItemsTransformation();
 	for (int i = 0; i < dataprocess->items.size();i++)
 	{
+		ShowMinMaxCenterPoint(dataprocess->items[i], "item_" + to_string(i+1));
+
 		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 
 		item->setText(0, QString::number(i+1));
-		item->setText(1, QString::number(dataprocess->items[i].width));
-		item->setText(2, QString::number(dataprocess->items[i].depth));
-		item->setText(3, QString::number(dataprocess->items[i].height));
-		item->setText(4, QString::number(dataprocess->items[i].object_pointcloud->size()));
-		item->setText(5, QString::number(dataprocess->items[i].transform->position_OBB.x));
-		item->setText(6, QString::number(dataprocess->items[i].transform->position_OBB.y));
-		item->setText(7, QString::number(dataprocess->items[i].transform->position_OBB.z));
+		item->setText(1, QString::number(dataprocess->items[i]->width));
+		item->setText(2, QString::number(dataprocess->items[i]->depth));
+		item->setText(3, QString::number(dataprocess->items[i]->height));
+		item->setText(4, QString::number(dataprocess->items[i]->object_pointcloud->size()));
+		item->setText(5, QString::number(dataprocess->items[i]->transform->position_OBB.x));
+		item->setText(6, QString::number(dataprocess->items[i]->transform->position_OBB.y));
+		item->setText(7, QString::number(dataprocess->items[i]->transform->position_OBB.z));
 
 
 		item->setTextAlignment(0, Qt::AlignHCenter);
@@ -604,14 +642,14 @@ void MainUI::ButtonExtractClusterPressed()
 void::MainUI::ButtonShowClusterBBPressed()
 {
 	// draw boundingbox+vector
-/*	viewerwindow->AddBoundingBoxWindowCloudViewer(
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
 		dataprocess->container->transform->position_OBB,
 		dataprocess->container->transform->min_point_OBB,
 		dataprocess->container->transform->max_point_OBB,
 		dataprocess->container->transform->rotational_matrix_OBB,
 		"container OBB"
 		);
-
+/*
 	viewerwindow->AddVectorDirectionWindowCloudViewer(
 		dataprocess->container->transform->mass_center,
 		dataprocess->container->transform->major_vector,
@@ -624,10 +662,10 @@ void::MainUI::ButtonShowClusterBBPressed()
 	for (int i = 0; i < dataprocess->items.size(); i++)
 	{
 		viewerwindow->AddBoundingBoxWindowCloudViewer(
-			dataprocess->items[i].transform->position_OBB,
-			dataprocess->items[i].transform->min_point_OBB,
-			dataprocess->items[i].transform->max_point_OBB,
-			dataprocess->items[i].transform->rotational_matrix_OBB,
+			dataprocess->items[i]->transform->position_OBB,
+			dataprocess->items[i]->transform->min_point_OBB,
+			dataprocess->items[i]->transform->max_point_OBB,
+			dataprocess->items[i]->transform->rotational_matrix_OBB,
 			"items OBB " + i);
 
 		/*viewerwindow->AddVectorDirectionWindowCloudViewer(
@@ -713,15 +751,15 @@ void MainUI::ButtonTrackItemPositionPressed()
 			*/
 
 		viewerwindow->AddSymbolWindowCloudViewer(
-			dataprocess->items[i].transform->position_OBB,
-			dataprocess->items[i].transform->min_point_OBB,
-			dataprocess->items[i].transform->max_point_OBB,
-			dataprocess->items[i].transform->mass_center,
-			dataprocess->items[i].transform->major_vector,
-			dataprocess->items[i].transform->middle_vector,
+			dataprocess->items[i]->transform->position_OBB,
+			dataprocess->items[i]->transform->min_point_OBB,
+			dataprocess->items[i]->transform->max_point_OBB,
+			dataprocess->items[i]->transform->mass_center,
+			dataprocess->items[i]->transform->major_vector,
+			dataprocess->items[i]->transform->middle_vector,
 			red, green, blue, "symbol " + i);
 
 		
 	}
 }
-	
+

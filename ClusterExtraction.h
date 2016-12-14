@@ -12,11 +12,11 @@ public:
 
 	void SetClusterExtractValue(
 		double cluster_tolerance, int cluster_min_size, int cluster_max_size);
-	void ShowClusterInColor(PointCloudXYZRGB::Ptr cloud);
+	void ExtractCluster(PointCloudXYZRGB::Ptr cloud);
 
 	vector<PointCloudXYZRGB::Ptr> GetExtractCluster();
 
-	PointCloudXYZRGB::Ptr applied_colorcluster_cloud;
+	PointCloudXYZRGB::Ptr color_cluster_cloud;
 
 private:
 	double tolerance;
