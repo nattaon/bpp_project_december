@@ -838,6 +838,56 @@ void MainUI::ButtonClearAllItemPressed()
 void MainUI::ButtonBinPackingPressed()
 {
 	cout << "call ButtonBinPackingPressed()" << endl;
+
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+
+	int *boxes_x_orient = new int[total_boxes];
+	int *boxes_y_orient = new int[total_boxes];
+	int *boxes_z_orient = new int[total_boxes];
+	int *boxes_bin_num = new int[total_boxes];
+
+	int *boxes_x_pos = new int[total_boxes];
+	int *boxes_y_pos = new int[total_boxes];
+	int *boxes_z_pos = new int[total_boxes];
+	int *boxes_item_num = new int[total_boxes];
+
+	int *boxes_w, *boxes_h, *boxes_d;
+
+	int *boxes_width = new int[total_boxes];
+	int *boxes_height = new int[total_boxes];
+	int *boxes_depth = new int[total_boxes];
+
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+
+		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+
+		item->setText(0, QString::number(i + 1));
+		item->setText(1, QString::number(dataprocess->items[i]->width));
+		item->setText(2, QString::number(dataprocess->items[i]->depth));
+		item->setText(3, QString::number(dataprocess->items[i]->height));
+		item->setText(4, QString::number(dataprocess->items[i]->object_pointcloud->size()));
+		item->setText(5, QString::number(dataprocess->items[i]->transform->position_OBB.x));
+		item->setText(6, QString::number(dataprocess->items[i]->transform->position_OBB.y));
+		item->setText(7, QString::number(dataprocess->items[i]->transform->position_OBB.z));
+
+	}
+
+	boxes_w = boxes_width;
+	boxes_h = boxes_height;
+	boxes_d = boxes_depth;
+
+	binpack = new CalculateBppErhan();
+	binpack->CalculateBinpack(
+		total_boxes,
+		ui->in_bin_w->text().toDouble(), 
+		ui->in_bin_d->text().toDouble(), 
+		ui->in_bin_h->text().toDouble(),
+		boxes_w, boxes_h, boxes_d,
+		boxes_x_pos, boxes_y_pos, boxes_z_pos,
+		boxes_x_orient, boxes_y_orient, boxes_z_orient,
+		boxes_bin_num, boxes_item_num);
+
 }
 void MainUI::ButtonShowPackingPressed()
 {

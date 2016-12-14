@@ -1,7 +1,7 @@
 #ifndef BinpackingCalculate_H
 #define BinpackingCalculate_H
 
-#include "AllHeader.h"
+#include "SharedHeader.h"
 
 class BinpackingCalculate
 {

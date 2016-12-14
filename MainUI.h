@@ -3,6 +3,7 @@
 #include "DataProcess.h"
 #include "ViewerWindow.h"
 #include "SharedHeader.h"
+#include "CalculateBppErhan.h"
 
 namespace Ui {
 class MainUI;
@@ -22,6 +23,8 @@ private:
     Ui::MainUI *ui;
 	DataProcess *dataprocess;
 	ViewerWindow *viewerwindow;
+
+	CalculateBppErhan *binpack;
 
 	bool isRegisterCameraCallback;
 
