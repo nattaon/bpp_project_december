@@ -11,6 +11,9 @@ MainUI::MainUI(QWidget *parent) :
 	cout << "MainUI::MainUI(QWidget *parent)" << endl;
 
     ui->setupUi(this);
+
+	isRegisterCameraCallback = false;
+
 	timerId_kinect = 0;
 
 	isLoadPlaneParameter = false;
@@ -97,8 +100,6 @@ MainUI::MainUI(QWidget *parent) :
 	}
 	//myTreeWidget->headerView()->resizeSection(0 , 100);
 
-	
-
 }
 
 MainUI::~MainUI()
@@ -110,12 +111,66 @@ MainUI::~MainUI()
 void MainUI::SetDataProcess(DataProcess* d) {dataprocess = d;}
 void MainUI::SetViewerWindow(ViewerWindow* v) {viewerwindow = v;}
 
+void MainUI::mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void)
+{	//trigged when : mouse position is move in viewer area
+	//boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+
+	//check mouse click and scroll action
+	if (event.getButton() == pcl::visualization::MouseEvent::LeftButton &&
+		event.getType() == pcl::visualization::MouseEvent::MouseButtonRelease)
+	{
+		//cout << "LeftButton " << endl;
+		SetCurrentCameraParameterToUI();
+
+	}
+	else if (event.getButton() == pcl::visualization::MouseEvent::RightButton &&
+		event.getType() == pcl::visualization::MouseEvent::MouseButtonRelease)
+	{
+		//cout << "RightButton " << endl;
+		SetCurrentCameraParameterToUI();
+	}
+	else if (event.getButton() == pcl::visualization::MouseEvent::MouseScrollUp || event.getButton() == pcl::visualization::MouseEvent::MouseScrollDown)
+	{
+		//cout << "MiddleButton " << endl;
+		SetCurrentCameraParameterToUI();
+	}
+}
+void MainUI::SetCurrentCameraParameterToUI()
+{
+
+	vector<pcl::visualization::Camera> cam;
+	viewerwindow->window_view->getCameras(cam);
+
+	ui->in_focal_x->setText(QString::number(cam[0].focal[0]));
+	ui->in_focal_y->setText(QString::number(cam[0].focal[1]));
+	ui->in_focal_z->setText(QString::number(cam[0].focal[2]));
+
+	ui->in_pos_x->setText(QString::number(cam[0].pos[0]));
+	ui->in_pos_y->setText(QString::number(cam[0].pos[1]));
+	ui->in_pos_z->setText(QString::number(cam[0].pos[2]));
+
+	ui->in_up_x->setText(QString::number(cam[0].view[0]));
+	ui->in_up_y->setText(QString::number(cam[0].view[1]));
+	ui->in_up_z->setText(QString::number(cam[0].view[2]));
+
+	ui->in_clipping_near->setText(QString::number(cam[0].clip[0]));
+	ui->in_clipping_far->setText(QString::number(cam[0].clip[1]));
+	ui->in_cam_angle_rad->setText(QString::number(cam[0].fovy));
+	ui->in_cam_angle_deg->setText(QString::number(cam[0].fovy * 180 / M_PI));
+}
+
 
 //top menu
 ///menu:viewer embedded
 void MainUI::ButtonConnectPressed()
 {
+
 	cout << "call ButtonConnectPressed()" << endl;
+	if (!isRegisterCameraCallback)
+	{
+		viewerwindow->window_view->registerMouseCallback(&MainUI::mouseEventOccurred, *this, (void*)&viewerwindow->window_view);
+		isRegisterCameraCallback = true;
+	}
 
 	if (timerId_kinect != 0)
 	{
@@ -190,6 +245,12 @@ void MainUI::ButtonSavePointCloudFromViewerPressed()
 void MainUI::ButtonLoadPointCloudToViewerPressed()
 {
 	cout << "call ButtonLoadPointCloudToViewerPressed()" << endl;
+	if (!isRegisterCameraCallback)
+	{
+		viewerwindow->window_view->registerMouseCallback(&MainUI::mouseEventOccurred, *this, (void*)&viewerwindow->window_view);
+		isRegisterCameraCallback = true;
+	}
+	
 
 	//disconnect kinect first
 	if (timerId_kinect != 0)
@@ -238,10 +299,73 @@ void MainUI::ButtonSavePassthroughParamPressed()
 void MainUI::ButtonLoadCameraParamPressed()
 {
 	cout << "call ButtonLoadCameraParamPressed()" << endl;
+
+	QString filename = QFileDialog::getOpenFileName(this,
+		tr("Open camera parameter file"), "../", tr("Text Files (*.txt)"));
+	if (filename.trimmed().isEmpty()) // no file selected
+	{
+		return;
+	}
+
+	double focal_x, focal_y, focal_z;
+	double pos_x, pos_y, pos_z;
+	double up_x, up_y, up_z;
+	double clipping_near, clipping_far;
+	double cam_angle_rad;
+	double cam_angle_deg;
+
+	vector<pcl::visualization::Camera> cam;
+	viewerwindow->window_view->getCameras(cam);
+
+	dataprocess->cameraparam->ReadCameraParameter(filename.toStdString(),
+		focal_x, focal_y, focal_z,
+		pos_x, pos_y, pos_z,
+		up_x, up_y, up_z,
+		clipping_near, clipping_far,
+		cam_angle_rad, cam_angle_deg);
+
+	viewerwindow->SetCameraParameter(
+		focal_x, focal_y, focal_z,
+		pos_x, pos_y, pos_z,
+		up_x, up_y, up_z,
+		clipping_near, clipping_far,
+		cam_angle_rad, cam_angle_deg);
+
+	//QMessageBox::information(0, QString("/load camera parameter"), QString("Load camera parameter complete"), QMessageBox::Ok);
+
+
+	
 }
 void MainUI::ButtonSaveCameraParamPressed()
 {
 	cout << "call ButtonSaveCameraParamPressed()" << endl;
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save camera parameter file"), "../", tr("Text Files (*.txt)"));
+	if (filename.trimmed().isEmpty()) // no file selected
+	{
+		cout << "no file selected" << endl;
+		return;
+	}
+
+	dataprocess->cameraparam->WriteCameraParameter(filename.toStdString(),
+		ui->in_focal_x->text().toDouble(), 
+		ui->in_focal_y->text().toDouble(),
+		ui->in_focal_z->text().toDouble(),
+		ui->in_pos_x->text().toDouble(), 
+		ui->in_pos_y->text().toDouble(), 
+		ui->in_pos_z->text().toDouble(),
+		ui->in_up_x->text().toDouble(), 
+		ui->in_up_y->text().toDouble(), 
+		ui->in_up_z->text().toDouble(),
+		ui->in_clipping_near->text().toDouble(), 
+		ui->in_clipping_far->text().toDouble(),
+		ui->in_cam_angle_rad->text().toDouble(), 
+		ui->in_cam_angle_deg->text().toDouble());
+	
+
+	//QMessageBox::information(0, QString("Save camera parameter"), QString("Save camera parameter complete"), QMessageBox::Ok);
+
 }
 void MainUI::ButtonLoadPlaneParamPressed()
 {
@@ -762,4 +886,5 @@ void MainUI::ButtonTrackItemPositionPressed()
 		
 	}
 }
+
 

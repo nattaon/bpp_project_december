@@ -11,10 +11,27 @@ ViewerWindow::ViewerWindow()
 	window_view->setPosition(50,0);//window position
 	window_view->setBackgroundColor(0, 0, 0);
 	window_view->initCameraParameters();
+
+
 }
 
 void ViewerWindow::SetDataProcess(DataProcess* d) {dataprocess = d;}
 
+void ViewerWindow::SetCameraParameter(
+	double focal_x, double focal_y, double focal_z,
+	double pos_x, double pos_y, double pos_z,
+	double up_x, double up_y, double up_z,
+	double clipping_near, double clipping_far,
+	double cam_angle_rad, double cam_angle_deg)
+{
+	window_view->setCameraPosition(
+		pos_x, pos_y, pos_z,
+		focal_x, focal_y, focal_z,
+		up_x, up_y, up_z);
+
+	window_view->setCameraClipDistances(clipping_near, clipping_far);
+	window_view->setCameraFieldOfView(cam_angle_rad);//radian
+}
 
 void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 {

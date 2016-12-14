@@ -23,6 +23,8 @@ private:
 	DataProcess *dataprocess;
 	ViewerWindow *viewerwindow;
 
+	bool isRegisterCameraCallback;
+
 	QTime time;
 	int timerId_kinect;
 
@@ -31,7 +33,8 @@ private:
 	bool isLoadPlaneParameter;
 
 	void ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name);
-	
+	void mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void);
+	void SetCurrentCameraParameterToUI();
 
 private slots:
 

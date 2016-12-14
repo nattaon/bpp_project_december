@@ -22,7 +22,8 @@ SOURCES += \
     TextFileIO.cpp \
     PointCloudTransformationExtraction.cpp \
     PlaneSegmentParameterIO.cpp \
-    ObjectTransformationData.cpp
+    ObjectTransformationData.cpp \
+    CameraParameterIO.cpp
 
 HEADERS  += \
     MainUI.h \
@@ -33,7 +34,8 @@ HEADERS  += \
     TextFileIO.h \
     PointCloudTransformationExtraction.h \
     PlaneSegmentParameterIO.h \
-    ObjectTransformationData.h
+    ObjectTransformationData.h \
+    CameraParameterIO.h
 
 FORMS    += \
     MainUI.ui

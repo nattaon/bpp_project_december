@@ -9,6 +9,13 @@ public:
     ViewerWindow();
     void SetDataProcess(DataProcess* d);
 
+	void SetCameraParameter(
+		double focal_x, double focal_y, double focal_z,
+		double pos_x, double pos_y, double pos_z,
+		double up_x, double up_y, double up_z,
+		double clipping_near, double clipping_far,
+		double cam_angle_rad, double cam_angle_deg);
+
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
 
@@ -42,10 +49,11 @@ public:
 		float r, float g, float b,
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
 private:
     DataProcess *dataprocess;
 
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
+	
 
 };
 

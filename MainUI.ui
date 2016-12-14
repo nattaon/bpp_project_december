@@ -2924,7 +2924,7 @@
    <widget class="QPushButton" name="bt_order_previous">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>210</x>
       <y>550</y>
       <width>41</width>
       <height>21</height>
@@ -3112,7 +3112,7 @@
    <widget class="QPushButton" name="bt_show_packing">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>120</x>
       <y>550</y>
       <width>91</width>
       <height>21</height>
@@ -3129,7 +3129,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -3260,9 +3260,9 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_16"/>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
