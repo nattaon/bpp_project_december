@@ -100,6 +100,7 @@ MainUI::MainUI(QWidget *parent) :
 	}
 	//myTreeWidget->headerView()->resizeSection(0 , 100);
 
+
 }
 
 MainUI::~MainUI()
@@ -487,7 +488,7 @@ void MainUI::ButtonClearViewerPointCloudPressed()
 {
 	cout << "call ButtonClearViewerPointCloudPressed()" << endl;
 	viewerwindow->ClearPointCloudWindowCloudViewer();
-	viewerwindow->ClearShapeWindowCloudViewer();
+	//viewerwindow->ClearShapeWindowCloudViewer();
 	viewerwindow->ToggleAxisOFFWindowCloudViewer();
 
 }	
@@ -857,25 +858,31 @@ void MainUI::ButtonBinPackingPressed()
 	int *boxes_height = new int[total_boxes];
 	int *boxes_depth = new int[total_boxes];
 
-	for (int i = 0; i < dataprocess->items.size(); i++)
+	for (int i = 0; i < total_boxes; i++)
 	{
-
-		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
-
-		item->setText(0, QString::number(i + 1));
-		item->setText(1, QString::number(dataprocess->items[i]->width));
-		item->setText(2, QString::number(dataprocess->items[i]->depth));
-		item->setText(3, QString::number(dataprocess->items[i]->height));
-		item->setText(4, QString::number(dataprocess->items[i]->object_pointcloud->size()));
-		item->setText(5, QString::number(dataprocess->items[i]->transform->position_OBB.x));
-		item->setText(6, QString::number(dataprocess->items[i]->transform->position_OBB.y));
-		item->setText(7, QString::number(dataprocess->items[i]->transform->position_OBB.z));
-
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		boxes_width[i] = item->text(1).toInt();
+		boxes_height[i] = item->text(2).toInt();
+		boxes_depth[i] = item->text(3).toInt();
 	}
 
 	boxes_w = boxes_width;
 	boxes_h = boxes_height;
 	boxes_d = boxes_depth;
+
+	for (int i = 0; i < total_boxes; ++i)
+	{
+		boxes_x_orient[i] = 0;
+		boxes_y_orient[i] = 0;
+		boxes_z_orient[i] = 0;
+		boxes_bin_num[i] = 0;
+
+		boxes_x_pos[i] = 0;
+		boxes_y_pos[i] = 0;
+		boxes_z_pos[i] = 0;
+		boxes_item_num[i] = 0;
+	}
+
 
 	binpack = new CalculateBppErhan();
 	binpack->CalculateBinpack(
@@ -887,6 +894,41 @@ void MainUI::ButtonBinPackingPressed()
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
 		boxes_bin_num, boxes_item_num);
+
+	// check if use bin >1
+	int item_not_fit = 0;
+	for (int i = 0; i < total_boxes; i++)
+	{
+		/*std::cout
+		<< i << ":"
+		<< boxes_width[i] << " " << boxes_height[i] << " " << boxes_depth[i] << " "
+		<< "bin_num:" << boxes_bin_num[i] << " "
+		<< "pos:"
+		<< boxes_x_pos[i] << " " << boxes_y_pos[i] << " " << boxes_z_pos[i] << " "
+		<< std::endl;
+		*/
+		if (boxes_bin_num[i] != 1) item_not_fit++;
+
+	}
+	if (item_not_fit != 0)
+	{
+		//std::cout << " cannot fit another " << item_not_fit << " boxes to bin" << std::endl;
+		QString text = "Another " + QString::number(item_not_fit) + " boxes cannot fit in to bin"; // CORRECT
+		QMessageBox::information(0, QString("Cannot fit all boxes"), text, QMessageBox::Ok);
+	}
+	//remove remain boxes
+
+	//binpack->SortBoxesOrder();
+
+	viewerwindow->ShowBinpacking(
+		total_boxes,
+		ui->in_bin_w->text().toDouble(),
+		ui->in_bin_d->text().toDouble(),
+		ui->in_bin_h->text().toDouble(),
+		boxes_x_orient, boxes_y_orient, boxes_z_orient,
+		boxes_x_pos, boxes_y_pos, boxes_z_pos);
+
+
 
 }
 void MainUI::ButtonShowPackingPressed()

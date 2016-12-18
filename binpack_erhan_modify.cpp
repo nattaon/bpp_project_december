@@ -6,7 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <iostream>
+using namespace std;
 
 //----------------------------------------------------------------------------
 // DEFINES
@@ -35,11 +36,12 @@ void write_visualization_data_file(void);
 void write_boxlist_file(void);
 void report_results(void);
 void print_help(void);
+void sortlayers(int num);
 
 //----------------------------------------------------------------------------
 // VARIABLE, CONSTANT AND STRUCTURE DECLARATIONS
 //----------------------------------------------------------------------------
-
+int malloccount = 0;
 char strpx[5], strpy[5], strpz[5];
 char strcox[5], strcoy[5], strcoz[5];
 char strpackx[5], strpacky[5], strpackz[5];
@@ -115,7 +117,7 @@ struct scrappad *scrapfirst, *scrapmemb, *smallestz, *trash;
 
 time_t start, finish;
 
-FILE *boxlist_input_file, *report_output_file, *visualizer_file;
+//FILE *boxlist_input_file, *report_output_file, *visualizer_file;
 
 char version[] = "0.01";
 
@@ -181,6 +183,13 @@ int total_box_to_pack,
   execute_iterations();
   time(&finish);
   report_results();
+
+  free(scrapfirst);
+
+  cout << "malloc couunt = " << malloccount << endl;
+
+ // free(smallestz);
+
   return(0);
 }
 
@@ -254,6 +263,9 @@ void execute_iterations(void)
 
     list_candidate_layers();
     layers[0].layereval = -1;
+	//cout << "layers " << layers << endl;
+	//cout << "layerlistlen " << layerlistlen << endl;
+	//sortlayers(layerlistlen*3);
     qsort(layers, layerlistlen+1, sizeof(struct layerlist), compute_layer_list);
 
     for (layersindex = 1; layersindex <= layerlistlen; layersindex++)
@@ -402,6 +414,18 @@ void list_candidate_layers(void)
 
 int compute_layer_list(const void *i, const void *j)
 {
+	/*
+	cout << endl;
+	cout << *(int*)i << " - " << *(int*)j << " = " << (*(int*)i - *(int*)j) << endl;
+
+	for (int k = 0; k <= layerlistlen; k++)
+	{
+		cout << "layers[" << k << "] ";
+		cout << " layereval=" << layers[k].layereval;
+		cout << " layerdim=" << layers[k].layerdim << endl;
+
+	}
+	*/
   return *(long int*)i - *(long int*)j;
 }
 
@@ -447,6 +471,7 @@ int pack_layer(void){
       else
       {
 		  smallestz->next = (scrappad*)malloc(sizeof(struct scrappad));
+		  malloccount++;
         if (smallestz->next == NULL)
         {
           printf("Insufficient memory available\n");
@@ -506,6 +531,7 @@ int pack_layer(void){
         else
         {
 			smallestz->next->prev = (scrappad*)malloc(sizeof(struct scrappad));
+			malloccount++;
           if (smallestz->next->prev == NULL)
           {
             printf("Insufficient memory available\n");
@@ -560,6 +586,7 @@ int pack_layer(void){
         else
         {
 			smallestz->prev->next = (scrappad*)malloc(sizeof(struct scrappad));
+			malloccount++;
           if ( smallestz->prev->next == NULL )
           {
             printf("Insufficient memory available\n");
@@ -626,6 +653,7 @@ int pack_layer(void){
         {
           boxlist[cboxi].cox = smallestz->prev->cumx;
 		  smallestz->prev->next = (scrappad*)malloc(sizeof(struct scrappad));
+		  malloccount++;
           if ( smallestz->prev->next == NULL )
           {
             printf("Insufficient memory available\n");
@@ -649,6 +677,7 @@ int pack_layer(void){
         {
           boxlist[cboxi].cox = smallestz->cumx - cboxx;
 		  smallestz->next->prev = (scrappad*)malloc(sizeof(struct scrappad));
+		  malloccount++;
           if (smallestz->next->prev == NULL)
           {
             printf("Insufficient memory available\n");
@@ -708,6 +737,7 @@ int pack_layer(void){
         else
         {
 			smallestz->prev->next = (scrappad*)malloc(sizeof(struct scrappad));
+			malloccount++;
           if ( smallestz->prev->next == NULL )
           {
             printf("Insufficient memory available\n");
@@ -1074,7 +1104,7 @@ void write_visualization_data_file(void)
   }
   current_item++;
 
-  if (!unpacked) // packable box
+/*  if (!unpacked) // packable box
   {
     fprintf(visualizer_file, "%5s%5s%5s%5s%5s%5s\n", strcox, strcoy, strcoz, strpackx, strpacky, strpackz);
   
@@ -1083,6 +1113,8 @@ void write_visualization_data_file(void)
   {
     fprintf(report_output_file,"%5s%5s%5s%5s\n", n, strpackx, strpacky, strpackz);
   }
+*/
+
 }
 
 //----------------------------------------------------------------------------
@@ -1170,7 +1202,7 @@ void write_boxlist_file(void)
   boxlist[cboxi].packx = bx;
   boxlist[cboxi].packy = by;
   boxlist[cboxi].packz = bz;
-  fprintf(report_output_file, "%5s%5s%9s%9s%9s%9s%9s%9s%9s%9s%9s\n", strx, strpackst, strdim1, strdim2, strdim3, strcox, strcoy, strcoz, strpackx, strpacky, strpackz);
+  //fprintf(report_output_file, "%5s%5s%9s%9s%9s%9s%9s%9s%9s%9s%9s\n", strx, strpackst, strdim1, strdim2, strdim3, strcox, strcoy, strcoz, strpackx, strpacky, strpackz);
   return;
 }
 
@@ -1203,7 +1235,7 @@ void report_results(void)
       break;
   }
   packingbest = 1;
-  if ( (visualizer_file = fopen(graphout,"w")) == NULL )
+ /* if ( (visualizer_file = fopen(graphout,"w")) == NULL )
   {
     printf("Cannot open file %s\n", filename);
     exit(1);
@@ -1221,11 +1253,11 @@ void report_results(void)
     printf("Cannot open output file %s\n", fileout);
     exit(1);
   }
-
+  */
   packed_box_percentage = best_solution_volume * 100 / total_box_volume;
   pallet_volume_used_percentage = best_solution_volume * 100 / total_pallet_volume;
   elapsed_time = difftime( finish, start);
-
+  /*
   fprintf(report_output_file,"---------------------------------------------------------------------------------------------\n");
   fprintf(report_output_file,"                                       *** REPORT ***\n");
   fprintf(report_output_file,"---------------------------------------------------------------------------------------------\n");
@@ -1243,7 +1275,7 @@ void report_results(void)
   fprintf(report_output_file,"---------------------------------------------------------------------------------------------\n");
   fprintf(report_output_file,"  NO: PACKSTA DIMEN-1  DMEN-2  DIMEN-3   COOR-X   COOR-Y   COOR-Z   PACKEDX  PACKEDY  PACKEDZ\n");
   fprintf(report_output_file,"---------------------------------------------------------------------------------------------\n");
-
+*/
   list_candidate_layers();
   layers[0].layereval= -1;
   qsort(layers, layerlistlen + 1, sizeof(struct layerlist), compute_layer_list);
@@ -1283,7 +1315,7 @@ void report_results(void)
     find_layer(remainpy);
   }
   while (packing);
-
+  /*
   fprintf(report_output_file,"\n\n *** LIST OF UNPACKED BOXES ***\n");
   unpacked = 1;
   for (cboxi = 1; cboxi <= total_boxes; cboxi++)
@@ -1296,14 +1328,29 @@ void report_results(void)
   unpacked = 0;
   fclose(report_output_file);
   fclose(visualizer_file);
+  */
   printf("\n");
   for (n = 1; n <= total_boxes; n++)
   {
     if (boxlist[n].is_packed)
     {
-      printf("%d %d %d %d %d %d %d %d %d %d\n", n, boxlist[n].dim1, boxlist[n].dim2, boxlist[n].dim3, boxlist[n].cox, boxlist[n].coy, boxlist[n].coz, boxlist[n].packx, boxlist[n].packy, boxlist[n].packz);
-    }
+      printf("%d %d %d %d %d %d %d %d %d %d\n", n, 
+		  boxlist[n].dim1, boxlist[n].dim2, boxlist[n].dim3, 
+		  boxlist[n].cox, boxlist[n].coy, boxlist[n].coz, 
+		  boxlist[n].packx, boxlist[n].packy, boxlist[n].packz);	
+	
+	}
+	box_x[n-1] = boxlist[n].cox;
+	box_y[n-1] = boxlist[n].coy;
+	box_z[n-1] = boxlist[n].coz;
+	orien_x[n-1] = boxlist[n].packx;
+	orien_y[n-1] = boxlist[n].packy;
+	orien_z[n-1] = boxlist[n].packz;
+	bin_no[n-1] = boxlist[n].n;
   }
+
+
+  /*
   printf("ELAPSED TIME                       : Almost %.0f sec\n", elapsed_time);
   printf("TOTAL NUMBER OF ITERATIONS DONE    : %d\n", number_of_iterations);
   printf("BEST SOLUTION FOUND AT             : ITERATION: %d OF VARIANT: %d\n", best_iteration, best_variant);
@@ -1316,6 +1363,7 @@ void report_results(void)
   printf("PERCENTAGE OF PACKEDBOXES (VOLUME) :%.6f%%\n", packed_box_percentage);
   printf("WHILE PALLET ORIENTATION           : X=%d; Y=%d; Z= %d\n\n\n", pallet_x, pallet_y, pallet_z);
   printf("TO VISUALIZE THIS SOLUTION, PLEASE RUN 'VISUAL.EXE'\n");
+  */
 }
 
 //----------------------------------------------------------------------------
@@ -1330,4 +1378,42 @@ void print_help(void)
   printf("\t[ -f|--inputfile ] <boxlist text file>   : Perform bin packing analysis\n");
   printf("\t[ -v|--version ]                         : Print software version\n");
   printf("\t[ -h|--help ]                            : Print this help screen\n\n");
+}
+
+void sortlayers(int num)
+{	
+	cout << endl;
+	cout << "sortlayers" << endl;
+	int max_eval_index;
+
+	for (int i = 0; i <= num; i++)
+	{
+		for (int j = i+1; j <= num; j++)
+		{
+			//max_eval_index = (layers[i].layereval > layers[j].layereval ? i : j);
+
+			if (layers[i].layereval > layers[j].layereval)
+			{
+				max_eval_index = i;
+			}
+			else if (layers[i].layereval == layers[j].layereval)
+			{
+				max_eval_index = (layers[i].layerdim > layers[j].layerdim ? i : j);
+			}
+			else
+			{
+				max_eval_index = j;
+				i = j;
+				break;
+			}
+
+
+		}
+		cout << "layers[" << i << "] ";
+		cout << " layereval=" << layers[i].layereval;
+		cout << " layerdim=" << layers[i].layerdim << endl;
+
+	}
+
+
 }

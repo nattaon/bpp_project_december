@@ -1,7 +1,4 @@
-#ifndef CalculateBppErhan_H
-#define CalculateBppErhan_H
 
-#include "SharedHeader.h"
 class CalculateBppErhan
 {
 public:
@@ -17,4 +14,3 @@ public:
 		int *bin_no, int *item_no);
 };
 
-#endif // CalculateBppErhan_H

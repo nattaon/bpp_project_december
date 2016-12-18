@@ -205,3 +205,59 @@ pcl::PolygonMesh ViewerWindow::visualizerGetCameraMesh(const Eigen::Matrix3f& R,
 	return pm;
 }
 
+
+void ViewerWindow::ShowBinpacking(int n,
+	int binW, int binH, int binD, 
+	int *w, int *h, int *d, 
+	int *x, int *y, int *z)
+{
+	for (int i = 0; i < n; i++)
+	{
+		string shapename = "itmecube" + std::to_string(i);
+		DrawItemCube(w[i], h[i], d[i], x[i], y[i], z[i], shapename);
+	}
+	window_view->spinOnce();
+}
+
+void ViewerWindow::DrawItemCube(int w, int h, int d, int x, int y, int z, string shapename)
+{
+	double r, g, b;
+	randomcolor(r, g, b);
+	
+	double xmin = x*0.001;
+	double ymin = y*0.001;
+	double zmin = z*0.001;
+	double xmax = (x+w)*0.001;
+	double ymax = (y+h)*0.001;
+	double zmax = (z+d)*0.001;
+
+	cout << "\n" << endl;
+	cout << r << "," << g << "," << b << endl; 
+	cout << "x " << xmin << "," << xmax << endl;
+	cout << "y " << ymin << "," << ymax << endl;
+	cout << "z " << zmin << "," << zmax << endl;
+
+	window_view->addCube(xmin,xmax,ymin,ymax,zmin,zmax,r,g,b,shapename);
+	
+}
+
+void ViewerWindow::randomcolor(double &r, double &g, double &b)
+{
+	int r256 = rand() % 200 + 56;
+	int g256 = rand() % 200 + 56;
+	int b256 = rand() % 200 + 56;
+
+
+	r = r256 / 255.0;
+	g = g256 / 255.0;
+	b = b256 / 255.0;
+
+	//int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+
+
+	//cout << "color = " << rgb << endl; //6388670
+
+	
+}
+
+

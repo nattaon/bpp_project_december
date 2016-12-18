@@ -49,6 +49,20 @@ public:
 		float r, float g, float b,
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
+
+	void ShowBinpacking(int n, int binW, int binH, int binD, int *w, int *h, int *d, int *x, int *y, int *z);
+
+	void DrawItemCube(int w, int h, int d, int x, int y, int z, string shapename);
+
+	void randomcolor(double &r,double &g,double &b);
+
+
+
+
+
+
+
+
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
 private:
     DataProcess *dataprocess;
