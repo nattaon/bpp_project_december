@@ -1506,31 +1506,6 @@
      <attribute name="title">
       <string>Segment</string>
      </attribute>
-     <widget class="QLabel" name="label_19">
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>100</y>
-        <width>20</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <pointsize>9</pointsize>
-        <weight>50</weight>
-        <italic>false</italic>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>%</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_9">
       <property name="geometry">
        <rect>
@@ -1793,7 +1768,7 @@
        </font>
       </property>
       <property name="text">
-       <string>1</string>
+       <string>50</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -2100,7 +2075,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>160</y>
+        <y>140</y>
         <width>91</width>
         <height>23</height>
        </rect>
@@ -2123,7 +2098,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>180</y>
+        <y>160</y>
         <width>91</width>
         <height>23</height>
        </rect>
@@ -2258,7 +2233,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>200</y>
+        <y>180</y>
         <width>91</width>
         <height>23</height>
        </rect>
@@ -2272,6 +2247,29 @@
       </property>
       <property name="text">
        <string>Show bounding</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_show_cluster_vector">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>200</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show Vector</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
@@ -3129,7 +3127,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -3261,8 +3259,8 @@
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_16"/>
+  <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

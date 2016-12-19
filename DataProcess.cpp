@@ -6,6 +6,7 @@ DataProcess::DataProcess()
 	
 	//cloudio = new PointCloudIO();
 	currentdisplay_pointcloud.reset(new PointCloudXYZRGB);
+	lastedoperate_pointcloud.reset(new PointCloudXYZRGB);
 }
 DataProcess::~DataProcess()
 {
@@ -61,7 +62,10 @@ PointCloudXYZRGB::Ptr DataProcess::GetColoredClusterPointCloud()
 {
 	return clusterextract->color_cluster_cloud;
 }
-
+void DataProcess::StoreLastedOperationCloud(PointCloudXYZRGB::Ptr cloud)
+{
+	pcl::copyPointCloud(*cloud, *lastedoperate_pointcloud);
+}
 
 
 

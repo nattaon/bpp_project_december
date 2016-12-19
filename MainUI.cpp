@@ -656,6 +656,16 @@ void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 void MainUI::ButtonApplyOutlierPressed()
 {
 	cout << "call ButtonApplyOutlierPressed()" << endl;
+
+	dataprocess->StoreLastedOperationCloud(dataprocess->GetCurrentDisplayPointCloud());
+
+	dataprocess->outlierremove->StatisticalOutlierRemoval(
+		dataprocess->GetCurrentDisplayPointCloud(), 
+		ui->in_outlier_meank->text().toInt(),
+		ui->in_outlier_stddev->text().toInt());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
+
 }
 void MainUI::ButtonShowClusterPressed()
 {
@@ -680,6 +690,7 @@ void MainUI::ButtonShowClusterPressed()
 	dataprocess->clusterextract->ExtractCluster(dataprocess->GetCurrentDisplayPointCloud());
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetColoredClusterPointCloud());
 	//dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
 
 
@@ -774,7 +785,7 @@ void::MainUI::ButtonShowClusterBBPressed()
 		dataprocess->container->transform->rotational_matrix_OBB,
 		"container OBB"
 		);
-/*
+
 	viewerwindow->AddVectorDirectionWindowCloudViewer(
 		dataprocess->container->transform->mass_center,
 		dataprocess->container->transform->major_vector,
@@ -782,7 +793,7 @@ void::MainUI::ButtonShowClusterBBPressed()
 		dataprocess->container->transform->minor_vector,
 		"container vector ");
 
-*/
+
 
 	for (int i = 0; i < dataprocess->items.size(); i++)
 	{
@@ -793,13 +804,13 @@ void::MainUI::ButtonShowClusterBBPressed()
 			dataprocess->items[i]->transform->rotational_matrix_OBB,
 			"items OBB " + i);
 
-		/*viewerwindow->AddVectorDirectionWindowCloudViewer(
-			dataprocess->items[i].transform->mass_center,
-			dataprocess->items[i].transform->major_vector,
-			dataprocess->items[i].transform->middle_vector,
-			dataprocess->items[i].transform->minor_vector,
+		viewerwindow->AddVectorDirectionWindowCloudViewer(
+			dataprocess->items[i]->transform->mass_center,
+			dataprocess->items[i]->transform->major_vector,
+			dataprocess->items[i]->transform->middle_vector,
+			dataprocess->items[i]->transform->minor_vector,
 			"items vector " + i);
-			*/
+			
 	}
 
 

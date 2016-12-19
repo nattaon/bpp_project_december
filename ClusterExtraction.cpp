@@ -25,7 +25,7 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 	cout << "max cluster size =" << max_size << endl;
 
 	color_cluster_cloud.reset(new PointCloudXYZRGB);
-	pcl::copyPointCloud(*cloud, *color_cluster_cloud);
+	//pcl::copyPointCloud(*cloud, *color_cluster_cloud);
 
 	// Creating the KdTree object for the search method of the extraction
 	pcl::search::KdTree<PointTypeXYZRGB>::Ptr tree(new pcl::search::KdTree<PointTypeXYZRGB>);
@@ -46,6 +46,7 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 
 	array_cluster_cloud.clear();
 	cout << "array_cluster_cloud size" << array_cluster_cloud.size() << endl;
+	int cluster_all_size = 0;
 
 	for (vector<pcl::PointIndices>::const_iterator it = vector_cluster_indices.begin(); it != vector_cluster_indices.end(); ++it)
 	{
@@ -59,12 +60,16 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 
 			//put original object color to array
 			cluster_cloud->points.push_back(cloud->points[*pit]);
-			color_cluster_cloud->points[*pit].rgb = color;
+			cluster_all_size++;
+			color_cluster_cloud->points.push_back(cloud->points[*pit]);
+			//color_cluster_cloud->points[*pit].rgb = color;
 		}
 		array_cluster_cloud.push_back(cluster_cloud);
 
 	}
-	cout << "array_cluster_cloud size" << array_cluster_cloud.size() << endl;
+	cout << "array_cluster_cloud size " << array_cluster_cloud.size() << endl;
+	cout << "cluster_all_size size " << cluster_all_size << endl;
+	cout << "color_cluster_cloud size " << color_cluster_cloud->points.size() << endl;
 }
 
 std::vector<PointCloudXYZRGB::Ptr> ClusterExtraction::GetExtractCluster()

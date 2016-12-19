@@ -5,17 +5,21 @@ PointCloudTransformationExtraction::PointCloudTransformationExtraction()
 
 }
 
-void PointCloudTransformationExtraction::CalculateTransformation(PointCloudXYZRGB::Ptr cloud, double voxel_size)
+void PointCloudTransformationExtraction::CalculateTransformation(
+	PointCloudXYZRGB::Ptr cloud, double voxel_size)
 {
 	//need to filter out data for speed calculation
 
 	//VoxelGridFilter *voxel;
 	//voxel = new VoxelGridFilter();
 
-	cout << "before 0.05 voxel : cloud size = " << cloud->size() << endl;
+	cout << "before " << voxel_size << " voxel : cloud size = " << cloud->size() << endl;
 	//voxel->
-	FilterVoxelSize(cloud, voxel_size);//distance between point 0.05 = 5cm
-	cout << "after 0.05 voxel : cloud size = " << cloud->size() << endl;
+	if (voxel_size!=0.0)
+	{ 
+		FilterVoxelSize(cloud, voxel_size);//distance between point 0.05 = 5cm
+		cout << "after " << voxel_size << " voxel : cloud size = " << cloud->size() << endl;
+	}
 
 	feature_extractor.setInputCloud(cloud);
 	feature_extractor.compute();

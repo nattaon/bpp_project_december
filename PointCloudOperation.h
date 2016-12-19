@@ -4,6 +4,7 @@
 #include "PlaneSegmentation.h"
 #include "ClusterExtraction.h"
 #include "ObjectTransformationData.h"
+#include "OutlierRemoval.h"
 
 class PointCloudOperation//:public PlaneSegmentation
 {
@@ -13,6 +14,7 @@ public:
 
 	PlaneSegmentation *planeseg;
 	ClusterExtraction *clusterextract;
+	OutlierRemoval *outlierremove;
 
 	ObjectTransformationData *container;
 	vector<ObjectTransformationData*> items;

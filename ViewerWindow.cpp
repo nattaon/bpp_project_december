@@ -72,10 +72,22 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 	Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector, 
 	string cloudname)
 {
+	//cout << "AddVectorDirectionWindowCloudViewer" << endl;
+	float vector_scale = 0.1f;
+
 	pcl::PointXYZ center(mass_center(0), mass_center(1), mass_center(2));
-	pcl::PointXYZ x_axis(major_vector(0) + mass_center(0), major_vector(1) + mass_center(1), major_vector(2) + mass_center(2));
-	pcl::PointXYZ y_axis(middle_vector(0) + mass_center(0), middle_vector(1) + mass_center(1), middle_vector(2) + mass_center(2));
-	pcl::PointXYZ z_axis(minor_vector(0) + mass_center(0), minor_vector(1) + mass_center(1), minor_vector(2) + mass_center(2));
+	pcl::PointXYZ x_axis(
+		major_vector(0)*vector_scale + mass_center(0), 
+		major_vector(1)*vector_scale + mass_center(1), 
+		major_vector(2)*vector_scale + mass_center(2));
+	pcl::PointXYZ y_axis(
+		middle_vector(0)*vector_scale + mass_center(0), 
+		middle_vector(1)*vector_scale + mass_center(1), 
+		middle_vector(2)*vector_scale + mass_center(2));
+	pcl::PointXYZ z_axis(
+		minor_vector(0)*vector_scale + mass_center(0), 
+		minor_vector(1)*vector_scale + mass_center(1), 
+		minor_vector(2)*vector_scale + mass_center(2));
 	window_view->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, cloudname + " major eigen vector");
 	window_view->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, cloudname + " middle eigen vector");
 	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
@@ -105,39 +117,55 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	PointTypeXYZRGB position_major;
 	PointTypeXYZRGB position_minor_plus, position_minor_minus;
 	PointTypeXYZRGB position_center;
-	
+	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
+	polygon_pointcloud.reset(new PointCloudXYZRGB);
 
-	double length_x = (max_point_OBB.x - min_point_OBB.x)*0.5;
-	double length_y = (max_point_OBB.y - min_point_OBB.y)*0.5;
-	double length_z = (max_point_OBB.z - min_point_OBB.z);
-	double translate_pos = length_y*0.5;
+	float vector_scale = 0.1f;
+	float length_x = (max_point_OBB.x - min_point_OBB.x);
+	float length_y = (max_point_OBB.y - min_point_OBB.y);
+	float length_z = (max_point_OBB.z - min_point_OBB.z);//most small=(height)
+	float translate_pos = 0;// length_y*0.5;
 
-	cout << "translate_pos= " << translate_pos << endl;
+	cout << endl;
+	cout << "length_x= " << length_x << ", major(0)= " << major_vector(0) << endl;
+	cout << "length_y= " << length_y << ", major(1)= " << major_vector(1) << endl;
+	cout << "length_z= " << length_z << ", major(2)= " << major_vector(2) << endl;
+	//cout << "translate_pos= " << translate_pos << endl;
 
-	position_major.x = (position_OBB.x + major_vector(0)*length_x);
-	position_major.y = (position_OBB.y + major_vector(1)*length_y) + translate_pos;
-	position_major.z = (position_OBB.z + major_vector(2)*length_z);
+	position_major.x = (position_OBB.x + major_vector(0)*vector_scale);
+	position_major.y = (position_OBB.y + major_vector(1)*vector_scale) + translate_pos;
+	position_major.z = (position_OBB.z + major_vector(2)*vector_scale);
 
-	position_minor_plus.x = (position_OBB.x + middle_vector(0)*length_x);
-	position_minor_plus.y = (position_OBB.y + middle_vector(1)*length_y) + translate_pos;
-	position_minor_plus.z = (position_OBB.z + middle_vector(2)*length_z);
+	position_minor_plus.x = (position_OBB.x + middle_vector(0)*vector_scale);
+	position_minor_plus.y = (position_OBB.y + middle_vector(1)*vector_scale) + translate_pos;
+	position_minor_plus.z = (position_OBB.z + middle_vector(2)*vector_scale);
 
-	position_minor_minus.x = (position_OBB.x - middle_vector(0)*length_x);
-	position_minor_minus.y = (position_OBB.y - middle_vector(1)*length_y) + translate_pos;
-	position_minor_minus.z = (position_OBB.z - middle_vector(2)*length_z);
+	position_minor_minus.x = (position_OBB.x - middle_vector(0)*vector_scale);
+	position_minor_minus.y = (position_OBB.y - middle_vector(1)*vector_scale) + translate_pos;
+	position_minor_minus.z = (position_OBB.z - middle_vector(2)*vector_scale);
 
 	position_center.x = position_OBB.x;
 	position_center.y = position_OBB.y + translate_pos;
 	position_center.z = position_OBB.z;
 
+	/*
+	polygon_pointcloud->points.push_back(position_major);
+	polygon_pointcloud->points.push_back(position_minor_minus);
+	polygon_pointcloud->points.push_back(position_minor_plus);
+	
+	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
+	polygon_pointcloud->height = 1;
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
+*/
 
-	window_view->addLine(position_center, position_minor_minus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineminus");
-	window_view->addLine(position_center, position_minor_plus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineplus");
+	//window_view->addLine(position_center, position_minor_minus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineminus");
+	//window_view->addLine(position_center, position_minor_plus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineplus");
 
 	window_view->addLine(position_center, position_major, 0.0f, 0.0f, 1.0f, cloudname + " majorline");
-	window_view->addLine(position_minor_minus, position_minor_plus, 0.0f, 0.0f, 1.0f, cloudname + " minorline");
-	window_view->addLine(position_minor_minus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorminusline");
-	window_view->addLine(position_minor_plus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorplusline");
+	//window_view->addLine(position_minor_minus, position_minor_plus, 1.0f, 0.0f, 0.0f, cloudname + " minorline");
+	//window_view->addLine(position_minor_minus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorminusline");
+	//window_view->addLine(position_minor_plus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorplusline");
 }
 
 

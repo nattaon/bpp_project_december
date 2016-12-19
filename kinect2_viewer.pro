@@ -23,7 +23,8 @@ SOURCES += \
     PointCloudTransformationExtraction.cpp \
     PlaneSegmentParameterIO.cpp \
     ObjectTransformationData.cpp \
-    CameraParameterIO.cpp
+    CameraParameterIO.cpp \
+    OutlierRemoval.cpp
 
 HEADERS  += \
     MainUI.h \
@@ -35,7 +36,8 @@ HEADERS  += \
     PointCloudTransformationExtraction.h \
     PlaneSegmentParameterIO.h \
     ObjectTransformationData.h \
-    CameraParameterIO.h
+    CameraParameterIO.h \
+    OutlierRemoval.h
 
 FORMS    += \
     MainUI.ui

@@ -29,11 +29,13 @@ public:
 	PointCloudXYZRGB::Ptr GetOnlyPlanePointCloud();
 	PointCloudXYZRGB::Ptr GetColoredClusterPointCloud();
 
+	void StoreLastedOperationCloud(PointCloudXYZRGB::Ptr cloud);
+
 
 
 private:
 	PointCloudXYZRGB::Ptr currentdisplay_pointcloud;
-	//PointCloudXYZRGB::Ptr currentdisplay_pointcloud;
+	PointCloudXYZRGB::Ptr lastedoperate_pointcloud;
 
 
 
