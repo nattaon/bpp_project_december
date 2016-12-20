@@ -979,8 +979,8 @@ void MainUI::ButtonTrackItemPositionPressed()
 
 		viewerwindow->AddSymbolWindowCloudViewer(
 			dataprocess->items[i]->transform->position_OBB,
-			dataprocess->items[i]->transform->min_point_OBB,
-			dataprocess->items[i]->transform->max_point_OBB,
+			dataprocess->items[i]->transform->min3d_point,
+			dataprocess->items[i]->transform->max3d_point,
 			dataprocess->items[i]->transform->mass_center,
 			dataprocess->items[i]->transform->major_vector,
 			dataprocess->items[i]->transform->middle_vector,

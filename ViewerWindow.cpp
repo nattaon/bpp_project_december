@@ -107,8 +107,8 @@ void ViewerWindow::AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, do
 
 void ViewerWindow::AddSymbolWindowCloudViewer(
 	PointTypeXYZRGB position_OBB, 
-	PointTypeXYZRGB min_point_OBB, 
-	PointTypeXYZRGB max_point_OBB,
+	PointTypeXYZRGB min3d, 
+	PointTypeXYZRGB max3d,
 	Eigen::Vector3f mass_center,
 	Eigen::Vector3f major_vector,
 	Eigen::Vector3f middle_vector,
@@ -121,34 +121,45 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	polygon_pointcloud.reset(new PointCloudXYZRGB);
 
 	float vector_scale = 0.1f;
-	float length_x = (max_point_OBB.x - min_point_OBB.x);
-	float length_y = (max_point_OBB.y - min_point_OBB.y);
-	float length_z = (max_point_OBB.z - min_point_OBB.z);//most small=(height)
-	float translate_pos = 0;// length_y*0.5;
+	float half_length_x = (max3d.x - min3d.x)*0.5;
+	float half_length_y = (max3d.y - min3d.y)*0.5;
+	float half_length_z = (max3d.z - min3d.z)*0.5;//most small=(height)
+	float translate_pos = 0.01;// for draw symbol on top of item
 
-	cout << endl;
-	cout << "length_x= " << length_x << ", major(0)= " << major_vector(0) << endl;
-	cout << "length_y= " << length_y << ", major(1)= " << major_vector(1) << endl;
-	cout << "length_z= " << length_z << ", major(2)= " << major_vector(2) << endl;
+	/*cout << endl;
+	cout << cloudname << endl;
+	cout << "length_x= " << half_length_x << ", major(0)= " << major_vector(0) << ", middle(0)= " << middle_vector(0) << endl;
+	cout << "length_y= " << half_length_y << ", major(1)= " << major_vector(1) << ", middle(1)= " << middle_vector(1) << endl;
+	cout << "length_z= " << half_length_z << ", major(2)= " << major_vector(2) << ", middle(2)= " << middle_vector(2) << endl;
+	*/
 	//cout << "translate_pos= " << translate_pos << endl;
-
-	position_major.x = (position_OBB.x + major_vector(0)*vector_scale);
-	position_major.y = (position_OBB.y + major_vector(1)*vector_scale) + translate_pos;
-	position_major.z = (position_OBB.z + major_vector(2)*vector_scale);
-
-	position_minor_plus.x = (position_OBB.x + middle_vector(0)*vector_scale);
-	position_minor_plus.y = (position_OBB.y + middle_vector(1)*vector_scale) + translate_pos;
-	position_minor_plus.z = (position_OBB.z + middle_vector(2)*vector_scale);
-
-	position_minor_minus.x = (position_OBB.x - middle_vector(0)*vector_scale);
-	position_minor_minus.y = (position_OBB.y - middle_vector(1)*vector_scale) + translate_pos;
-	position_minor_minus.z = (position_OBB.z - middle_vector(2)*vector_scale);
 
 	position_center.x = position_OBB.x;
 	position_center.y = position_OBB.y + translate_pos;
 	position_center.z = position_OBB.z;
 
-	/*
+	position_major.x = (position_OBB.x + major_vector(0)*half_length_x);
+	position_major.y = (position_OBB.y + major_vector(1)*half_length_y) + translate_pos;
+	position_major.z = (position_OBB.z + major_vector(2)*half_length_z);
+
+	//window_view->addLine(position_center, position_major, 0.0f, 0.0f, 1.0f, cloudname + " majorline");
+	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, cloudname + " majorline");
+
+	position_minor_plus.x = (position_OBB.x + middle_vector(0)*half_length_x);
+	position_minor_plus.y = (position_OBB.y + middle_vector(1)*half_length_y) + translate_pos;
+	position_minor_plus.z = (position_OBB.z + middle_vector(2)*half_length_z);
+	position_minor_minus.x = (position_OBB.x - middle_vector(0)*half_length_x);
+	position_minor_minus.y = (position_OBB.y - middle_vector(1)*half_length_y) + translate_pos;
+	position_minor_minus.z = (position_OBB.z - middle_vector(2)*half_length_z);
+
+
+	/*cout << "position_center " << position_center << endl;
+	cout << "position_major " << position_major << endl;
+	cout << "position_minor_plus " << position_minor_plus << endl;
+	*/
+	//window_view->addLine(position_center, position_minor_plus, 1.0f, 0.0f, 1.0f, cloudname + " minorlineplus");
+	
+
 	polygon_pointcloud->points.push_back(position_major);
 	polygon_pointcloud->points.push_back(position_minor_minus);
 	polygon_pointcloud->points.push_back(position_minor_plus);
@@ -157,12 +168,9 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	polygon_pointcloud->height = 1;
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
-*/
+
 
 	//window_view->addLine(position_center, position_minor_minus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineminus");
-	//window_view->addLine(position_center, position_minor_plus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineplus");
-
-	window_view->addLine(position_center, position_major, 0.0f, 0.0f, 1.0f, cloudname + " majorline");
 	//window_view->addLine(position_minor_minus, position_minor_plus, 1.0f, 0.0f, 0.0f, cloudname + " minorline");
 	//window_view->addLine(position_minor_minus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorminusline");
 	//window_view->addLine(position_minor_plus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorplusline");

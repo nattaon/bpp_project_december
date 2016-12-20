@@ -35,8 +35,8 @@ public:
 
 	void AddSymbolWindowCloudViewer(
 		PointTypeXYZRGB position_OBB,
-		PointTypeXYZRGB min_point_OBB,
-		PointTypeXYZRGB max_point_OBB,
+		PointTypeXYZRGB min3d,
+		PointTypeXYZRGB max3d,
 		Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector,
 		Eigen::Vector3f minor_vector,
