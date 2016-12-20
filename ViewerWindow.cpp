@@ -242,32 +242,59 @@ pcl::PolygonMesh ViewerWindow::visualizerGetCameraMesh(const Eigen::Matrix3f& R,
 }
 
 
-void ViewerWindow::ShowBinpacking(int n,
+void ViewerWindow::ShowBinpacking(
+	PointTypeXYZRGB ref_position, 
+	int n,
 	int binW, int binH, int binD, 
 	int *w, int *h, int *d, 
 	int *x, int *y, int *z)
 {
+	cout << "ref_position= " << ref_position << endl;
+
 	for (int i = 0; i < n; i++)
 	{
 		string shapename = "itmecube" + std::to_string(i);
-		DrawItemCube(w[i], h[i], d[i], x[i], y[i], z[i], shapename);
+		string symbolname = "symbolitmecube" + std::to_string(i);
+		cout << endl;
+		cout << "shapename " << shapename << endl;
+		cout << "x,y,z = " << x[i] << "," << y[i] << "," << z[i] << endl;
+		cout << "w,h,d = " << w[i] << "," << h[i] << "," << d[i] << endl;
+		
+		float cube_w = w[i] * 0.001;
+		float cube_h = h[i] * 0.001;
+		float cube_d = d[i] * 0.001;
+		float cube_x_min = x[i] * 0.001 + ref_position.x;
+		float cube_y_min = y[i] * 0.001 + ref_position.y;
+		float cube_z_min = z[i] * 0.001 + ref_position.z;
+
+
+		DrawItemCube(
+			cube_w, cube_h, cube_d,
+			cube_x_min, cube_y_min, cube_z_min,
+			shapename);
+
+
+		DrawItemSymbol(
+			cube_w, cube_h, cube_d,
+			cube_x_min, cube_y_min, cube_z_min,
+			1.0, 1.0, 1.0, symbolname);
 	}
 	window_view->spinOnce();
 }
 
-void ViewerWindow::DrawItemCube(int w, int h, int d, int x, int y, int z, string shapename)
+void ViewerWindow::DrawItemCube(float w, float h, float d, float x, float y, float z, string shapename)
 {
 	double r, g, b;
 	randomcolor(r, g, b);
 	
-	double xmin = x*0.001;
-	double ymin = y*0.001;
-	double zmin = z*0.001;
-	double xmax = (x+w)*0.001;
-	double ymax = (y+h)*0.001;
-	double zmax = (z+d)*0.001;
+	float xmin = x;
+	float ymin = y;
+	float zmin = z;
+	float xmax = (x + w);
+	float ymax = (y + h);
+	float zmax = (z + d);
 
-	cout << "\n" << endl;
+	cout << endl;
 	cout << r << "," << g << "," << b << endl; 
 	cout << "x " << xmin << "," << xmax << endl;
 	cout << "y " << ymin << "," << ymax << endl;
@@ -275,6 +302,83 @@ void ViewerWindow::DrawItemCube(int w, int h, int d, int x, int y, int z, string
 
 	window_view->addCube(xmin,xmax,ymin,ymax,zmin,zmax,r,g,b,shapename);
 	
+}
+void ViewerWindow::DrawItemSymbol(
+	float w, float h, float d,
+	float x, float y, float z,
+	float r, float g, float b,
+	string symbolname)
+{
+	PointTypeXYZRGB position_major;
+	PointTypeXYZRGB position_minor_plus, position_minor_minus;
+	PointTypeXYZRGB position_center;
+	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
+	polygon_pointcloud.reset(new PointCloudXYZRGB);
+
+	float half_length_x = w*0.5;
+	float half_length_y = h*0.5;
+	float half_length_z = d*0.5;//most small=(height)
+	float translate_pos = half_length_y + 0.01;// for draw symbol on top of item
+
+	/*cout << endl;
+	cout << cloudname << endl;
+	cout << "length_x= " << half_length_x << ", major(0)= " << major_vector(0) << ", middle(0)= " << middle_vector(0) << endl;
+	cout << "length_y= " << half_length_y << ", major(1)= " << major_vector(1) << ", middle(1)= " << middle_vector(1) << endl;
+	cout << "length_z= " << half_length_z << ", major(2)= " << major_vector(2) << ", middle(2)= " << middle_vector(2) << endl;
+	*/
+	//cout << "translate_pos= " << translate_pos << endl;
+
+	position_center.x = x + half_length_x;
+	position_center.y = y + half_length_y;
+	position_center.z = z + half_length_z;
+
+	if (half_length_x > half_length_z)
+	{
+		position_major.x = position_center.x + half_length_x;
+		position_major.y = position_center.y + translate_pos;
+		position_major.z = position_center.z;
+
+		position_minor_plus.x = position_center.x;
+		position_minor_plus.y = position_center.y + translate_pos;
+		position_minor_plus.z = position_center.z + half_length_z;
+
+		position_minor_minus.x = position_center.x;
+		position_minor_minus.y = position_center.y + translate_pos;
+		position_minor_minus.z = position_center.z - half_length_z;
+
+
+		polygon_pointcloud->points.push_back(position_major);
+		polygon_pointcloud->points.push_back(position_minor_minus);
+		polygon_pointcloud->points.push_back(position_minor_plus);
+	}
+	else
+	{
+
+		position_major.x = position_center.x;
+		position_major.y = position_center.y + translate_pos;
+		position_major.z = position_center.z + half_length_z;
+
+		position_minor_plus.x = position_center.x + half_length_x;
+		position_minor_plus.y = position_center.y + translate_pos;
+		position_minor_plus.z = position_center.z;
+
+		position_minor_minus.x = position_center.x - half_length_x;
+		position_minor_minus.y = position_center.y + translate_pos;
+		position_minor_minus.z = position_center.z;
+
+
+		polygon_pointcloud->points.push_back(position_major);
+		polygon_pointcloud->points.push_back(position_minor_minus);
+		polygon_pointcloud->points.push_back(position_minor_plus);
+	}
+
+
+
+	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
+	polygon_pointcloud->height = 1;
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, symbolname + " polygon");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, symbolname + " polygon");
+
 }
 
 void ViewerWindow::randomcolor(double &r, double &g, double &b)

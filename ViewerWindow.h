@@ -50,9 +50,19 @@ public:
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
 
-	void ShowBinpacking(int n, int binW, int binH, int binD, int *w, int *h, int *d, int *x, int *y, int *z);
+	void ShowBinpacking(
+		PointTypeXYZRGB ref_position,
+		int n, int binW, int binH, int binD, 
+		int *w, int *h, int *d, int *x, int *y, int *z);
 
-	void DrawItemCube(int w, int h, int d, int x, int y, int z, string shapename);
+	void DrawItemCube(float w, float h, float d, float x, float y, float z, string shapename);
+	void DrawItemSymbol(
+		float w, float h, float d, 
+		float x, float y, float z, 
+		float r, float g, float b,
+		string symbolname);
+
+
 
 	void randomcolor(double &r,double &g,double &b);
 

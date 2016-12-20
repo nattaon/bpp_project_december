@@ -873,8 +873,8 @@ void MainUI::ButtonBinPackingPressed()
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
 		boxes_width[i] = item->text(1).toInt();
-		boxes_height[i] = item->text(2).toInt();
-		boxes_depth[i] = item->text(3).toInt();
+		boxes_height[i] = item->text(3).toInt();
+		boxes_depth[i] = item->text(2).toInt();
 	}
 
 	boxes_w = boxes_width;
@@ -899,8 +899,9 @@ void MainUI::ButtonBinPackingPressed()
 	binpack->CalculateBinpack(
 		total_boxes,
 		ui->in_bin_w->text().toDouble(), 
-		ui->in_bin_d->text().toDouble(), 
 		ui->in_bin_h->text().toDouble(),
+		ui->in_bin_d->text().toDouble(), 
+
 		boxes_w, boxes_h, boxes_d,
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
@@ -932,6 +933,7 @@ void MainUI::ButtonBinPackingPressed()
 	//binpack->SortBoxesOrder();
 
 	viewerwindow->ShowBinpacking(
+		dataprocess->container->transform->min3d_point,
 		total_boxes,
 		ui->in_bin_w->text().toDouble(),
 		ui->in_bin_d->text().toDouble(),
@@ -945,6 +947,7 @@ void MainUI::ButtonBinPackingPressed()
 void MainUI::ButtonShowPackingPressed()
 {
 	cout << "call ButtonShowPackingPressed()" << endl;
+
 }
 void MainUI::ButtonShowPrevPackingPressed()
 {
