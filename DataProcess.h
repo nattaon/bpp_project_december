@@ -11,10 +11,6 @@ public:
     DataProcess();
 	~DataProcess();
 
-	//PointCloudIO *cloudio; // just declare, this not call PointCloudIO::PointCloudIO()
-	//PointCloudOperation *cloudprocess; // just declare, this not call PointCloudOperation::PointCloudOperation()
-	//TextFileIO *fileio; // just declare, this not call TextFileIO::TextFileIO()
-
 	PointCloudXYZRGB::Ptr GetKinectPointCloud();
 	cv::Mat GetKinectRGBImage();
 	PointCloudXYZRGB::Ptr GetLoadedPointCloud();

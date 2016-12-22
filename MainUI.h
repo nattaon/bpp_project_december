@@ -25,8 +25,6 @@ private:
 	ViewerWindow *viewerwindow;
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
 
-	//CalculateBppErhan *binpack;
-
 	bool isRegisterCameraCallback;
 
 	QTime time;

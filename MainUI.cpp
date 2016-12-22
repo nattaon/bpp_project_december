@@ -843,7 +843,7 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 	last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
 	last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
 
-	cout << "select " << last_selected_item->text(5).toStdString() << endl;
+	
 
 	//item->setBackgroundColor(0, QColor(200, 200, 200));
 	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
@@ -853,6 +853,7 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 
 	last_select_item_index = ui->treeWidget->currentIndex().row();
 
+	cout << "select " << last_select_item_index << endl;
 	//show seleted cloud
 	//program->ShowSelectedListedCloudIndex(last_select_item_index);
 
