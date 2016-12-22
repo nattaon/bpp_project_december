@@ -4,8 +4,8 @@
 #include "PointCloudIO.h"
 #include "PointCloudOperation.h"
 #include "TextFileIO.h"
-
-class DataProcess:public PointCloudIO, public PointCloudOperation, public TextFileIO
+#include "CalculateBppErhan.h"
+class DataProcess :public PointCloudIO, public PointCloudOperation, public TextFileIO, public CalculateBppErhan
 {
 public:
     DataProcess();

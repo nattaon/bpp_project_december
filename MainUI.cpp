@@ -15,8 +15,18 @@ MainUI::MainUI(QWidget *parent) :
 	isRegisterCameraCallback = false;
 
 	timerId_kinect = 0;
+	last_select_item_index = 0;
 
 	isLoadPlaneParameter = false;
+
+	//	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
+	embeded_view.reset(new pcl::visualization::PCLVisualizer("embeded_view", false));
+	embeded_view->setBackgroundColor(0, 0, 0);
+	embeded_view->addCoordinateSystem();
+	embeded_view->initCameraParameters();
+
+	ui->widget->SetRenderWindow(embeded_view->getRenderWindow());
+	embeded_view->setupInteractor(ui->widget->GetInteractor(), ui->widget->GetRenderWindow());
 	
 	//top menu
 	///menu:viewer embedded
@@ -550,6 +560,8 @@ void MainUI::ButtonSetCloudCenterPressed()
 void MainUI::ButtonSetCloudCornerPressed()
 {
 	cout << "call ButtonSetCloudCornerPressed()" << endl;
+
+
 }
 
 //tab:segmentation
@@ -822,6 +834,35 @@ void::MainUI::ButtonShowClusterBBPressed()
 void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 {
 	cout << "call PressedTreeItem()" << endl;
+
+	//hilight item clicked
+	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
+	//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+
+	cout << "select " << last_selected_item->text(5).toStdString() << endl;
+
+	//item->setBackgroundColor(0, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
+
+	last_select_item_index = ui->treeWidget->currentIndex().row();
+
+	//show seleted cloud
+	//program->ShowSelectedListedCloudIndex(last_select_item_index);
+
+
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	if (!embeded_view->updatePointCloud(pointcloud, "embeded_view"))
+	{
+		embeded_view->addPointCloud(pointcloud, "embeded_view");
+	}
+	ui->widget->update();
 };
 void MainUI::ButtonLoadPointCloudToListPressed()
 {
@@ -895,8 +936,7 @@ void MainUI::ButtonBinPackingPressed()
 	}
 
 
-	binpack = new CalculateBppErhan();
-	binpack->CalculateBinpack(
+	dataprocess->CalculateBinpack(
 		total_boxes,
 		ui->in_bin_w->text().toDouble(), 
 		ui->in_bin_h->text().toDouble(),

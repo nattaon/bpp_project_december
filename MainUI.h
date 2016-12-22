@@ -3,7 +3,7 @@
 #include "DataProcess.h"
 #include "ViewerWindow.h"
 #include "SharedHeader.h"
-#include "CalculateBppErhan.h"
+
 
 namespace Ui {
 class MainUI;
@@ -23,13 +23,15 @@ private:
     Ui::MainUI *ui;
 	DataProcess *dataprocess;
 	ViewerWindow *viewerwindow;
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
 
-	CalculateBppErhan *binpack;
+	//CalculateBppErhan *binpack;
 
 	bool isRegisterCameraCallback;
 
 	QTime time;
 	int timerId_kinect;
+	int last_select_item_index;
 
 	void timerEvent(QTimerEvent *event);
 
