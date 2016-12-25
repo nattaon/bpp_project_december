@@ -3,6 +3,7 @@
 #include "SharedHeader.h"
 #include "PlaneSegmentParameterIO.h"
 #include "CameraParameterIO.h"
+#include "PointCloudBPPTextListIO.h"
 
 class TextFileIO
 {
@@ -11,7 +12,7 @@ public:
 
 	PlaneSegmentParameterIO *planeparam;
 	CameraParameterIO *cameraparam;
-
+	PointCloudBPPTextListIO * pointcloudbpptext;
 };
 
 #endif // TEXTFILEIO_H

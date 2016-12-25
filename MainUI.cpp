@@ -19,14 +19,10 @@ MainUI::MainUI(QWidget *parent) :
 
 	isLoadPlaneParameter = false;
 
-	//	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
-	embeded_view.reset(new pcl::visualization::PCLVisualizer("embeded_view", false));
-	embeded_view->setBackgroundColor(0, 0, 0);
-	embeded_view->addCoordinateSystem();
-	embeded_view->initCameraParameters();
+	viewerembeded = new ViewerEmbeded(ui->widget);
 
-	ui->widget->SetRenderWindow(embeded_view->getRenderWindow());
-	embeded_view->setupInteractor(ui->widget->GetInteractor(), ui->widget->GetRenderWindow());
+
+
 	
 	//top menu
 	///menu:viewer embedded
@@ -71,6 +67,8 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_apply_passthrough, SIGNAL(clicked()), this, SLOT(ButtonApplyCloudPassthroughPressed()));
 	connect(ui->bt_set_cloud_center, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCenterPressed()));
 	connect(ui->bt_set_cloud_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCornerPressed()));
+	connect(ui->bt_set_cloud_align_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudAlignCornerPressed()));
+	connect(ui->bt_calculate_cloud_transform, SIGNAL(clicked()), this, SLOT(ButtonCalculateCloudTransformPressed()));
 
 	//tab:segmentation
 	connect(ui->bt_apply_voxelgrid, SIGNAL(clicked()), this, SLOT(ButtonApplyVoxelGridPressed()));
@@ -91,11 +89,18 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_all_save, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPressed()));
 	connect(ui->bt_item_remove, SIGNAL(clicked()), this, SLOT(ButtonRemoveItemPressed()));
 	connect(ui->bt_item_clearall, SIGNAL(clicked()), this, SLOT(ButtonClearAllItemPressed()));
+
 	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonBinPackingPressed()));
-	connect(ui->bt_show_packing, SIGNAL(clicked()), this, SLOT(ButtonShowPackingPressed()));
+	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
+
+	connect(ui->bt_show_packing_target, SIGNAL(clicked()), this, SLOT(ButtonShowPackingTargetPressed()));
+	connect(ui->bt_show_packing_indicate, SIGNAL(clicked()), this, SLOT(ButtonShowPackingIndicatePressed()));
+	connect(ui->bt_show_packing_animation, SIGNAL(clicked()), this, SLOT(ButtonShowPackingAnimationPressed()));
+
+	connect(ui->bt_order_zero, SIGNAL(clicked()), this, SLOT(ButtonShowZeroPackingPressed()));
 	connect(ui->bt_order_previous, SIGNAL(clicked()), this, SLOT(ButtonShowPrevPackingPressed()));
 	connect(ui->bt_order_next, SIGNAL(clicked()), this, SLOT(ButtonShowNextPackingPressed()));
-	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
+
 
 	
 	//resize tree column size	
@@ -540,6 +545,51 @@ void MainUI::ButtonResetCloudTransformationPressed()
 void MainUI::ButtonApplyCloudRotationPressed()
 {
 	cout << "call ButtonApplyCloudRotationPressed()" << endl;
+
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+
+	float rotate_x = ui->edit_cloud_rot_x->text().toDouble();
+	float rotate_y = ui->edit_cloud_rot_y->text().toDouble();
+	float rotate_z = ui->edit_cloud_rot_z->text().toDouble();
+	float rotate_degree;
+	Eigen::Matrix<float, 1, 3>  rotation_vector;
+
+	if (rotate_x != 0.0)
+	{
+		rotate_degree = rotate_x;
+
+		rotation_vector[0] = 1.0;
+		rotation_vector[1] = 0.0;
+		rotation_vector[2] = 0.0;
+	}
+	else if (rotate_y != 0.0)
+	{
+		rotate_degree = rotate_y;
+
+		rotation_vector[0] = 0.0;
+		rotation_vector[1] = 1.0;
+		rotation_vector[2] = 0.0;
+	}
+	else if (rotate_z != 0.0)
+	{
+		rotate_degree = rotate_z;
+
+		rotation_vector[0] = 0.0;
+		rotation_vector[1] = 0.0;
+		rotation_vector[2] = 1.0;
+	}
+	else
+	{
+		cout << endl << "ERROR ROTATE!!!" << endl;
+
+	}
+
+	dataprocess->RotatePointCloud(pointcloud,
+		rotate_degree, rotation_vector);
+
+
+	viewerembeded->UpdateCloudViewer(pointcloud);
+
 }
 void MainUI::ButtonApplyCloudTranslationPressed()
 {
@@ -561,6 +611,80 @@ void MainUI::ButtonSetCloudCornerPressed()
 {
 	cout << "call ButtonSetCloudCornerPressed()" << endl;
 
+
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	dataprocess->items[last_select_item_index]->transform->CalculateMinMaxPoint(pointcloud);
+
+	PointTypeXYZRGB move_from_point = dataprocess->items[last_select_item_index]->transform->min3d_point;
+	PointTypeXYZRGB move_to_point;
+	move_to_point.x = 0;
+	move_to_point.y = 0;
+	move_to_point.z = 0;
+
+	dataprocess->MovePointCloudFromTo(pointcloud, move_from_point, move_to_point);
+
+	viewerembeded->UpdateCloudViewer(pointcloud);
+
+}
+
+void MainUI::ButtonSetCloudAlignCornerPressed()
+{
+	cout << "call ButtonSetCloudAlignCornerPressed()" << endl;
+	cout << endl;
+	cout << "major_vector " << dataprocess->items[last_select_item_index]->transform->major_vector << endl;
+	cout << "minor_vector " << dataprocess->items[last_select_item_index]->transform->minor_vector << endl;
+	cout << "middle_vector " << dataprocess->items[last_select_item_index]->transform->middle_vector << endl;
+	
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+
+	Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector, target_plane_normal_vector;
+	floor_plane_normal_vector[0] = dataprocess->items[last_select_item_index]->transform->major_vector(0);
+	floor_plane_normal_vector[1] = dataprocess->items[last_select_item_index]->transform->major_vector(1);
+	floor_plane_normal_vector[2] = dataprocess->items[last_select_item_index]->transform->major_vector(2);
+
+
+	if (floor_plane_normal_vector[0]>0.9)
+	{
+		target_plane_normal_vector[0] = 1.0;
+		target_plane_normal_vector[1] = 0.0;
+		target_plane_normal_vector[2] = 0.0;
+	}
+	else if (floor_plane_normal_vector[0]<-0.9)
+	{
+		target_plane_normal_vector[0] = -1.0;
+		target_plane_normal_vector[1] = 0.0;
+		target_plane_normal_vector[2] = 0.0;
+	}
+	else if (floor_plane_normal_vector[2]>0.9)
+	{
+		target_plane_normal_vector[0] = 0.0;
+		target_plane_normal_vector[1] = 0.0;
+		target_plane_normal_vector[2] = 1.0;
+	}
+	else if (floor_plane_normal_vector[2]<-0.9)
+	{
+		target_plane_normal_vector[0] = 0.0;
+		target_plane_normal_vector[1] = 0.0;
+		target_plane_normal_vector[2] = -1.0;
+	}
+	else
+	{
+		cout << endl << "ERROR ROTATE!!!" << endl;
+
+	}
+
+	dataprocess->RotatePointCloudAtAxis(pointcloud,
+		floor_plane_normal_vector, target_plane_normal_vector);
+
+
+	viewerembeded->UpdateCloudViewer(pointcloud);
+}
+
+void MainUI::ButtonCalculateCloudTransformPressed()
+{
+	cout << "call ButtonCalculateCloudTransformPressed()" << endl;
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	dataprocess->items[last_select_item_index]->transform->CalculateTransformation(pointcloud, 0.005);
 
 }
 
@@ -853,25 +977,65 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 
 	last_select_item_index = ui->treeWidget->currentIndex().row();
 
+
+
 	cout << "select " << last_select_item_index << endl;
 	//show seleted cloud
 	//program->ShowSelectedListedCloudIndex(last_select_item_index);
 
 
 	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
-	if (!embeded_view->updatePointCloud(pointcloud, "embeded_view"))
-	{
-		embeded_view->addPointCloud(pointcloud, "embeded_view");
-	}
-	ui->widget->update();
+	viewerembeded->UpdateCloudViewer(pointcloud);
 };
 void MainUI::ButtonLoadPointCloudToListPressed()
 {
 	cout << "call ButtonLoadPointCloudToListPressed()" << endl;
+
+	QString filename = QFileDialog::getOpenFileName(this,
+		tr("Load pcd"), POINTCLOUD_DIR, tr("point cloud (*.pcd)"));
+	if (filename.trimmed().isEmpty()) return;
+
+	PointCloudXYZRGB::Ptr cloud;
+	dataprocess->LoadPointCloudToVariable(filename.toStdString(), cloud);
+
+
+	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+
+	item->setText(0, QString::number(last_select_item_index + 1));
+	item->setText(11, filename);
+	
+	item->setTextAlignment(0, Qt::AlignHCenter);
+	for (int j = 1; j < 5; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignRight);
+	}
+	for (int j = 5; j < 12; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignLeft);
+	}
+
+	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+	ui->treeWidget->addTopLevelItem(item);
+
+
+
 }
 void MainUI::ButtonSavePointCloudFromListPressed()
 {
 	cout << "call ButtonSavePointCloudFromListPressed()" << endl;
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save pcd"), POINTCLOUD_DIR, tr("point cloud (*.pcd)"));
+	if (filename.trimmed().isEmpty()) return;
+
+	dataprocess->SavePointCloud(filename.toStdString(),
+		dataprocess->items[last_select_item_index]->object_pointcloud);
+
+	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
+	last_selected_item->setText(11, filename);
+
+
 }
 void MainUI::ButtonLoadAllItemPressed()
 {
@@ -880,6 +1044,58 @@ void MainUI::ButtonLoadAllItemPressed()
 void MainUI::ButtonSaveAllItemPressed()
 {
 	cout << "call ButtonSaveAllItemPressed()" << endl;
+
+
+
+	vector<string> array_pcd_filename;
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	int *boxes_width = new int[total_boxes];
+	int *boxes_height = new int[total_boxes];
+	int *boxes_depth = new int[total_boxes];
+
+	for (int i = 0; i < total_boxes; i++)
+	{
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		if (item->text(11) == "")
+		{
+			//cout << i << " no filename" << endl;
+			QMessageBox::information(0, QString("ButtonSaveAllItemPressed"), QString("Each Pcd File has not been saved"), QMessageBox::Ok);
+			return;
+		}
+		else
+		{
+			array_pcd_filename.push_back(item->text(11).toStdString());
+		}
+
+		if (item->text(1) == "")
+		{
+			QMessageBox::information(0, QString("ButtonSaveAllItemPressed"), QString("Pointcloud has no WHD Data"), QMessageBox::Ok);
+			return;
+		}
+		else
+		{
+			boxes_width[i] = item->text(1).toInt();
+			boxes_height[i] = item->text(3).toInt();
+			boxes_depth[i] = item->text(2).toInt();
+		}
+	}
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save txt"), POINTCLOUD_DIR, tr("list of pcd (*.txt)"));
+
+	if (filename.trimmed().isEmpty()) return;
+
+
+	dataprocess->pointcloudbpptext->WritePointCloudListForBPP(
+		filename.toStdString(), total_boxes,
+		ui->in_bin_w->text().toDouble(),
+		ui->in_bin_h->text().toDouble(),
+		ui->in_bin_d->text().toDouble(),
+		array_pcd_filename,
+		boxes_width, boxes_height, boxes_depth
+		);
+
+
 }
 void MainUI::ButtonRemoveItemPressed()
 {
@@ -985,19 +1201,7 @@ void MainUI::ButtonBinPackingPressed()
 
 
 }
-void MainUI::ButtonShowPackingPressed()
-{
-	cout << "call ButtonShowPackingPressed()" << endl;
 
-}
-void MainUI::ButtonShowPrevPackingPressed()
-{
-	cout << "call ButtonShowPrevPackingPressed()" << endl;
-}
-void MainUI::ButtonShowNextPackingPressed()
-{
-	cout << "call ButtonShowNextPackingPressed()" << endl;
-}
 void MainUI::ButtonTrackItemPositionPressed()
 {
 	cout << "call ButtonTrackItemPositionPressed()" << endl;
@@ -1009,17 +1213,17 @@ void MainUI::ButtonTrackItemPositionPressed()
 	for (int i = 0; i < dataprocess->items.size(); i++)
 	{
 		/*viewerwindow->AddTextWindowCloudViewer(
-			dataprocess->items[i].transform->min_point_OBB,
-			dataprocess->items[i].transform->major_vector,
-			red, green, blue, "min",
-			"items min text " + i);
+		dataprocess->items[i].transform->min_point_OBB,
+		dataprocess->items[i].transform->major_vector,
+		red, green, blue, "min",
+		"items min text " + i);
 
 		viewerwindow->AddTextWindowCloudViewer(
-			dataprocess->items[i].transform->max_point_OBB,
-			dataprocess->items[i].transform->major_vector,
-			red, green, blue, "max",
-			"items max text " + i);
-			*/
+		dataprocess->items[i].transform->max_point_OBB,
+		dataprocess->items[i].transform->major_vector,
+		red, green, blue, "max",
+		"items max text " + i);
+		*/
 
 		viewerwindow->AddSymbolWindowCloudViewer(
 			dataprocess->items[i]->transform->position_OBB,
@@ -1030,8 +1234,46 @@ void MainUI::ButtonTrackItemPositionPressed()
 			dataprocess->items[i]->transform->middle_vector,
 			red, green, blue, "symbol " + i);
 
-		
+
 	}
 }
+
+
+
+
+
+
+void MainUI::ButtonShowPackingTargetPressed()
+{
+	cout << "call ButtonShowPackingPressed()" << endl;
+
+}
+void MainUI::ButtonShowPackingIndicatePressed()
+{
+	cout << "call ButtonShowPackingIndicatePressed()" << endl;
+
+}
+void MainUI::ButtonShowPackingAnimationPressed()
+{
+	cout << "call ButtonShowPackingAnimationPressed()" << endl;
+
+}
+
+void MainUI::ButtonShowZeroPackingPressed()
+{
+	cout << "call ButtonShowZeroPackingPressed()" << endl;
+
+}
+void MainUI::ButtonShowPrevPackingPressed()
+{
+	cout << "call ButtonShowPrevPackingPressed()" << endl;
+
+}
+void MainUI::ButtonShowNextPackingPressed()
+{
+	cout << "call ButtonShowNextPackingPressed()" << endl;
+
+}
+
 
 

@@ -24,7 +24,9 @@ SOURCES += \
     PlaneSegmentParameterIO.cpp \
     ObjectTransformationData.cpp \
     CameraParameterIO.cpp \
-    OutlierRemoval.cpp
+    OutlierRemoval.cpp \
+    PointCloudBPPListIO.cpp \
+    ViewerEmbeded.cpp
 
 HEADERS  += \
     MainUI.h \
@@ -37,7 +39,9 @@ HEADERS  += \
     PlaneSegmentParameterIO.h \
     ObjectTransformationData.h \
     CameraParameterIO.h \
-    OutlierRemoval.h
+    OutlierRemoval.h \
+    PointCloudBPPListIO.h \
+    ViewerEmbeded.h
 
 FORMS    += \
     MainUI.ui

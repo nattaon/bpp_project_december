@@ -141,3 +141,16 @@ void PointCloudOperation::RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 
 
 }
+
+void PointCloudOperation::RotatePointCloud(PointCloudXYZRGB::Ptr cloud,
+	float degree, Eigen::Matrix<float, 1, 3>  rotation_vector)
+{
+	cout << "Rotation Vector(perpendicular): " << rotation_vector << std::endl;
+	cout << "degree=" << degree << " deg" << endl;
+	cout << "degree=" << degree * M_PI / 180 << " rad" << endl;
+
+	Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+	transform.rotate(Eigen::AngleAxisf(degree*M_PI/180, rotation_vector));
+	pcl::transformPointCloud(*cloud, *cloud, transform);
+
+}

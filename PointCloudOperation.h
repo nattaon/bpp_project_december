@@ -27,6 +27,9 @@ public:
 	void RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 		Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector,
 		Eigen::Matrix<float, 1, 3>  target_plane_normal_vector);
+	void RotatePointCloud(PointCloudXYZRGB::Ptr cloud,
+		float degree, Eigen::Matrix<float, 1, 3>  rotation_vector);
+
 
 private:
 

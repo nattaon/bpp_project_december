@@ -2,6 +2,7 @@
 #define MAINUI_H
 #include "DataProcess.h"
 #include "ViewerWindow.h"
+#include "ViewerEmbeded.h"
 #include "SharedHeader.h"
 
 
@@ -23,7 +24,8 @@ private:
     Ui::MainUI *ui;
 	DataProcess *dataprocess;
 	ViewerWindow *viewerwindow;
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
+	ViewerEmbeded *viewerembeded;
+
 
 	bool isRegisterCameraCallback;
 
@@ -84,6 +86,8 @@ private slots:
 	void ButtonApplyCloudPassthroughPressed();
 	void ButtonSetCloudCenterPressed();
 	void ButtonSetCloudCornerPressed();
+	void ButtonSetCloudAlignCornerPressed();
+	void ButtonCalculateCloudTransformPressed();
 
 	//tab:segmentation
 	void ButtonApplyVoxelGridPressed();
@@ -106,11 +110,15 @@ private slots:
 	void ButtonRemoveItemPressed();
 	void ButtonClearAllItemPressed();
 	void ButtonBinPackingPressed();
-	void ButtonShowPackingPressed();
+	void ButtonTrackItemPositionPressed();
+
+	void ButtonShowPackingTargetPressed();
+	void ButtonShowPackingIndicatePressed();
+	void ButtonShowPackingAnimationPressed();
+
+	void ButtonShowZeroPackingPressed();
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
-	void ButtonTrackItemPositionPressed();
-	
 
 
 };

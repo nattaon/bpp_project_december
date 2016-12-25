@@ -33,10 +33,16 @@ void PointCloudTransformationExtraction::CalculateTransformation(
 	mass_center_point.y = mass_center[1];
 	mass_center_point.z = mass_center[2];
 
+	CalculateMinMaxPoint(cloud);
+
+
+
+}
+
+void PointCloudTransformationExtraction::CalculateMinMaxPoint(
+	PointCloudXYZRGB::Ptr cloud)
+{
 	pcl::getMinMax3D(*cloud, min3d_point, max3d_point);
-
-
-
 }
 
 

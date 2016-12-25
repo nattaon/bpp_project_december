@@ -4,6 +4,6 @@ TextFileIO::TextFileIO()
 {
 	cout << "TextFileIO()" << endl;
 
-	planeparam = new PlaneSegmentParameterIO();
+	//planeparam = new PlaneSegmentParameterIO();
 
 }

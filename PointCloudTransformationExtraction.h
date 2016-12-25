@@ -8,6 +8,7 @@ class PointCloudTransformationExtraction:public VoxelGridFilter
 public:
     PointCloudTransformationExtraction();
 	void CalculateTransformation(PointCloudXYZRGB::Ptr cloud, double voxel_size);
+	void CalculateMinMaxPoint(PointCloudXYZRGB::Ptr cloud);
 	void PrintTransformationData();
 
 	Eigen::Matrix3f plane_coefficients_matrix;

@@ -14,7 +14,10 @@ public:
 	void DisconnectKinect();
 
 	void LoadPointCloud(string filename);
+	void LoadPointCloudToVariable(string filename, PointCloudXYZRGB::Ptr cloud);
 	void SavePointCloud(string filename, PointCloudXYZRGB::Ptr cloud);
+
+
 
 private:
 	KinectV2Connector *kinect;
