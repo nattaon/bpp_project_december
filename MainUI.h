@@ -41,6 +41,18 @@ private:
 	void mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void);
 	void SetCurrentCameraParameterToUI();
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 private slots:
 
 	//top menu
@@ -89,6 +101,14 @@ private slots:
 	void ButtonSetCloudAlignCornerPressed();
 	void ButtonCalculateCloudTransformPressed();
 
+	
+	
+	
+	
+	
+	
+	
+	
 	//tab:segmentation
 	void ButtonApplyVoxelGridPressed();
 	void ButtonApplyPlaneSegmentPressed();

@@ -17,7 +17,7 @@ void PointCloudIO::ConnectKinect()
 	int return_val = kinect->openKinect();
 
 	isKinectRunning = true;
-	raw_pointcloud.reset(new PointCloudXYZRGB);
+	kinectraw_pointcloud.reset(new PointCloudXYZRGB);
 
 }
 
@@ -25,7 +25,7 @@ void PointCloudIO::ReadKinectInput()
 {
 	rawrgbimge = kinect->get_colorframe(0.3);
 	kinect->get_depthframe();
-	kinect->mapping_pointcloud(raw_pointcloud);
+	kinect->mapping_pointcloud(kinectraw_pointcloud);
 
 }
 

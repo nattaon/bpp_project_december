@@ -20,6 +20,7 @@ public:
 	void RemovePlane(PointCloudXYZRGB::Ptr cloud);
 	void CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud);
 	void RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud);
+	void RemovePlaneOutsideAfterAxisAlign(PointCloudXYZRGB::Ptr cloud);
 
 	PointCloudXYZRGB::Ptr before_applyplane_cloud;
 	PointCloudXYZRGB::Ptr applied_redplane_cloud;

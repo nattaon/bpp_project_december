@@ -31,6 +31,11 @@ public:
 		float degree, Eigen::Matrix<float, 1, 3>  rotation_vector);
 
 
+	void ApplyPassthroughFilter(PointCloudXYZRGB::Ptr cloud, 
+		double xmin, double xmax,
+		double ymin, double ymax,
+		double zmin, double zmax);
+
 private:
 
 

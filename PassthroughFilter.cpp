@@ -15,7 +15,7 @@ PassthroughFilter::~PassthroughFilter()
 void PassthroughFilter::Filter(PointCloudXYZRGB::Ptr cloud, std::string axis, float min, float max)
 {
 
-	cout << "filter " << axis << ":" << min << "," << max << endl;
+	//cout << "filter " << axis << ":" << min << "," << max << endl;
 	if (max == 99 || min == 99)
 	{
 		//cout << "nofilter" << endl;

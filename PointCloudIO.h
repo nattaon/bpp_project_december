@@ -24,7 +24,7 @@ private:
 	bool isKinectRunning;
 
 protected:
-	PointCloudXYZRGB::Ptr raw_pointcloud;
+	PointCloudXYZRGB::Ptr kinectraw_pointcloud;
 	PointCloudXYZRGB::Ptr loaded_pointcloud;
 	cv::Mat rawrgbimge;
 

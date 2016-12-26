@@ -203,6 +203,16 @@ void MainUI::timerEvent(QTimerEvent *event)
 
 	viewerwindow->UpdateWindowRGB(dataprocess->GetKinectRGBImage());
 
+	dataprocess->ApplyPassthroughFilter(
+		dataprocess->GetKinectPointCloud(),
+		ui->edit_passthrough_xmin->text().toDouble(),
+		ui->edit_passthrough_xmax->text().toDouble(),
+		ui->edit_passthrough_ymin->text().toDouble(),
+		ui->edit_passthrough_ymax->text().toDouble(),
+		ui->edit_passthrough_zmin->text().toDouble(),
+		ui->edit_passthrough_zmax->text().toDouble());
+
+
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetKinectPointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetKinectPointCloud());
 
@@ -221,7 +231,7 @@ void MainUI::ButtonDisconnectPressed()
 	killTimer(timerId_kinect);
 	timerId_kinect = 0;
 
-	dataprocess->DisconnectKinect();
+	//dataprocess->DisconnectKinect();
 
 	QMessageBox::information(0, QString("Disconnect kinect"), QString("Disconnect kinect complete"), QMessageBox::Ok);
 
@@ -517,6 +527,9 @@ void MainUI::ButtonClearViewerShapePressed()
 void MainUI::ButtonUndoLastedPointCloudPressed()
 {
 	cout << "call ButtonUndoLastedPointCloudPressed()" << endl;
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLastedOperateDisplayPointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLastedOperateDisplayPointCloud());
+
 }
 
 //tab:viewer parameter
@@ -601,8 +614,26 @@ void MainUI::ButtonResetCloudPassthroughPressed()
 }
 void MainUI::ButtonApplyCloudPassthroughPressed()
 {
-	cout << "call ButtonApplyCloudPassthroughPressed()" << endl;
+	//cout << "call ButtonApplyCloudPassthroughPressed()" << endl;
+	dataprocess->StoreLastedOperationCloud(dataprocess->GetCurrentDisplayPointCloud());
+	
+
+	dataprocess->ApplyPassthroughFilter(
+		dataprocess->GetCurrentDisplayPointCloud(),
+		ui->edit_passthrough_xmin->text().toDouble(),
+		ui->edit_passthrough_xmax->text().toDouble(),
+		ui->edit_passthrough_ymin->text().toDouble(),
+		ui->edit_passthrough_ymax->text().toDouble(),
+		ui->edit_passthrough_zmin->text().toDouble(),
+		ui->edit_passthrough_zmax->text().toDouble());
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
+	
+
 }
+
+
+
 void MainUI::ButtonSetCloudCenterPressed()
 {
 	cout << "call ButtonSetCloudCenterPressed()" << endl;
@@ -728,6 +759,41 @@ void MainUI::ButtonGetPlaneTransformPressed()
 		dataprocess->planeseg->transformextract->rotational_matrix_OBB,
 		"planeseg OBB"
 		);
+
+	string id_name = " plane";
+
+	//min_point_OBB
+	viewerwindow->AddSphereWindowCloudViewer(
+	dataprocess->planeseg->transformextract->min_point_OBB, 0.01,
+		0, 1, 0.0, " minobb" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(
+		dataprocess->planeseg->transformextract->min_point_OBB, 0.01,
+		1.0, 1.0, 1.0, "minobb" + id_name, "text minobb" + id_name);
+
+	//max_point_OBB
+	viewerwindow->AddSphereWindowCloudViewer(
+		dataprocess->planeseg->transformextract->max_point_OBB, 0.01,
+		0, 1, 0.0, " maxobb" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(
+		dataprocess->planeseg->transformextract->max_point_OBB, 0.01,
+		1.0, 1.0, 1.0, "maxobb" + id_name, " text maxobb" + id_name);
+
+	//min_point_3d
+	viewerwindow->AddSphereWindowCloudViewer(
+		dataprocess->planeseg->transformextract->min3d_point, 0.01,
+		0, 0, 1.0, " min3d" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(
+		dataprocess->planeseg->transformextract->min3d_point, 0.01,
+		1.0, 1.0, 1.0, "min3d" + id_name, "text min3d" + id_name);
+
+	//max_point_3d
+	viewerwindow->AddSphereWindowCloudViewer(
+		dataprocess->planeseg->transformextract->max3d_point, 0.01,
+		0, 0, 1.0, " max3d" + id_name);
+	viewerwindow->AddTextWindowCloudViewer(
+		dataprocess->planeseg->transformextract->max3d_point, 0.01,
+		1.0, 1.0, 1.0, "max3d" + id_name, " text max3d" + id_name);
+
 
 	viewerwindow->AddVectorDirectionWindowCloudViewer(
 		dataprocess->planeseg->transformextract->mass_center,

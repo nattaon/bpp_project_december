@@ -11,13 +11,16 @@ public:
     DataProcess();
 	~DataProcess();
 
-	PointCloudXYZRGB::Ptr GetKinectPointCloud();
 	cv::Mat GetKinectRGBImage();
+	
+	PointCloudXYZRGB::Ptr GetKinectPointCloud();
 	PointCloudXYZRGB::Ptr GetLoadedPointCloud();
-
-	void SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud);
-	PointCloudXYZRGB::Ptr GetCurrentDisplayPointCloud();
+	
 	int GetCurrentDisplayPointCloudSize();
+	void SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud);
+	
+	PointCloudXYZRGB::Ptr GetCurrentDisplayPointCloud();
+	PointCloudXYZRGB::Ptr GetLastedOperateDisplayPointCloud();
 
 	PointCloudXYZRGB::Ptr GetAppliedRedPlanePointCloud();
 	PointCloudXYZRGB::Ptr GetRemovedPlanePointCloud();
@@ -27,7 +30,7 @@ public:
 
 	void StoreLastedOperationCloud(PointCloudXYZRGB::Ptr cloud);
 
-
+	
 
 private:
 	PointCloudXYZRGB::Ptr currentdisplay_pointcloud;

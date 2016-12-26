@@ -72,10 +72,12 @@ void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointClou
 	extract.setNegative(false);
 	extract.filter(*only_plane_cloud);
 
+	int r = rand() % 128+ 128;
+	cout << "r= " << r << endl;
 
 	// 3. color plane as red to input pointcloud
 	for (int i = 0; i < inliers->indices.size(); i++){
-		cloud->points[inliers->indices[i]].r = 255;
+		cloud->points[inliers->indices[i]].r = r;
 		cloud->points[inliers->indices[i]].g = 0;
 		cloud->points[inliers->indices[i]].b = 0;
 	}
@@ -138,11 +140,38 @@ void PlaneSegmentation::RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud)
 
 	}
 
+	Filter(cloud, "x", transformextract->min3d_point.x, transformextract->max3d_point.x);
+	Filter(cloud, "y", transformextract->min3d_point.y, transformextract->max3d_point.y);
+	Filter(cloud, "z", transformextract->min3d_point.z-0.5, transformextract->max3d_point.z);
 
-	Filter(cloud, "x", transformextract->min_point_OBB.x, transformextract->max_point_OBB.x);
-	Filter(cloud, "y", transformextract->min_point_OBB.y, transformextract->max_point_OBB.y);
-	Filter(cloud, "z", transformextract->min_point_OBB.z-0.5, transformextract->max_point_OBB.z + 1.5);
+	pcl::copyPointCloud(*cloud, *removed_planeoutside_cloud);
+
+
+
+
+}
+
+void PlaneSegmentation::RemovePlaneOutsideAfterAxisAlign(PointCloudXYZRGB::Ptr cloud)
+{
+	if (!isPlaneTransformDataAvailable())
+	{
+		QMessageBox::information(0, QString("Remove plane outside"), QString("No plane transformation data. Please segment plane or load plane first"), QMessageBox::Ok);
+		return;
+	}
+	if (cloud->points.size() == 0)
+	{
+		QMessageBox::information(0, QString("Remove plane outside"), QString("No pointcloud"), QMessageBox::Ok);
+		return;
+
+	}	
+	//calculate min max point of cloud
+	transformextract->CalculateMinMaxPoint(cloud);
+
+	Filter(cloud, "x", transformextract->min3d_point.x, transformextract->max3d_point.x);
+	Filter(cloud, "y", transformextract->min3d_point.y, transformextract->max3d_point.y);
+	Filter(cloud, "z", transformextract->min3d_point.z - 0.5, transformextract->max3d_point.z + 1.5);
 
 	pcl::copyPointCloud(*cloud, *removed_planeoutside_cloud);
 
 }
+

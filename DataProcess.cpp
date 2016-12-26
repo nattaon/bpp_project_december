@@ -16,7 +16,7 @@ DataProcess::~DataProcess()
 
 PointCloudXYZRGB::Ptr DataProcess::GetKinectPointCloud()
 {
-	return raw_pointcloud;
+	return kinectraw_pointcloud;
 }
 cv::Mat DataProcess::GetKinectRGBImage()
 {
@@ -36,6 +36,10 @@ void DataProcess::SetCurrentDisplayPointCloud(PointCloudXYZRGB::Ptr cloud)
 PointCloudXYZRGB::Ptr DataProcess::GetCurrentDisplayPointCloud()
 {
 	return currentdisplay_pointcloud;
+}
+PointCloudXYZRGB::Ptr DataProcess::GetLastedOperateDisplayPointCloud()
+{
+	return lastedoperate_pointcloud;
 }
 int DataProcess::GetCurrentDisplayPointCloudSize()
 {

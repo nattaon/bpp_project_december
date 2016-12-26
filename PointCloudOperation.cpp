@@ -154,3 +154,21 @@ void PointCloudOperation::RotatePointCloud(PointCloudXYZRGB::Ptr cloud,
 	pcl::transformPointCloud(*cloud, *cloud, transform);
 
 }
+
+void PointCloudOperation::ApplyPassthroughFilter(PointCloudXYZRGB::Ptr cloud,
+	double xmin, double xmax,
+	double ymin, double ymax,
+	double zmin, double zmax)
+{
+	if (cloud->size() <= 0)
+	{
+		QMessageBox::information(0, QString("ApplyPassthroughFilter"), QString("No PointCloud Data"), QMessageBox::Ok);
+		return;
+
+	}
+
+	planeseg->Filter(cloud, "x", xmin, xmax);
+	planeseg->Filter(cloud, "y", ymin, ymax);
+	planeseg->Filter(cloud, "z", zmin, zmax);
+
+}
