@@ -15,7 +15,7 @@ MainUI::MainUI(QWidget *parent) :
 	isRegisterCameraCallback = false;
 
 	timerId_kinect = 0;
-	last_select_item_index = 0;
+	last_select_item_index = -1;
 
 	isLoadPlaneParameter = false;
 
@@ -222,7 +222,7 @@ void MainUI::timerEvent(QTimerEvent *event)
 void MainUI::ButtonDisconnectPressed()
 {
 	cout << "call ButtonDisconnectPressed()" << endl;
-
+	cout << "timerId_kinect=" << timerId_kinect << endl;
 	if (timerId_kinect == 0)
 	{
 		QMessageBox::information(0, QString("Disconnect kinect"), QString("No kinect to disconnect"), QMessageBox::Ok);
@@ -231,10 +231,11 @@ void MainUI::ButtonDisconnectPressed()
 	killTimer(timerId_kinect);
 	timerId_kinect = 0;
 
-	//dataprocess->DisconnectKinect();
+	dataprocess->DisconnectKinect();
 
-	QMessageBox::information(0, QString("Disconnect kinect"), QString("Disconnect kinect complete"), QMessageBox::Ok);
-
+	//QMessageBox::information(0, QString("Disconnect kinect complete"), 
+	//	QString("Disconnect kinect complete"), QMessageBox::Ok);
+	// this message box auto close...
 }
 void MainUI::ButtonSavePointCloudFromViewerPressed()
 {
@@ -293,6 +294,9 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 	}
 	else
 	{
+
+
+
 		cout << filename.toStdString() << endl;
 		dataprocess->LoadPointCloud(filename.toStdString());
 
@@ -558,8 +562,28 @@ void MainUI::ButtonResetCloudTransformationPressed()
 void MainUI::ButtonApplyCloudRotationPressed()
 {
 	cout << "call ButtonApplyCloudRotationPressed()" << endl;
+	
+	PointCloudXYZRGB::Ptr pointcloud;
+	
+	// rotate cloud at viewer window
+	if (last_select_item_index == -1)
+	{
+		pointcloud = dataprocess->GetCurrentDisplayPointCloud();
 
-	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	}
+	else // rotate cloud at viewer embeded
+	{
+		pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	}
+
+	if (pointcloud->size() <= 0)
+	{
+		QMessageBox::information(0, QString("ButtonApplyCloudRotationPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+
+	}
+
+	
 
 	float rotate_x = ui->edit_cloud_rot_x->text().toDouble();
 	float rotate_y = ui->edit_cloud_rot_y->text().toDouble();
@@ -600,8 +624,16 @@ void MainUI::ButtonApplyCloudRotationPressed()
 	dataprocess->RotatePointCloud(pointcloud,
 		rotate_degree, rotation_vector);
 
-
-	viewerembeded->UpdateCloudViewer(pointcloud);
+	// rotate cloud at viewer window
+	if (last_select_item_index == -1)
+	{
+		viewerwindow->UpdateWindowCloudViewer(pointcloud);
+	}
+	else // rotate cloud at viewer embeded
+	{
+		viewerembeded->UpdateCloudViewer(pointcloud);
+	}
+	
 
 }
 void MainUI::ButtonApplyCloudTranslationPressed()
@@ -641,7 +673,12 @@ void MainUI::ButtonSetCloudCenterPressed()
 void MainUI::ButtonSetCloudCornerPressed()
 {
 	cout << "call ButtonSetCloudCornerPressed()" << endl;
-
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonSetCloudCornerPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
 
 	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
 	dataprocess->items[last_select_item_index]->transform->CalculateMinMaxPoint(pointcloud);
@@ -661,6 +698,12 @@ void MainUI::ButtonSetCloudCornerPressed()
 void MainUI::ButtonSetCloudAlignCornerPressed()
 {
 	cout << "call ButtonSetCloudAlignCornerPressed()" << endl;
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonSetCloudAlignCornerPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
 	cout << endl;
 	cout << "major_vector " << dataprocess->items[last_select_item_index]->transform->major_vector << endl;
 	cout << "minor_vector " << dataprocess->items[last_select_item_index]->transform->minor_vector << endl;
@@ -714,6 +757,12 @@ void MainUI::ButtonSetCloudAlignCornerPressed()
 void MainUI::ButtonCalculateCloudTransformPressed()
 {
 	cout << "call ButtonCalculateCloudTransformPressed()" << endl;
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonCalculateCloudTransformPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
 	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
 	dataprocess->items[last_select_item_index]->transform->CalculateTransformation(pointcloud, 0.005);
 
@@ -1025,16 +1074,20 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 {
 	cout << "call PressedTreeItem()" << endl;
 
-	//hilight item clicked
-	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
-	//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+	if (last_select_item_index != -1)// if has already hilight previous one
+	{
+		//remove hilight last selected item
+		QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
+		//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+	}
+
 
 	
-
+	//hilight item clicked
 	//item->setBackgroundColor(0, QColor(200, 200, 200));
 	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
 	current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
@@ -1066,8 +1119,9 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 
 
 	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+	int pointcloud_number=ui->treeWidget->topLevelItemCount()+1;
 
-	item->setText(0, QString::number(last_select_item_index + 1));
+	item->setText(0, QString::number(pointcloud_number));
 	item->setText(11, filename);
 	
 	item->setTextAlignment(0, Qt::AlignHCenter);
@@ -1090,6 +1144,13 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 void MainUI::ButtonSavePointCloudFromListPressed()
 {
 	cout << "call ButtonSavePointCloudFromListPressed()" << endl;
+
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonSavePointCloudFromListPressed"), 
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
 
 	QString filename = QFileDialog::getSaveFileName(this,
 		tr("Save pcd"), POINTCLOUD_DIR, tr("point cloud (*.pcd)"));

@@ -19,6 +19,7 @@ void ClusterExtraction::SetClusterExtractValue(
 }
 void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 {
+	
 	cout << "ShowClusterInColor" << endl;
 	cout << "cloud size = " << cloud->size() << endl;
 	cout << "min cluster size =" << min_size << endl;
@@ -41,9 +42,13 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 	ec.setSearchMethod(tree);
 	ec.setInputCloud(cloud);
 
+	QTime timer;
+	timer.start();
 	ec.extract(vector_cluster_indices);	
+	int nMilliseconds = timer.elapsed();
+	cout << "timer elapsed " << nMilliseconds << " msec" << endl;
 	cout << "cluster total =  " << vector_cluster_indices.size() << endl;
-
+	
 	array_cluster_cloud.clear();
 	cout << "array_cluster_cloud size" << array_cluster_cloud.size() << endl;
 	int cluster_all_size = 0;
@@ -62,7 +67,9 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 			cluster_cloud->points.push_back(cloud->points[*pit]);
 			cluster_all_size++;
 			color_cluster_cloud->points.push_back(cloud->points[*pit]);
-			//color_cluster_cloud->points[*pit].rgb = color;
+			//this copy new point, not just a pointer
+			
+			color_cluster_cloud->points[color_cluster_cloud->size()-1].rgb = color;
 		}
 		array_cluster_cloud.push_back(cluster_cloud);
 

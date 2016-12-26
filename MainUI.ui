@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
@@ -1671,7 +1671,7 @@
        </font>
       </property>
       <property name="text">
-       <string>0.003</string>
+       <string>0.01</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -1883,7 +1883,7 @@
        </font>
       </property>
       <property name="text">
-       <string>100</string>
+       <string>70</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -2098,7 +2098,7 @@
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>70</y>
+        <y>50</y>
         <width>131</width>
         <height>23</height>
        </rect>
@@ -2192,7 +2192,7 @@
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>50</y>
+        <y>70</y>
         <width>131</width>
         <height>23</height>
        </rect>
@@ -3381,9 +3381,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_16"/>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_16"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

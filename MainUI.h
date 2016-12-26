@@ -5,6 +5,7 @@
 #include "ViewerEmbeded.h"
 #include "SharedHeader.h"
 
+enum timermode { raw_input, bpp_animation };
 
 namespace Ui {
 class MainUI;
@@ -25,6 +26,8 @@ private:
 	DataProcess *dataprocess;
 	ViewerWindow *viewerwindow;
 	ViewerEmbeded *viewerembeded;
+
+	timermode mode;
 
 
 	bool isRegisterCameraCallback;
