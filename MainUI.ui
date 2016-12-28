@@ -1671,7 +1671,7 @@
        </font>
       </property>
       <property name="text">
-       <string>0.01</string>
+       <string>0.005</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -1946,7 +1946,7 @@
        </font>
       </property>
       <property name="text">
-       <string>0.005</string>
+       <string>0.001</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -2065,7 +2065,7 @@
        </font>
       </property>
       <property name="text">
-       <string>5</string>
+       <string>1</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -3383,7 +3383,7 @@
  <buttongroups>
   <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup_16"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_16"/>
  </buttongroups>
 </ui>

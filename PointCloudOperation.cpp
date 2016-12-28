@@ -6,6 +6,8 @@ PointCloudOperation::PointCloudOperation()
 	
 	planeseg = new PlaneSegmentation();
 	clusterextract = new ClusterExtraction();
+	outlierremove = new OutlierRemoval();
+	voxelfilter = new VoxelGridFilter();
 
 	container = new ObjectTransformationData();
 }

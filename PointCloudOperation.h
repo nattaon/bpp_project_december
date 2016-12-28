@@ -15,6 +15,7 @@ public:
 	PlaneSegmentation *planeseg;
 	ClusterExtraction *clusterextract;
 	OutlierRemoval *outlierremove;
+	VoxelGridFilter *voxelfilter;
 
 	ObjectTransformationData *container;
 	vector<ObjectTransformationData*> items;

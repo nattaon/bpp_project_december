@@ -92,7 +92,7 @@ int ClusterExtraction::randomcolor()
 
 	int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
 
-	cout << "\n" << endl;
+	//cout << "\n" << endl;
 	//cout << r << "," << g << "," << b << endl; // 97,123,190
 	//cout << "color = " << rgb << endl; //6388670
 

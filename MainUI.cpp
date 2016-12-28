@@ -772,6 +772,19 @@ void MainUI::ButtonCalculateCloudTransformPressed()
 void MainUI::ButtonApplyVoxelGridPressed()
 {
 	cout << "call ButtonApplyVoxelGridPressed()" << endl;
+	
+	
+	PointCloudXYZRGB::Ptr pointcloud = dataprocess->GetCurrentDisplayPointCloud();
+	double voxelsize = ui->in_voxel_leafsize->text().toDouble();
+	dataprocess->StoreLastedOperationCloud(pointcloud);
+
+	dataprocess->voxelfilter->FilterVoxelSize(pointcloud, voxelsize);
+
+	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetCurrentDisplayPointCloud());
+	
+	cout << "voxel= " << voxelsize << ", GetCurrentDisplayPointCloudSize= " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
+
 }
 void MainUI::ButtonApplyPlaneSegmentPressed()
 {
@@ -1227,6 +1240,21 @@ void MainUI::ButtonSaveAllItemPressed()
 void MainUI::ButtonRemoveItemPressed()
 {
 	cout << "call ButtonRemoveItemPressed()" << endl;
+
+	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
+
+	delete last_selected_item;
+
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+
+	//rerun index number
+	for (int i = 0; i < total_boxes; ++i)
+	{
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		item->setText(0, QString::number(i + 1));
+
+	}
+
 }
 void MainUI::ButtonClearAllItemPressed()
 {
@@ -1285,7 +1313,6 @@ void MainUI::ButtonBinPackingPressed()
 		ui->in_bin_w->text().toDouble(), 
 		ui->in_bin_h->text().toDouble(),
 		ui->in_bin_d->text().toDouble(), 
-
 		boxes_w, boxes_h, boxes_d,
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
@@ -1315,15 +1342,6 @@ void MainUI::ButtonBinPackingPressed()
 	//remove remain boxes
 
 	//binpack->SortBoxesOrder();
-
-	viewerwindow->ShowBinpacking(
-		dataprocess->container->transform->min3d_point,
-		total_boxes,
-		ui->in_bin_w->text().toDouble(),
-		ui->in_bin_d->text().toDouble(),
-		ui->in_bin_h->text().toDouble(),
-		boxes_x_orient, boxes_y_orient, boxes_z_orient,
-		boxes_x_pos, boxes_y_pos, boxes_z_pos);
 
 
 
@@ -1363,6 +1381,16 @@ void MainUI::ButtonTrackItemPositionPressed()
 
 
 	}
+
+	/*viewerwindow->ShowBinpackingIndication(
+		dataprocess->container->transform->min3d_point,
+		total_boxes,
+		ui->in_bin_w->text().toDouble(),
+		ui->in_bin_d->text().toDouble(),
+		ui->in_bin_h->text().toDouble(),
+		boxes_x_orient, boxes_y_orient, boxes_z_orient,
+		boxes_x_pos, boxes_y_pos, boxes_z_pos);
+*/
 }
 
 
@@ -1373,7 +1401,16 @@ void MainUI::ButtonTrackItemPositionPressed()
 void MainUI::ButtonShowPackingTargetPressed()
 {
 	cout << "call ButtonShowPackingPressed()" << endl;
+	/*viewerwindow->ShowBinpackingTarget(
+	dataprocess->container->transform->min3d_point,
+	total_boxes,
+	ui->in_bin_w->text().toDouble(),
+	ui->in_bin_d->text().toDouble(),
+	ui->in_bin_h->text().toDouble(),
+	boxes_x_orient, boxes_y_orient, boxes_z_orient,
+	boxes_x_pos, boxes_y_pos, boxes_z_pos);
 
+	*/
 }
 void MainUI::ButtonShowPackingIndicatePressed()
 {
