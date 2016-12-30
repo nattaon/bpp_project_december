@@ -120,7 +120,7 @@ void PlaneSegmentation::CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud
 
 	SetHasPlaneTransformData(true);
 
-	transformextract->PrintTransformationData();
+	//transformextract->PrintTransformationData();
 
 
 }

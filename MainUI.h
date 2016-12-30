@@ -43,6 +43,7 @@ private:
 	void ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name);
 	void mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void);
 	void SetCurrentCameraParameterToUI();
+	void WritePlaneParamToUI();
 
 	
 	
@@ -77,11 +78,7 @@ private slots:
 	
 	//items above tab
 	void RadioButtonAxisONSelected();
-	void RadioButtonAxisOFFSelected();
-	void RadioButtonBBONSelected();
-	void RadioButtonBBOFFSelected();	
-	void RadioButtonBBAABBSelected();
-	void RadioButtonBBOBBSelected();		
+	void RadioButtonAxisOFFSelected();		
 	void ButtonShowLoadedPointCloudPressed();
 	void ButtonClearViewerPointCloudPressed();	
 	void ButtonClearViewerShapePressed();

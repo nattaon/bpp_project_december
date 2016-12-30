@@ -44,10 +44,7 @@ MainUI::MainUI(QWidget *parent) :
 	//items above tab
 	connect(ui->radio_axis_on, SIGNAL(clicked()), this, SLOT(RadioButtonAxisONSelected()));
 	connect(ui->radio_axis_off, SIGNAL(clicked()), this, SLOT(RadioButtonAxisOFFSelected()));
-	connect(ui->radio_boundingbox_on, SIGNAL(clicked()), this, SLOT(RadioButtonBBONSelected()));
-	connect(ui->radio_boundingbox_off, SIGNAL(clicked()), this, SLOT(RadioButtonBBOFFSelected()));
-	connect(ui->radio_boundingbox_aabb, SIGNAL(clicked()), this, SLOT(RadioButtonBBAABBSelected()));
-	connect(ui->radio_boundingbox_obb, SIGNAL(clicked()), this, SLOT(RadioButtonBBOBBSelected()));
+	
 	connect(ui->bt_reloadcloud_to_viewer, SIGNAL(clicked()), this, SLOT(ButtonShowLoadedPointCloudPressed()));
 	connect(ui->bt_clear_viewer_pointcloud, SIGNAL(clicked()), this, SLOT(ButtonClearViewerPointCloudPressed()));
 	connect(ui->bt_clear_viewer_shape, SIGNAL(clicked()), this, SLOT(ButtonClearViewerShapePressed()));
@@ -76,6 +73,10 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_get_plane_transform, SIGNAL(clicked()), this, SLOT(ButtonGetPlaneTransformPressed()));
 	connect(ui->bt_apply_removeplane, SIGNAL(clicked()), this, SLOT(ButtonRemovePlanePressed()));
 	connect(ui->bt_setplane_align_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignPlaneToAxisCenterPressed()));
+	
+	connect(ui->bt_load_plane_txt, SIGNAL(clicked()), this, SLOT(ButtonLoadPlaneParamPressed()));
+	connect(ui->bt_save_plane_txt, SIGNAL(clicked()), this, SLOT(ButtonSavePlaneParamPressed()));
+	
 	connect(ui->bt_apply_outlierremove, SIGNAL(clicked()), this, SLOT(ButtonApplyOutlierPressed()));
 	connect(ui->bt_show_cluster, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
 	connect(ui->bt_extract_cluster, SIGNAL(clicked()), this, SLOT(ButtonExtractClusterPressed()));
@@ -97,7 +98,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_show_packing_indicate, SIGNAL(clicked()), this, SLOT(ButtonShowPackingIndicatePressed()));
 	connect(ui->bt_show_packing_animation, SIGNAL(clicked()), this, SLOT(ButtonShowPackingAnimationPressed()));
 
-	connect(ui->bt_order_zero, SIGNAL(clicked()), this, SLOT(ButtonShowZeroPackingPressed()));
+	connect(ui->bt_order_one, SIGNAL(clicked()), this, SLOT(ButtonShowZeroPackingPressed()));
 	connect(ui->bt_order_previous, SIGNAL(clicked()), this, SLOT(ButtonShowPrevPackingPressed()));
 	connect(ui->bt_order_next, SIGNAL(clicked()), this, SLOT(ButtonShowNextPackingPressed()));
 
@@ -294,7 +295,7 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 	}
 	else
 	{
-
+		ui->text_cloudname->setText(filename);
 
 
 		cout << filename.toStdString() << endl;
@@ -493,22 +494,8 @@ void MainUI::RadioButtonAxisOFFSelected()
 	ui->radio_axis_on->setChecked(false);
 	ui->radio_axis_off->setChecked(true);
 }
-void MainUI::RadioButtonBBONSelected()
-{
-	cout << "call RadioButtonBBONSelected()" << endl;
-}
-void MainUI::RadioButtonBBOFFSelected()
-{
-	cout << "call RadioButtonBBOFFSelected()" << endl;
-}	
-void MainUI::RadioButtonBBAABBSelected()
-{
-	cout << "call RadioButtonBBAABBSelected()" << endl;
-}
-void MainUI::RadioButtonBBOBBSelected()
-{
-	cout << "call RadioButtonBBOBBSelected()" << endl;
-}		
+
+
 void MainUI::ButtonShowLoadedPointCloudPressed()
 {
 	cout << "call ButtonShowLoadedPointCloudPressed()" << endl;
@@ -799,8 +786,73 @@ void MainUI::ButtonApplyPlaneSegmentPressed()
 	double planethreshold = ui->in_plane_threshold->text().toDouble();
 	dataprocess->planeseg->ApplyPlaneSegmentation(planethreshold, dataprocess->GetCurrentDisplayPointCloud());
 
+	WritePlaneParamToUI();
+
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetAppliedRedPlanePointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetAppliedRedPlanePointCloud());
+
+}
+void MainUI::WritePlaneParamToUI()
+{
+	//plane coefficients
+	ui->in_planecoef_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->plane_coefficients_matrix(0)));
+	ui->in_planecoef_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->plane_coefficients_matrix(1)));
+	ui->in_planecoef_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->plane_coefficients_matrix(2)));
+
+	//min_point_OBB
+	ui->in_minobb_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->min_point_OBB.x));
+	ui->in_minobb_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->min_point_OBB.y));
+	ui->in_minobb_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->min_point_OBB.z));
+	//max_point_OBB
+	ui->in_maxobb_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->max_point_OBB.x));
+	ui->in_maxobb_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->max_point_OBB.y));
+	ui->in_maxobb_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->max_point_OBB.z));
+	//position_OBB
+	ui->in_posobb_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->position_OBB.x));
+	ui->in_posobb_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->position_OBB.y));
+	ui->in_posobb_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->position_OBB.z));
+
+	//pca vector (principal component analysis)
+	ui->in_majorvector_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->major_vector(0)));
+	ui->in_majorvector_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->major_vector(1)));
+	ui->in_majorvector_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->major_vector(2)));
+
+	ui->in_middlevector_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->middle_vector(0)));
+	ui->in_middlevector_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->middle_vector(1)));
+	ui->in_middlevector_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->middle_vector(2)));
+	
+	ui->in_minorvector_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->minor_vector(0)));
+	ui->in_minorvector_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->minor_vector(1)));
+	ui->in_minorvector_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->minor_vector(2)));
+
+	//mass center
+	ui->in_masscenter_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->mass_center(0)));
+	ui->in_masscenter_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->mass_center(1)));
+	ui->in_masscenter_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->mass_center(2)));
 
 }
 
@@ -810,6 +862,8 @@ void MainUI::ButtonGetPlaneTransformPressed()
 
 	dataprocess->planeseg->CalculatePlaneTransformation(dataprocess->GetOnlyPlanePointCloud());
 	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
+
+	WritePlaneParamToUI();
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetRemovedPlaneOutsidePointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
