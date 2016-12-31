@@ -64,8 +64,8 @@ void PointCloudIO::SavePointCloud(string filename, PointCloudXYZRGB::Ptr cloud)
 		cout << "No pointcloud to save." << endl;
 		return;
 	}
-
-	cloud->width = cloud->points.size();
+	
+	cloud->width = static_cast<uint32_t>(cloud->points.size());
 	cloud->height = 1;
 
 	pcl::io::savePCDFileBinary(filename, *cloud); //save-load faster

@@ -112,8 +112,8 @@ void PlaneSegmentParameterIO::ReadPlaneTransformParameter(
     }
 
 	string sLine;
-	int index1 = 0;
-	int index2 = 0;
+	size_t index1 = 0;
+	size_t index2 = 0;
 
 	//writing plane_coefficients variable is not easy (need header value)
 	getline(infile, sLine); //plane_coefficients

@@ -16,6 +16,11 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 #set (COMPILE_DEFINITIONS_Debug _CRT_SECURE_NO_WARNINGS)
 #set (COMPILE_DEFINITIONS_Release _CRT_SECURE_NO_WARNINGS)
  
+add_definitions(-D_SCL_SECURE_NO_WARNINGS)	
+
+#set (COMPILE_DEFINITIONS_Debug _SCL_SECURE_NO_WARNINGS)
+#set (COMPILE_DEFINITIONS_Release _SCL_SECURE_NO_WARNINGS)
+
 find_package (PCL 1.7.2 REQUIRED)
 
 SET(Kinect_DIR "C:/Program Files/Microsoft SDKs/Kinect/v2.0_1409")
@@ -40,6 +45,7 @@ QT5_WRAP_CPP (project_HEADERS_MOC MainUI.h)
 QT5_WRAP_UI  (project_FORMS_HEADERS ${project_FORMS})
 
 ADD_DEFINITIONS (${QT_DEFINITIONS})
+
 
 ADD_EXECUTABLE  (bpp_projectv3 
 ${project_c} 

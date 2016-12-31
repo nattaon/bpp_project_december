@@ -27,6 +27,7 @@
 #include <QTreeWidgetItem>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QKeyEvent>
 
 // Point Cloud Library
 #include <pcl/common/common_headers.h> 

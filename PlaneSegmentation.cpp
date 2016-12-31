@@ -114,9 +114,9 @@ void PlaneSegmentation::RemovePlane(PointCloudXYZRGB::Ptr cloud)
 */
 }
 
-void PlaneSegmentation::CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud)
+void PlaneSegmentation::CalculatePlaneTransformation(double plane_threshold, PointCloudXYZRGB::Ptr cloud)
 {
-	transformextract->CalculateTransformation(cloud,0.05); //only_plane_cloud
+	transformextract->CalculateTransformation(cloud, plane_threshold); //only_plane_cloud
 
 	SetHasPlaneTransformData(true);
 

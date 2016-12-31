@@ -55,8 +55,8 @@ void PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename, int &tot
 
 	//1.get bin size
 	getline(infile, sLine);
-	int index1 = 0;
-	int index2 = 0;
+	size_t index1 = 0;
+	size_t index2 = 0;
 
 	index1 = sLine.find(" ");
 	index2 = sLine.find_last_of(" ");

@@ -21,8 +21,6 @@ MainUI::MainUI(QWidget *parent) :
 
 	viewerembeded = new ViewerEmbeded(ui->widget);
 
-
-
 	
 	//top menu
 	///menu:viewer embedded
@@ -70,7 +68,7 @@ MainUI::MainUI(QWidget *parent) :
 	//tab:segmentation
 	connect(ui->bt_apply_voxelgrid, SIGNAL(clicked()), this, SLOT(ButtonApplyVoxelGridPressed()));
 	connect(ui->bt_apply_planesegment, SIGNAL(clicked()), this, SLOT(ButtonApplyPlaneSegmentPressed()));
-	connect(ui->bt_get_plane_transform, SIGNAL(clicked()), this, SLOT(ButtonGetPlaneTransformPressed()));
+	connect(ui->bt_get_plane_transform, SIGNAL(clicked()), this, SLOT(ButtonCalculatePlaneTransformPressed()));
 	connect(ui->bt_apply_removeplane, SIGNAL(clicked()), this, SLOT(ButtonRemovePlanePressed()));
 	connect(ui->bt_setplane_align_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignPlaneToAxisCenterPressed()));
 	
@@ -81,17 +79,23 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_show_cluster, SIGNAL(clicked()), this, SLOT(ButtonShowClusterPressed()));
 	connect(ui->bt_extract_cluster, SIGNAL(clicked()), this, SLOT(ButtonExtractClusterPressed()));
 	connect(ui->bt_show_cluster_bb, SIGNAL(clicked()), this, SLOT(ButtonShowClusterBBPressed()));
+	connect(ui->bt_show_cluster_vector, SIGNAL(clicked()), this, SLOT(ButtonShowClusterVectorPressed()));
 
 	//cluster list
 	connect(ui->treeWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeItem(QTreeWidgetItem *)));
 	connect(ui->bt_item_load, SIGNAL(clicked()), this, SLOT(ButtonLoadPointCloudToListPressed()));
 	connect(ui->bt_item_save, SIGNAL(clicked()), this, SLOT(ButtonSavePointCloudFromListPressed()));
+	
+	connect(ui->bt_align_all_items_to_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignAllItemAxisPressed()));
+	connect(ui->bt_save_all_items_to_pcd, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPcdPressed()));
+
 	connect(ui->bt_all_load, SIGNAL(clicked()), this, SLOT(ButtonLoadAllItemPressed()));
 	connect(ui->bt_all_save, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPressed()));
+
 	connect(ui->bt_item_remove, SIGNAL(clicked()), this, SLOT(ButtonRemoveItemPressed()));
 	connect(ui->bt_item_clearall, SIGNAL(clicked()), this, SLOT(ButtonClearAllItemPressed()));
 
-	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonBinPackingPressed()));
+	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonCalculateBinPackingPressed()));
 	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
 
 	connect(ui->bt_show_packing_target, SIGNAL(clicked()), this, SLOT(ButtonShowPackingTargetPressed()));
@@ -102,21 +106,22 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_order_previous, SIGNAL(clicked()), this, SLOT(ButtonShowPrevPackingPressed()));
 	connect(ui->bt_order_next, SIGNAL(clicked()), this, SLOT(ButtonShowNextPackingPressed()));
 
-
+	connect(ui->bt_save_packing_info, SIGNAL(clicked()), this, SLOT(ButtonSaveBinPackingInfoPressed()));
+	connect(ui->bt_load_packing_info, SIGNAL(clicked()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
 	
 	//resize tree column size	
-	ui->treeWidget->header()->resizeSection(0, 40);
+	ui->treeWidget->header()->resizeSection(0, 45);
 	for (int j = 1; j < 5; j++)
 	{
 		ui->treeWidget->header()->resizeSection(j, 40);
 	}
-	for (int j = 5; j < 12; j++)
+	for (int j = 5; j < 11; j++)
 	{
 		ui->treeWidget->header()->resizeSection(j, 80);
 	}
-	//myTreeWidget->headerView()->resizeSection(0 , 100);
+	ui->treeWidget->header()->resizeSection(11, 150);
 
-
+	//QApplication::instance()->installEventFilter(this);
 }
 
 MainUI::~MainUI()
@@ -128,6 +133,62 @@ MainUI::~MainUI()
 void MainUI::SetDataProcess(DataProcess* d) {dataprocess = d;}
 void MainUI::SetViewerWindow(ViewerWindow* v) {viewerwindow = v;}
 
+bool MainUI::eventFilter(QObject *object, QEvent *event) 
+{
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent* key_event = static_cast<QKeyEvent*>(event);
+		cout << "key " << key_event->key() << " object:" << object->objectName().toStdString() << endl;
+
+
+		if (key_event->key() == Qt::Key_Right)
+		{
+			//PressedNextOrder();
+		}
+		else if (key_event->key() == Qt::Key_Left)
+		{
+			//PressedPreviousOrder();
+		}
+	}
+	return false;
+}
+void MainUI::keyPressEvent(QKeyEvent * event)
+{
+	//after opengl show boxes, this function is not working tooo!!!!
+	//solve: set ui as nofocus
+	cout << "MainWindow event->key() " << event->key() << endl;
+
+	if (event->key() == Qt::Key_Up)
+	{
+		if (last_select_item_index-1>=0)
+		{
+			cout << "up   : select index " << last_select_item_index - 1 << endl;
+			QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index-1);
+			ui->treeWidget->setCurrentItem(item);
+			PressedTreeItem(item);
+		}
+	}
+	else if (event->key() == Qt::Key_Down)
+	{
+		if (last_select_item_index + 1 < ui->treeWidget->topLevelItemCount())
+		{
+			cout << "down : select index " << last_select_item_index +1 << endl;
+			QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index+1);
+			ui->treeWidget->setCurrentItem(item);
+			PressedTreeItem(item);
+		}
+	}
+	else if (event->key() == Qt::Key_Left)
+	{
+		
+	}
+	else if (event->key() == Qt::Key_Right)
+	{
+		
+	}
+
+	QWidget::keyPressEvent(event);
+
+}
 void MainUI::mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void)
 {	//trigged when : mouse position is move in viewer area
 	//boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
@@ -423,6 +484,7 @@ void MainUI::ButtonLoadPlaneParamPressed()
 		dataprocess->planeseg->transformextract->rotational_matrix_OBB);
 
 	dataprocess->planeseg->SetHasPlaneTransformData(true);
+	WritePlaneParamToUI();
 
 	if (dataprocess->GetCurrentDisplayPointCloud()->size()>0)
 	{
@@ -773,6 +835,8 @@ void MainUI::ButtonApplyVoxelGridPressed()
 	cout << "voxel= " << voxelsize << ", GetCurrentDisplayPointCloudSize= " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
 
 }
+
+
 void MainUI::ButtonApplyPlaneSegmentPressed()
 {
 	cout << "call ButtonApplyPlaneSegmentPressed()" << endl;
@@ -854,14 +918,54 @@ void MainUI::WritePlaneParamToUI()
 	ui->in_masscenter_3->setText(
 		QString::number(dataprocess->planeseg->transformextract->mass_center(2)));
 
+	//min max 3d
+	ui->in_min3d_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->min3d_point.x));
+	ui->in_min3d_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->min3d_point.y));
+	ui->in_min3d_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->min3d_point.z));
+	
+	ui->in_max3d_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->max3d_point.x));
+	ui->in_max3d_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->max3d_point.y));
+	ui->in_max3d_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->max3d_point.z));
+
+	//rotatoin matrix
+	ui->in_rotationmatrix_1->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(0)));
+	ui->in_rotationmatrix_2->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(1)));
+	ui->in_rotationmatrix_3->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(2)));
+
+	ui->in_rotationmatrix_4->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(3)));
+	ui->in_rotationmatrix_5->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(4)));
+	ui->in_rotationmatrix_6->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(5)));
+
+	ui->in_rotationmatrix_7->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(6)));
+	ui->in_rotationmatrix_8->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(7)));
+	ui->in_rotationmatrix_9->setText(
+		QString::number(dataprocess->planeseg->transformextract->rotational_matrix_OBB(8)));
 }
 
-void MainUI::ButtonGetPlaneTransformPressed()
+void MainUI::ButtonCalculatePlaneTransformPressed()
 {
-	cout << "call ButtonGetPlaneTransformPressed()" << endl;
+	cout << "call ButtonCalculatePlaneTransformPressed()" << endl;
 
-	dataprocess->planeseg->CalculatePlaneTransformation(dataprocess->GetOnlyPlanePointCloud());
+	double planethreshold = ui->in_plane_threshold->text().toDouble();
+	dataprocess->planeseg->CalculatePlaneTransformation(planethreshold, dataprocess->GetOnlyPlanePointCloud());
+
 	dataprocess->planeseg->RemovePlaneOutside(dataprocess->GetCurrentDisplayPointCloud());
+	cout << "After RemovePlaneOutside PointCloudSize= " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
+
 
 	WritePlaneParamToUI();
 
@@ -924,7 +1028,7 @@ void MainUI::ButtonRemovePlanePressed()
 {
 	cout << "call ButtonRemovePlanePressed()" << endl;
 
-	int pointcloudsize = dataprocess->GetRemovedPlanePointCloud()->size();
+	int pointcloudsize = static_cast<int>(dataprocess->GetRemovedPlanePointCloud()->size());
 
 	if (pointcloudsize == 0)
 	{
@@ -969,6 +1073,7 @@ void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
 	viewerwindow->ClearShapeWindowCloudViewer();
+	viewerwindow->ToggleAxisONWindowCloudViewer();
 
 }
 void MainUI::ButtonApplyOutlierPressed()
@@ -989,7 +1094,7 @@ void MainUI::ButtonShowClusterPressed()
 {
 	cout << "call ButtonShowClusterPressed()" << endl;
 
-	int pointcloudsize = dataprocess->GetCurrentDisplayPointCloud()->size();
+	int pointcloudsize = static_cast<int>(dataprocess->GetCurrentDisplayPointCloud()->size());
 
 	if (pointcloudsize == 0)
 	{
@@ -1006,6 +1111,9 @@ void MainUI::ButtonShowClusterPressed()
 
 	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
 	dataprocess->clusterextract->ExtractCluster(dataprocess->GetCurrentDisplayPointCloud());
+
+	viewerwindow->DrawPlanarAtOrigin(0.5, 1.0, 1.0, 1.0, "planeorigin");
+
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetColoredClusterPointCloud());
@@ -1051,9 +1159,15 @@ void MainUI::ButtonExtractClusterPressed()
 {
 	cout << "call ButtonExtractClusterPressed()" << endl;
 
+	ButtonClearAllItemPressed();
+
 	dataprocess->SeparateContainerAndItems(dataprocess->clusterextract->GetExtractCluster());
 	
 	dataprocess->CalculateContainerTransformation();
+
+
+	
+
 	ShowMinMaxCenterPoint(dataprocess->container, "container");
 	ui->in_bin_w->setText(QString::number(dataprocess->container->width));
 	ui->in_bin_d->setText(QString::number(dataprocess->container->depth));
@@ -1132,6 +1246,10 @@ void::MainUI::ButtonShowClusterBBPressed()
 	}
 
 
+
+}
+void MainUI::ButtonShowClusterVectorPressed()
+{
 
 }
 
@@ -1231,9 +1349,51 @@ void MainUI::ButtonSavePointCloudFromListPressed()
 
 
 }
+
+
+void MainUI::ButtonAlignAllItemAxisPressed()
+{
+	cout << "call ButtonAlignAllItemAxisPressed()" << endl;
+
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		last_select_item_index = i;
+		ButtonSetCloudCornerPressed();
+	}
+
+}
+void MainUI::ButtonSaveAllItemPcdPressed()
+{
+	cout << "call ButtonSaveAllItemPcdPressed()" << endl;
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save pcd"), POINTCLOUD_DIR);
+	if (filename.trimmed().isEmpty()) return;
+
+	
+
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		string eachfilename = filename.toStdString() + to_string(i + 1)+".pcd";
+		dataprocess->SavePointCloud(eachfilename,
+			dataprocess->items[0]->object_pointcloud);
+
+		cout << eachfilename << endl;
+
+		QTreeWidgetItem* item = ui->treeWidget->topLevelItem(i);
+		item->setText(11, QString::fromStdString(eachfilename));
+	}
+
+
+}
+
 void MainUI::ButtonLoadAllItemPressed()
 {
 	cout << "call ButtonLoadAllItemPressed()" << endl;
+
+
 }
 void MainUI::ButtonSaveAllItemPressed()
 {
@@ -1313,10 +1473,18 @@ void MainUI::ButtonRemoveItemPressed()
 void MainUI::ButtonClearAllItemPressed()
 {
 	cout << "call ButtonClearAllItemPressed()" << endl;
+	
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(0);
+		delete item;
+	}
+
 }
-void MainUI::ButtonBinPackingPressed()
+void MainUI::ButtonCalculateBinPackingPressed()
 {
-	cout << "call ButtonBinPackingPressed()" << endl;
+	cout << "call ButtonCalculateBinPackingPressed()" << endl;
 
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 
@@ -1475,6 +1643,8 @@ void MainUI::ButtonShowPackingAnimationPressed()
 {
 	cout << "call ButtonShowPackingAnimationPressed()" << endl;
 
+	//viewerwindow->DrawPlanarAtOrigin(1.0, 1.0, 1.0, 1.0, "planeorigin");
+
 }
 
 void MainUI::ButtonShowZeroPackingPressed()
@@ -1493,5 +1663,13 @@ void MainUI::ButtonShowNextPackingPressed()
 
 }
 
+void MainUI::ButtonSaveBinPackingInfoPressed()
+{
+
+}
+void MainUI::ButtonLoadBinPackingInfoPressed()
+{
+
+}
 
 

@@ -29,7 +29,6 @@ private:
 
 	timermode mode;
 
-
 	bool isRegisterCameraCallback;
 
 	QTime time;
@@ -40,25 +39,17 @@ private:
 
 	bool isLoadPlaneParameter;
 
-	void ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name);
+	bool eventFilter(QObject *object, QEvent *event);
+	void keyPressEvent(QKeyEvent * event);
 	void mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void);
+	
+	void ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name);
+	
 	void SetCurrentCameraParameterToUI();
 	void WritePlaneParamToUI();
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 private slots:
-
 	//top menu
 	///menu:viewer embedded
 	void ButtonConnectPressed();
@@ -71,75 +62,86 @@ private slots:
 	void ButtonSaveTransformParamPressed();
 	void ButtonLoadPassthroughParamPressed();
 	void ButtonSavePassthroughParamPressed();
-	void ButtonLoadCameraParamPressed();
-	void ButtonSaveCameraParamPressed();
-	void ButtonLoadPlaneParamPressed();
-	void ButtonSavePlaneParamPressed();
-	
+
 	//items above tab
 	void RadioButtonAxisONSelected();
 	void RadioButtonAxisOFFSelected();		
 	void ButtonShowLoadedPointCloudPressed();
+	void ButtonUndoLastedPointCloudPressed();
 	void ButtonClearViewerPointCloudPressed();	
 	void ButtonClearViewerShapePressed();
-	void ButtonUndoLastedPointCloudPressed();
 
-	//tab:viewer parameter
+	//tab:camera
 	void ButtonApplyParamtoCameraPressed();
 	void ButtonResetCamParamPressed();
+
+	void ButtonLoadCameraParamPressed();
+	void ButtonSaveCameraParamPressed();
+
 	void ButtonApplyCamRotationPressed();
 	void ButtonApplyCamTranslationPressed();
 
-	//tab:cloud transformation
-	void ButtonResetCloudTransformationPressed();	
-	void ButtonApplyCloudRotationPressed();
-	void ButtonApplyCloudTranslationPressed();
-	void ButtonResetCloudPassthroughPressed();
-	void ButtonApplyCloudPassthroughPressed();
-	void ButtonSetCloudCenterPressed();
-	void ButtonSetCloudCornerPressed();
-	void ButtonSetCloudAlignCornerPressed();
-	void ButtonCalculateCloudTransformPressed();
-
-	
-	
-	
-	
-	
-	
-	
-	
 	//tab:segmentation
-	void ButtonApplyVoxelGridPressed();
 	void ButtonApplyPlaneSegmentPressed();
-	void ButtonGetPlaneTransformPressed();
+	void ButtonCalculatePlaneTransformPressed();
+
 	void ButtonRemovePlanePressed();
 	void ButtonAlignPlaneToAxisCenterPressed();
+
+	void ButtonLoadPlaneParamPressed();
+	void ButtonSavePlaneParamPressed();
+
+	//tab:filter+transform
+	///Passthrough Filter
+	void ButtonApplyCloudPassthroughPressed();
+	void ButtonResetCloudPassthroughPressed();
+	///Voxel Grid Filter
+	void ButtonApplyVoxelGridPressed();
+	///Outlier Removal
 	void ButtonApplyOutlierPressed();
+	///Transformation
+	void ButtonApplyCloudRotationPressed();
+	void ButtonApplyCloudTranslationPressed();
+	void ButtonResetCloudTransformationPressed();	
+	///Cluster Extraction
 	void ButtonShowClusterPressed();
 	void ButtonExtractClusterPressed();
 	void ButtonShowClusterBBPressed();
-	
+	void ButtonShowClusterVectorPressed();
+	///Set Cloud Position
+	void ButtonSetCloudCornerPressed();
+	void ButtonSetCloudCenterPressed();
+	void ButtonSetCloudAlignCornerPressed();
+	void ButtonCalculateCloudTransformPressed();
 
-	//cluster list
-	void PressedTreeItem(QTreeWidgetItem *current_select_item);
-	void ButtonLoadPointCloudToListPressed();
-	void ButtonSavePointCloudFromListPressed();
-	void ButtonLoadAllItemPressed();
-	void ButtonSaveAllItemPressed();
-	void ButtonRemoveItemPressed();
-	void ButtonClearAllItemPressed();
-	void ButtonBinPackingPressed();
+	//BinPacking
+	void ButtonCalculateBinPackingPressed();
 	void ButtonTrackItemPositionPressed();
 
 	void ButtonShowPackingTargetPressed();
 	void ButtonShowPackingIndicatePressed();
 	void ButtonShowPackingAnimationPressed();
-
+	
 	void ButtonShowZeroPackingPressed();
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
 
+	void ButtonSaveBinPackingInfoPressed();
+	void ButtonLoadBinPackingInfoPressed();
+
+	//cluster list
+	void PressedTreeItem(QTreeWidgetItem *current_select_item);
+	void ButtonLoadPointCloudToListPressed();
+	void ButtonSavePointCloudFromListPressed();
+
+	void ButtonAlignAllItemAxisPressed();
+	void ButtonSaveAllItemPcdPressed();
+
+	void ButtonLoadAllItemPressed();
+	void ButtonSaveAllItemPressed();
+
+	void ButtonRemoveItemPressed();
+	void ButtonClearAllItemPressed();
 
 };
 

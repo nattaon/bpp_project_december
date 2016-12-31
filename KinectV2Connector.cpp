@@ -179,7 +179,8 @@ cv::Mat KinectV2Connector::get_colorframe(float COLORSCALE)
 			cv::flip(colorMat, colorMat, 1);
 
 			// Retrieved Color Data for pcl
-			hResult = pColorFrame->CopyConvertedFrameDataToArray(colorBuffer.size() * sizeof(RGBQUAD),
+			hResult = pColorFrame->CopyConvertedFrameDataToArray(
+				static_cast<UINT>(colorBuffer.size() * sizeof(RGBQUAD)),
 				reinterpret_cast<BYTE*>(&colorBuffer[0]), ColorImageFormat::ColorImageFormat_Bgra);
 			if (FAILED(hResult)){
 				std::cerr << "Error : IColorFrame::CopyConvertedFrameDataToArray()" << endl;
@@ -199,7 +200,8 @@ void KinectV2Connector::get_depthframe()
     hResult = pDepthReader->AcquireLatestFrame( &pDepthFrame );
     if( SUCCEEDED( hResult ) ){
         // Retrieved Depth Data
-        hResult = pDepthFrame->CopyFrameDataToArray( depthBuffer.size(), &depthBuffer[0] );
+		hResult = pDepthFrame->CopyFrameDataToArray(
+			static_cast<UINT>(depthBuffer.size()), &depthBuffer[0]);
         if( FAILED( hResult ) ){
             std::cerr << "Error : IDepthFrame::CopyFrameDataToArray()" << endl;
         }

@@ -22,6 +22,9 @@ public:
 	void ClearPointCloudWindowCloudViewer();
 	void ClearShapeWindowCloudViewer();
 
+	void DrawPlanarAtOrigin(double plane_halflegth,
+		double r, double g, double b, string planename);
+
 	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
 		PointTypeXYZRGB min_point_OBB, PointTypeXYZRGB max_point_OBB,
 		Eigen::Matrix3f rotational_matrix_OBB, string cloudname);

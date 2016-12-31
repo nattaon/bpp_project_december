@@ -60,8 +60,8 @@ void CameraParameterIO::ReadCameraParameter(
 	}
 
 	string sLine;
-	int index1 = 0;
-	int index2 = 0;
+	size_t index1 = 0; //unsign int
+	size_t index2 = 0;
 
 	getline(infile, sLine);
 	index1 = sLine.find(" ");

@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 	HWND consoleWindow = GetConsoleWindow();
-	SetWindowPos(consoleWindow, 0, 1000, 0, 800, 600, SWP_NOZORDER);
+	SetWindowPos(consoleWindow, 0, 0, 200, 900, 700, SWP_NOZORDER);
 
 
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     mainui.SetDataProcess(&d);
     mainui.SetViewerWindow(&v);
     mainui.show();
-	mainui.move(600, 340);
+	mainui.move(600, 200);
 
     return a.exec();
 }

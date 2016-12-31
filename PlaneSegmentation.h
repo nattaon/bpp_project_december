@@ -18,7 +18,7 @@ public:
 
 	void ApplyPlaneSegmentation(double plane_threshold, PointCloudXYZRGB::Ptr cloud);
 	void RemovePlane(PointCloudXYZRGB::Ptr cloud);
-	void CalculatePlaneTransformation(PointCloudXYZRGB::Ptr cloud);
+	void CalculatePlaneTransformation(double plane_threshold, PointCloudXYZRGB::Ptr cloud);
 	void RemovePlaneOutside(PointCloudXYZRGB::Ptr cloud);
 	void RemovePlaneOutsideAfterAxisAlign(PointCloudXYZRGB::Ptr cloud);
 

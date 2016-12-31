@@ -55,12 +55,44 @@ void ViewerWindow::ClearShapeWindowCloudViewer()
 	window_view->removeAllShapes();
 }
 
+void ViewerWindow::DrawPlanarAtOrigin(double plane_halflegth,
+	double r, double g, double b, string planename)
+{
+	double minus_halflength = -1 * plane_halflegth;
+	PointTypeXYZRGB p1, p2, p3, p4;
+
+	p1.x = minus_halflength; p1.y = 0; p1.z = minus_halflength;
+	p2.x = minus_halflength; p2.y = 0; p2.z = plane_halflegth;
+	p3.x = plane_halflegth; p3.y = 0; p3.z = plane_halflegth;
+	p4.x = plane_halflegth; p4.y = 0; p4.z = minus_halflength;
+
+	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
+	polygon_pointcloud.reset(new PointCloudXYZRGB);
+
+	polygon_pointcloud->points.push_back(p1);
+	polygon_pointcloud->points.push_back(p2);
+	polygon_pointcloud->points.push_back(p3);
+	polygon_pointcloud->points.push_back(p4);
+
+	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
+	polygon_pointcloud->height = 1;
+	
+	//cout << "polygon_pointcloud" << polygon_pointcloud->points.size() << endl;
+
+	window_view->removeShape(planename);
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r,g,b, planename);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, planename);
+	window_view->spinOnce();
+
+}
+
 void ViewerWindow::AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB, 
 	PointTypeXYZRGB min_point_OBB, PointTypeXYZRGB max_point_OBB, 
 	Eigen::Matrix3f rotational_matrix_OBB, string cloudname)
 {
 	Eigen::Vector3f position(position_OBB.x, position_OBB.y, position_OBB.z);
 	Eigen::Quaternionf quat(rotational_matrix_OBB);
+	window_view->removeShape(cloudname);
 	window_view->addCube(position, quat, 
 		max_point_OBB.x - min_point_OBB.x, 
 		max_point_OBB.y - min_point_OBB.y, 
@@ -88,6 +120,11 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 		minor_vector(0)*vector_scale + mass_center(0), 
 		minor_vector(1)*vector_scale + mass_center(1), 
 		minor_vector(2)*vector_scale + mass_center(2));
+
+	window_view->removeShape(cloudname + " major eigen vector");
+	window_view->removeShape(cloudname + " middle eigen vector");
+	window_view->removeShape(cloudname + " minor eigen vector");
+
 	window_view->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, cloudname + " major eigen vector");
 	window_view->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, cloudname + " middle eigen vector");
 	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
@@ -95,11 +132,13 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 void ViewerWindow::AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 	double r, double g, double b, string drawtext, string cloudname)
 {
+	window_view->removeText3D(cloudname);
 	window_view->addText3D(drawtext, point_position, text_scale, r, g, b, cloudname);
 }
 
 void ViewerWindow::AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name)
 {
+	window_view->removeShape(id_name);
 	window_view->addSphere(point_position, radius, r, g, b, id_name);
 }
 
@@ -166,6 +205,8 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	
 	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
 	polygon_pointcloud->height = 1;
+
+	window_view->removeShape(cloudname + " polygon");
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
 
@@ -300,6 +341,7 @@ void ViewerWindow::DrawItemCube(float w, float h, float d, float x, float y, flo
 	cout << "y " << ymin << "," << ymax << endl;
 	cout << "z " << zmin << "," << zmax << endl;
 
+	window_view->removeShape(shapename);
 	window_view->addCube(xmin,xmax,ymin,ymax,zmin,zmax,r,g,b,shapename);
 	
 }
@@ -376,6 +418,8 @@ void ViewerWindow::DrawItemSymbol(
 
 	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
 	polygon_pointcloud->height = 1;
+
+	window_view->removeShape(symbolname + " polygon");
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, symbolname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, symbolname + " polygon");
 

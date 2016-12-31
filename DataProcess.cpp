@@ -43,7 +43,7 @@ PointCloudXYZRGB::Ptr DataProcess::GetLastedOperateDisplayPointCloud()
 }
 int DataProcess::GetCurrentDisplayPointCloudSize()
 {
-	return currentdisplay_pointcloud->size();
+	return static_cast<int>(currentdisplay_pointcloud->size());
 }
 
 PointCloudXYZRGB::Ptr DataProcess::GetAppliedRedPlanePointCloud()
