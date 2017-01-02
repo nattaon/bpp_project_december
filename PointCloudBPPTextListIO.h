@@ -13,11 +13,16 @@ public:
 		vector<string> array_pcd_filename,
 		int *item_w, int *item_h, int *item_d);
 
-	void ReadPointCloudListForBPP(
-		string filename, int &total,
+	int ReadPointCloudListForBPP(string filename);
+	/*, int &total);
 		int &bin_width, int &bin_height, int &bin_depth,
 		vector<string> &array_pcd_filename,
-		int *item_w, int *item_h, int *item_d);
+		int *item_w, int *item_h, int *item_d);*/
+
+	int total_items;
+	int bin_width, bin_height, bin_depth;
+	vector<string> array_pcd_filename;
+	int *item_w, *item_h, *item_d;
 
 };
 

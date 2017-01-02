@@ -1,12 +1,12 @@
 301 122 239
 5
-z1.pcd
+C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z1.pcd
 140 59 85
-z2.pcd
+C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z2.pcd
 141 65 86
-z3.pcd
+C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z3.pcd
 106 51 132
-z4.pcd
+C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z4.pcd
 88 56 154
-z5.pcd
+C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z5.pcd
 84 63 143

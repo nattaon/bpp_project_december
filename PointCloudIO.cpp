@@ -47,7 +47,7 @@ void PointCloudIO::LoadPointCloud(string filename)
 	}
 }
 
-void PointCloudIO::LoadPointCloudToVariable(string filename, PointCloudXYZRGB::Ptr cloud)
+void PointCloudIO::LoadPcdFileToPointCloudVariable(string filename, PointCloudXYZRGB::Ptr cloud)
 {
 	cloud.reset(new PointCloudXYZRGB);
 	if (pcl::io::loadPCDFile(filename, *cloud) < 0)

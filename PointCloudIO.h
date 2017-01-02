@@ -14,7 +14,7 @@ public:
 	void DisconnectKinect();
 
 	void LoadPointCloud(string filename);
-	void LoadPointCloudToVariable(string filename, PointCloudXYZRGB::Ptr cloud);
+	void LoadPcdFileToPointCloudVariable(string filename, PointCloudXYZRGB::Ptr cloud);
 	void SavePointCloud(string filename, PointCloudXYZRGB::Ptr cloud);
 
 

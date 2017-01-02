@@ -1300,8 +1300,14 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 	if (filename.trimmed().isEmpty()) return;
 
 	PointCloudXYZRGB::Ptr cloud;
-	dataprocess->LoadPointCloudToVariable(filename.toStdString(), cloud);
 
+	//call read pcd file
+	dataprocess->LoadPcdFileToPointCloudVariable(filename.toStdString(), cloud);
+
+
+
+	//copy cloud to dataprocess->items[i]
+	dataprocess->AddLoadPointCloudToItems(cloud);
 
 	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 	int pointcloud_number=ui->treeWidget->topLevelItemCount()+1;
@@ -1392,6 +1398,69 @@ void MainUI::ButtonSaveAllItemPcdPressed()
 void MainUI::ButtonLoadAllItemPressed()
 {
 	cout << "call ButtonLoadAllItemPressed()" << endl;
+
+	QString filename = QFileDialog::getOpenFileName(this,
+		tr("Load container & items list file"), POINTCLOUD_DIR, tr("text file (*.txt)"));
+	if (filename.trimmed().isEmpty()) return;
+
+	int total_items;
+	int container_w, container_h, container_d;
+	int container_x, container_y, container_z;
+	double container_orient_x, container_orient_y, container_orient_z;
+	vector<string> array_items_filename;
+	int *items_w, *items_h, *items_d;
+	int *items_x, *items_y, *items_z;
+	double *items_orient_x, *items_orient_y, *items_orient_z;
+	
+	total_items=dataprocess->pointcloudbpptext->ReadPointCloudListForBPP(filename.toStdString());
+
+	container_w = dataprocess->pointcloudbpptext->bin_width;
+	container_h = dataprocess->pointcloudbpptext->bin_height;
+	container_d = dataprocess->pointcloudbpptext->bin_depth;
+
+	array_items_filename = dataprocess->pointcloudbpptext->array_pcd_filename;
+
+	items_w = dataprocess->pointcloudbpptext->item_w;
+	items_h = dataprocess->pointcloudbpptext->item_h;
+	items_d = dataprocess->pointcloudbpptext->item_d;
+
+	//call read pcd file
+	//dataprocess->LoadTxtListofItems(filename.toStdString());
+
+
+	//add load txt item to ui
+
+	PointCloudXYZRGB::Ptr cloud;
+	//call read pcd file
+	dataprocess->LoadPcdFileToPointCloudVariable(array_items_filename[0], cloud);
+
+	//copy cloud to dataprocess->items[i]
+	dataprocess->AddLoadPointCloudToItems(cloud);
+
+	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+	int pointcloud_number = ui->treeWidget->topLevelItemCount() + 1;
+
+
+	item->setText(0, QString::number(0 + 1));
+	item->setText(1, QString::number(items_w[0]));
+	item->setText(2, QString::number(items_d[0]));
+	item->setText(3, QString::number(items_h[0]));
+	item->setText(4, QString::number(cloud->size()));
+	item->setText(11, filename);
+
+	item->setTextAlignment(0, Qt::AlignHCenter);
+	for (int j = 1; j < 5; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignRight);
+	}
+	for (int j = 5; j < 12; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignLeft);
+	}
+
+	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+	ui->treeWidget->addTopLevelItem(item);
 
 
 }

@@ -35,10 +35,11 @@ void PointCloudBPPTextListIO::WritePointCloudListForBPP(string filename, int tot
 
 
 //pass by reference(&) 
-void PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename, int &total,
-	int &bin_width, int &bin_height, int &bin_depth,
+int PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename)
+/*	, int &total)
+int &bin_width, int &bin_height, int &bin_depth,
 	vector<string> &array_pcd_filename,
-	int *item_w, int *item_h, int *item_d)
+	int *item_w, int *item_h, int *item_d)*/
 {
 	cout << "ReadListofPcdfromTextFile" << endl;
 
@@ -48,7 +49,7 @@ void PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename, int &tot
 	if (!infile.is_open())
 	{
 		cout << "cannot open file" << endl;
-		return;
+		return -1;
 	}
 
 	string sLine;
@@ -67,16 +68,16 @@ void PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename, int &tot
 
 	//2.get items total
 	getline(infile, sLine);
-	total = stod(sLine);
+	total_items = stod(sLine);
 
 
-	//item_w = new int[total];
-	//item_h = new int[total];
-	//item_d = new int[total];
+	item_w = new int[total_items];
+	item_h = new int[total_items];
+	item_d = new int[total_items];
 
 
 	//3.get array of pcd filename and item dimension
-	for (int i = 0; i < total; i++)
+	for (int i = 0; i < total_items; i++)
 	{
 		getline(infile, sLine);
 		array_pcd_filename.push_back(string(sLine));//pcd file name
@@ -98,6 +99,6 @@ void PointCloudBPPTextListIO::ReadPointCloudListForBPP(string filename, int &tot
 	//cout << "item_h " << item_h << endl;
 	//cout << "item_d " << item_d << endl;
 
-
+	return total_items;
 
 }

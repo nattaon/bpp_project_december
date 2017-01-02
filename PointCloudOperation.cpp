@@ -37,7 +37,8 @@ void PointCloudOperation::SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr
 	}
 
 	//cout << "max_point_size_id = " << max_point_size_id << "/ size=" << max_point_size << endl;
-	items.clear();
+	ClearVectorItems();
+	
 	cout << "items size" << items.size() << endl;
 	//separate container-items
 	for (int i = 0; i < extract_cluster_cloud.size(); i++)
@@ -59,6 +60,19 @@ void PointCloudOperation::SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr
 
 
 }
+void PointCloudOperation::ClearVectorItems()
+{
+	cout << "PointCloudOperation::ClearVectorItems()" << endl;
+	items.clear();
+	cout << "items.size() = " << items.size() << endl;
+}
+void PointCloudOperation::AddLoadPointCloudToItems(PointCloudXYZRGB::Ptr cloud)
+{
+	ObjectTransformationData *item = new ObjectTransformationData();
+	pcl::copyPointCloud(*cloud, *item->object_pointcloud);
+	items.push_back(item);
+
+}
 
 void PointCloudOperation::CalculateContainerTransformation()
 {
@@ -75,13 +89,13 @@ void PointCloudOperation::CalculateItemsTransformation()
 
 	for (int i = 0; i < items.size(); i++)
 	{
-		cout << "item " << i << endl;
+		//cout << "item " << i << endl;
 
 		items[i]->transform->CalculateTransformation(items[i]->object_pointcloud,0.0);
 		//items[i]->transform->PrintTransformationData();
 
 		items[i]->CalculateWDH();
-		cout << endl;
+		//cout << endl;
 
 	}
 }

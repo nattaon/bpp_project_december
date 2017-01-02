@@ -21,6 +21,8 @@ public:
 	vector<ObjectTransformationData*> items;
 
 	void SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr> extract_cluster_cloud);
+	void ClearVectorItems();
+	void AddLoadPointCloudToItems(PointCloudXYZRGB::Ptr cloud);
 	void CalculateContainerTransformation();
 	void CalculateItemsTransformation();
 
