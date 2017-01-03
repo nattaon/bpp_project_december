@@ -28,11 +28,14 @@ public:
 	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
 		PointTypeXYZRGB min_point_OBB, PointTypeXYZRGB max_point_OBB,
 		Eigen::Matrix3f rotational_matrix_OBB, string cloudname);
+	
 	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
+	
 	void AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 		double r, double g, double b, string drawtext, string cloudname);
+	
 	void AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name);
 
 
@@ -59,7 +62,8 @@ public:
 		int *w, int *h, int *d, int *x, int *y, int *z);
 
 	void DrawItemCube(float w, float h, float d, float x, float y, float z, string shapename);
-	void DrawItemSymbol(
+	
+	void DrawItemArrowDirectionSymbol(
 		float w, float h, float d, 
 		float x, float y, float z, 
 		float r, float g, float b,

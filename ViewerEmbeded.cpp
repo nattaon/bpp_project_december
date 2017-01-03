@@ -20,6 +20,11 @@ ViewerEmbeded::~ViewerEmbeded()
 {
 
 }
+void ViewerEmbeded::ClearPointCloudEmbededCloudViewer()
+{
+	embeded_view->removeAllPointClouds();
+	ui_widget_viewer->update();
+}
 
 void ViewerEmbeded::UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 {

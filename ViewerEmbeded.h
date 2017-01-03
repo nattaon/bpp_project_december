@@ -11,6 +11,7 @@ public:
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
 	QVTKWidget *ui_widget_viewer;
 
+	void ClearPointCloudEmbededCloudViewer();
 	void UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void DrawXYZAxis();
 

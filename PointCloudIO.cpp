@@ -47,13 +47,17 @@ void PointCloudIO::LoadPointCloud(string filename)
 	}
 }
 
-void PointCloudIO::LoadPcdFileToPointCloudVariable(string filename, PointCloudXYZRGB::Ptr cloud)
+PointCloudXYZRGB::Ptr PointCloudIO::LoadPcdFileToPointCloudVariable(string filename)
 {
+	PointCloudXYZRGB::Ptr cloud;
 	cloud.reset(new PointCloudXYZRGB);
 	if (pcl::io::loadPCDFile(filename, *cloud) < 0)
 	{
 		cout << "Error loading model cloud." << endl;
+		return NULL;
 	}
+	
+	return cloud;
 }
 
 void PointCloudIO::SavePointCloud(string filename, PointCloudXYZRGB::Ptr cloud)

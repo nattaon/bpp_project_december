@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -3129,7 +3129,7 @@
         <x>390</x>
         <y>40</y>
         <width>91</width>
-        <height>23</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -3231,9 +3231,9 @@
       <property name="geometry">
        <rect>
         <x>390</x>
-        <y>60</y>
+        <y>70</y>
         <width>91</width>
-        <height>23</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -5006,7 +5006,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -5137,8 +5137,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>

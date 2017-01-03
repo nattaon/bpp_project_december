@@ -79,7 +79,7 @@ void PointCloudOperation::CalculateContainerTransformation()
 	cout << "CalculateContainerTransformation" << endl;
 
 	container->transform->CalculateTransformation(container->object_pointcloud,0.005);
-	//container->transform->PrintTransformationData();
+	container->transform->PrintTransformationData();
 
 	container->CalculateWDH();
 }
@@ -89,10 +89,10 @@ void PointCloudOperation::CalculateItemsTransformation()
 
 	for (int i = 0; i < items.size(); i++)
 	{
-		//cout << "item " << i << endl;
+		cout << "item " << i << endl;
 
 		items[i]->transform->CalculateTransformation(items[i]->object_pointcloud,0.0);
-		//items[i]->transform->PrintTransformationData();
+		items[i]->transform->PrintTransformationData();
 
 		items[i]->CalculateWDH();
 		//cout << endl;
@@ -142,11 +142,21 @@ void PointCloudOperation::RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 
 	Eigen::Matrix<float, 1, 3>  rotation_vector;
 
+	//vector/axis to rotate around
 	rotation_vector = floor_plane_normal_vector.cross(target_plane_normal_vector);
-	//rotation_vector = target_plane_normal_vector.cross(floor_plane_normal_vector);//Error	3	error C2338: THIS_METHOD_IS_ONLY_FOR_VECTORS_OF_A_SPECIFIC_SIZE	c:\program files\pcl172qt\eigen-3.7.2\eigen\src\Geometry\OrthoMethods.h	28	1	bpp_projectv3
+	//rotation_vector = target_plane_normal_vector.cross(floor_plane_normal_vector);
+	//Error	3	error C2338: THIS_METHOD_IS_ONLY_FOR_VECTORS_OF_A_SPECIFIC_SIZE	
+//c:\program files\pcl172qt\eigen-3.7.2\eigen\src\Geometry\OrthoMethods.h	28	1	bpp_projectv3
 
 	cout << "Rotation Vector(perpendicular): " << rotation_vector << std::endl;
+	
+		/*
+		angle between 2 planes is EQUAL
+		to the acute angle of normal vector of 2 planes
 
+		equation : n1 dot n2 = length(n1)*length(n2)*cos(angle)
+
+		*/
 	float theta = acos(floor_plane_normal_vector.dot(target_plane_normal_vector) / sqrt(pow(floor_plane_normal_vector[0], 2) + pow(floor_plane_normal_vector[1], 2) + pow(floor_plane_normal_vector[2], 2)));
 
 	transform.rotate(Eigen::AngleAxisf(theta, rotation_vector));
@@ -160,7 +170,7 @@ void PointCloudOperation::RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 }
 
 void PointCloudOperation::RotatePointCloud(PointCloudXYZRGB::Ptr cloud,
-	float degree, Eigen::Matrix<float, 1, 3>  rotation_vector)
+		float degree, Eigen::Matrix<float, 1, 3>  rotation_vector)
 {
 	cout << "Rotation Vector(perpendicular): " << rotation_vector << std::endl;
 	cout << "degree=" << degree << " deg" << endl;

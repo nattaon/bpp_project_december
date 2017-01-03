@@ -111,17 +111,19 @@ MainUI::MainUI(QWidget *parent) :
 	
 	//resize tree column size	
 	ui->treeWidget->header()->resizeSection(0, 45);
-	for (int j = 1; j < 5; j++)
+	for (int j = 1; j < 3; j++)
 	{
 		ui->treeWidget->header()->resizeSection(j, 40);
 	}
+	ui->treeWidget->header()->resizeSection(4, 45);
 	for (int j = 5; j < 11; j++)
 	{
 		ui->treeWidget->header()->resizeSection(j, 80);
 	}
-	ui->treeWidget->header()->resizeSection(11, 150);
+	ui->treeWidget->header()->resizeSection(11, 500);
 
 	//QApplication::instance()->installEventFilter(this);
+	
 }
 
 MainUI::~MainUI()
@@ -367,6 +369,8 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 
 		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetLoadedPointCloud());
 		cout << "GetCurrentDisplayPointCloudSize " << dataprocess->GetCurrentDisplayPointCloudSize() << endl;
+
+		RadioButtonAxisONSelected();
 	}
 	
 }
@@ -1172,6 +1176,9 @@ void MainUI::ButtonExtractClusterPressed()
 	ui->in_bin_w->setText(QString::number(dataprocess->container->width));
 	ui->in_bin_d->setText(QString::number(dataprocess->container->depth));
 	ui->in_bin_h->setText(QString::number(dataprocess->container->height));
+	ui->in_pos_container_1->setText(QString::number(dataprocess->container->transform->position_OBB.x));
+	ui->in_pos_container_2->setText(QString::number(dataprocess->container->transform->position_OBB.y));
+	ui->in_pos_container_3->setText(QString::number(dataprocess->container->transform->position_OBB.z));
 
 	dataprocess->CalculateItemsTransformation();
 	for (int i = 0; i < dataprocess->items.size();i++)
@@ -1299,20 +1306,17 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 		tr("Load pcd"), POINTCLOUD_DIR, tr("point cloud (*.pcd)"));
 	if (filename.trimmed().isEmpty()) return;
 
-	PointCloudXYZRGB::Ptr cloud;
-
-	//call read pcd file
-	dataprocess->LoadPcdFileToPointCloudVariable(filename.toStdString(), cloud);
 
 
-
+	PointCloudXYZRGB::Ptr cloud = dataprocess->LoadPcdFileToPointCloudVariable(filename.toStdString());
 	//copy cloud to dataprocess->items[i]
 	dataprocess->AddLoadPointCloudToItems(cloud);
 
-	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 	int pointcloud_number=ui->treeWidget->topLevelItemCount()+1;
-
+	
+	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget); // at this  point  topLevelItemCount() is increase
 	item->setText(0, QString::number(pointcloud_number));
+	item->setText(4, QString::number(cloud->size()));
 	item->setText(11, filename);
 	
 	item->setTextAlignment(0, Qt::AlignHCenter);
@@ -1328,8 +1332,6 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
 
 	ui->treeWidget->addTopLevelItem(item);
-
-
 
 }
 void MainUI::ButtonSavePointCloudFromListPressed()
@@ -1430,37 +1432,39 @@ void MainUI::ButtonLoadAllItemPressed()
 
 	//add load txt item to ui
 
-	PointCloudXYZRGB::Ptr cloud;
-	//call read pcd file
-	dataprocess->LoadPcdFileToPointCloudVariable(array_items_filename[0], cloud);
-
-	//copy cloud to dataprocess->items[i]
-	dataprocess->AddLoadPointCloudToItems(cloud);
-
-	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
-	int pointcloud_number = ui->treeWidget->topLevelItemCount() + 1;
-
-
-	item->setText(0, QString::number(0 + 1));
-	item->setText(1, QString::number(items_w[0]));
-	item->setText(2, QString::number(items_d[0]));
-	item->setText(3, QString::number(items_h[0]));
-	item->setText(4, QString::number(cloud->size()));
-	item->setText(11, filename);
-
-	item->setTextAlignment(0, Qt::AlignHCenter);
-	for (int j = 1; j < 5; j++)
+	for (int i = 0; i < total_items; i++)
 	{
-		item->setTextAlignment(j, Qt::AlignRight);
-	}
-	for (int j = 5; j < 12; j++)
-	{
-		item->setTextAlignment(j, Qt::AlignLeft);
+		//call read pcd file
+		PointCloudXYZRGB::Ptr cloud=dataprocess->LoadPcdFileToPointCloudVariable(array_items_filename[i]);
+
+		//copy cloud to dataprocess->items[i]
+		dataprocess->AddLoadPointCloudToItems(cloud);
+	
+		int pointcloud_number = ui->treeWidget->topLevelItemCount() + 1;
+		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget); // when new item, topLevelItemCount() is increase
+		item->setText(0, QString::number(i + 1));
+		item->setText(1, QString::number(items_w[i]));
+		item->setText(2, QString::number(items_d[i]));
+		item->setText(3, QString::number(items_h[i]));
+		item->setText(4, QString::number(cloud->size()));
+		item->setText(11, QString::fromStdString(array_items_filename[i]));
+
+		item->setTextAlignment(0, Qt::AlignHCenter);
+		for (int j = 1; j < 5; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignRight);
+		}
+		for (int j = 5; j < 12; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignLeft);
+		}
+
+		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+		ui->treeWidget->addTopLevelItem(item);
 	}
 
-	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
 
-	ui->treeWidget->addTopLevelItem(item);
 
 
 }
@@ -1549,6 +1553,8 @@ void MainUI::ButtonClearAllItemPressed()
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(0);
 		delete item;
 	}
+
+	viewerembeded->ClearPointCloudEmbededCloudViewer();
 
 }
 void MainUI::ButtonCalculateBinPackingPressed()
@@ -1692,6 +1698,7 @@ void MainUI::ButtonTrackItemPositionPressed()
 void MainUI::ButtonShowPackingTargetPressed()
 {
 	cout << "call ButtonShowPackingPressed()" << endl;
+	
 	/*viewerwindow->ShowBinpackingTarget(
 	dataprocess->container->transform->min3d_point,
 	total_boxes,
@@ -1700,8 +1707,8 @@ void MainUI::ButtonShowPackingTargetPressed()
 	ui->in_bin_h->text().toDouble(),
 	boxes_x_orient, boxes_y_orient, boxes_z_orient,
 	boxes_x_pos, boxes_y_pos, boxes_z_pos);
-
 	*/
+	
 }
 void MainUI::ButtonShowPackingIndicatePressed()
 {
@@ -1712,7 +1719,7 @@ void MainUI::ButtonShowPackingAnimationPressed()
 {
 	cout << "call ButtonShowPackingAnimationPressed()" << endl;
 
-	//viewerwindow->DrawPlanarAtOrigin(1.0, 1.0, 1.0, 1.0, "planeorigin");
+
 
 }
 

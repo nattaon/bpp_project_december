@@ -49,10 +49,12 @@ void ViewerWindow::UpdateWindowRGB(cv::Mat image)
 void ViewerWindow::ClearPointCloudWindowCloudViewer()
 {
 	window_view->removeAllPointClouds();
+	window_view->spinOnce();
 }
 void ViewerWindow::ClearShapeWindowCloudViewer()
 {
 	window_view->removeAllShapes();
+	window_view->spinOnce();
 }
 
 void ViewerWindow::DrawPlanarAtOrigin(double plane_halflegth,
@@ -210,11 +212,6 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
 
-
-	//window_view->addLine(position_center, position_minor_minus, 0.0f, 0.0f, 1.0f, cloudname + " minorlineminus");
-	//window_view->addLine(position_minor_minus, position_minor_plus, 1.0f, 0.0f, 0.0f, cloudname + " minorline");
-	//window_view->addLine(position_minor_minus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorminusline");
-	//window_view->addLine(position_minor_plus, position_major, 0.0f, 0.0f, 1.0f, cloudname + " minorplusline");
 }
 
 
@@ -315,7 +312,7 @@ void ViewerWindow::ShowBinpacking(
 			shapename);
 
 
-		DrawItemSymbol(
+		DrawItemArrowDirectionSymbol(
 			cube_w, cube_h, cube_d,
 			cube_x_min, cube_y_min, cube_z_min,
 			1.0, 1.0, 1.0, symbolname);
@@ -345,7 +342,7 @@ void ViewerWindow::DrawItemCube(float w, float h, float d, float x, float y, flo
 	window_view->addCube(xmin,xmax,ymin,ymax,zmin,zmax,r,g,b,shapename);
 	
 }
-void ViewerWindow::DrawItemSymbol(
+void ViewerWindow::DrawItemArrowDirectionSymbol(
 	float w, float h, float d,
 	float x, float y, float z,
 	float r, float g, float b,
@@ -374,6 +371,8 @@ void ViewerWindow::DrawItemSymbol(
 	position_center.y = y + half_length_y;
 	position_center.z = z + half_length_z;
 
+	//y is height direction : no effect
+	//decide which x or z has a longer side
 	if (half_length_x > half_length_z)
 	{
 		position_major.x = position_center.x + half_length_x;

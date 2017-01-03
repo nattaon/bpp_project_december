@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
 
 
-    DataProcess d; //=call DataProcess::DataProcess()
+	DataProcess d;//=call DataProcess::DataProcess()
 
 	ViewerWindow v; //=call ViewerWindow::ViewerWindow()
     v.SetDataProcess(&d);
