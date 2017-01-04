@@ -20,12 +20,15 @@ public:
 	ObjectTransformationData *container;
 	vector<ObjectTransformationData*> items;
 
+	bool isSetAlignCorner;
+
 	void SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr> extract_cluster_cloud);
 	void ClearVectorItems();
 	void AddLoadPointCloudToItems(PointCloudXYZRGB::Ptr cloud);
 	void CalculateContainerTransformation();
 	void CalculateItemsTransformation();
 
+	void TranslatePointCloud(PointCloudXYZRGB::Ptr cloud, float translate_x, float translate_y, float translate_z);
 	void MovePointCloudFromTo(PointCloudXYZRGB::Ptr cloud, PointTypeXYZRGB current_pos, PointTypeXYZRGB target_pos);
 	void RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 		Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector,

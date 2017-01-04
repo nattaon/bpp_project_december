@@ -10,6 +10,8 @@ PointCloudOperation::PointCloudOperation()
 	voxelfilter = new VoxelGridFilter();
 
 	container = new ObjectTransformationData();
+
+	isSetAlignCorner = false;
 }
 
 PointCloudOperation::~PointCloudOperation()
@@ -98,6 +100,13 @@ void PointCloudOperation::CalculateItemsTransformation()
 		//cout << endl;
 
 	}
+}
+void PointCloudOperation::TranslatePointCloud(PointCloudXYZRGB::Ptr cloud, float translate_x, float translate_y, float translate_z)
+{
+	Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+	transform.translation() << translate_x, translate_y, translate_z;
+
+	pcl::transformPointCloud(*cloud, *cloud, transform);
 }
 
 void PointCloudOperation::MovePointCloudFromTo(PointCloudXYZRGB::Ptr cloud, PointTypeXYZRGB current_pos, PointTypeXYZRGB target_pos)

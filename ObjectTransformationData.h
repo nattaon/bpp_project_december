@@ -11,13 +11,16 @@ public:
 	PointCloudXYZRGB::Ptr object_pointcloud;
 	PointCloudTransformationExtraction *transform;
 	
-	Eigen::Vector3f target_orientation;
+	PointTypeXYZRGB target_orientation;
 	PointTypeXYZRGB target_position;
+	PointTypeXYZRGB input_dimension;
 
 	void CalculateWDH();
-	int width, depth, height;
+	int x_length_mm, y_length_mm, z_length_mm;
+	double x_length, y_length, z_length;
 
 	double r, g, b;
+	int rotation_case;
 };
 
 #endif // OBJECTTRANSFORMATIONDATA_H

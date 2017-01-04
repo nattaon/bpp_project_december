@@ -214,7 +214,50 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 
 }
 
+void ViewerWindow::AddCircleWindowCloudViewer(
+	PointTypeXYZRGB position_OBB, float radius,
+	double r, double g, double b, string cloudname)
+{
+	/* //circle border only not fill inside
+	pcl::ModelCoefficients circle_coeff;
+	circle_coeff.values.resize(3);    // We need 3 values
+	circle_coeff.values[0] = position_OBB.x;
+	circle_coeff.values[1] = position_OBB.z;
+	circle_coeff.values[2] = radius;
+	window_view->addCircle(circle_coeff, cloudname);*/
 
+	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
+	polygon_pointcloud.reset(new PointCloudXYZRGB);
+	
+	//cout << "radius=" << radius << endl;
+	int circle_segment = 12;
+	for (int i = 0; i < circle_segment; i++)
+	{
+		float theta = 2.0 * M_PI*float(i) / float(circle_segment);
+		float x = radius * cosf(theta);//calculate the x component
+		float y = radius * sinf(theta);//calculate the y component
+
+		//cout << "boundery x=" << x << endl;
+		//cout << "boundery y=" << y << endl;
+
+		PointTypeXYZRGB boundery_point;
+		boundery_point.x = position_OBB.x+x;
+		boundery_point.y = position_OBB.y;
+		boundery_point.z = position_OBB.z+y;
+
+		//cout << "boundery_point = " << boundery_point << endl;
+
+		polygon_pointcloud->points.push_back(boundery_point);
+	}
+	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
+	polygon_pointcloud->height = 1;
+
+	window_view->removeShape(cloudname + " polygon");
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, cloudname + " polygon");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
+
+
+}
 
 
 
@@ -443,4 +486,87 @@ void ViewerWindow::randomcolor(double &r, double &g, double &b)
 	
 }
 
+
+void ViewerWindow::ShowBinPackingTarget(PointTypeXYZRGB container_position,
+	vector<ObjectTransformationData*> items)
+{
+
+	Eigen::Matrix<float, 1, 3>  rotation_x_axis(1.0, 0.0, 0.0);
+	Eigen::Matrix<float, 1, 3>  rotation_y_axis(0.0, 1.0, 0.0);
+	Eigen::Matrix<float, 1, 3>  rotation_z_axis(0.0, 0.0, 1.0);
+
+	for (int i = 0; i < items.size(); i++)
+	{
+		string cloudname = "itemcloud" + std::to_string(i);
+	
+		/*cout << endl;
+		cout << "shapename " << shapename << endl;
+		cout << "x,y,z = " << x[i] << "," << y[i] << "," << z[i] << endl;
+		cout << "w,h,d = " << w[i] << "," << h[i] << "," << d[i] << endl;
+		*/
+
+		PointCloudXYZRGB::Ptr item_pointcloud;
+		item_pointcloud.reset(new PointCloudXYZRGB);
+		pcl::copyPointCloud(*items[i]->object_pointcloud, *item_pointcloud);
+
+		//if (items[i]->rotation_case == 1) // do nothing
+		if (items[i]->rotation_case == 2)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+							90, rotation_y_axis);
+			dataprocess->TranslatePointCloud(item_pointcloud,
+				0.0, 0.0, items[i]->input_dimension.x);
+
+		}
+		else if (items[i]->rotation_case == 3)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+				-90, rotation_x_axis);
+			dataprocess->TranslatePointCloud(item_pointcloud,
+				0.0, 0.0, items[i]->input_dimension.y);
+		}
+		else if (items[i]->rotation_case == 4)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_z_axis);
+			dataprocess->TranslatePointCloud(item_pointcloud,
+				items[i]->input_dimension.y, 0.0, 0.0);
+		}
+		else if (items[i]->rotation_case == 5)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_y_axis);
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_x_axis);
+		}
+		else if (items[i]->rotation_case == 6)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+				-90, rotation_x_axis);
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_z_axis);
+		}
+
+		dataprocess->TranslatePointCloud(item_pointcloud,
+			items[i]->target_position.x, items[i]->target_position.y, items[i]->target_position.z);
+
+		/*float cube_w = w[i] * 0.001;
+		float cube_h = h[i] * 0.001;
+		float cube_d = d[i] * 0.001;
+		float cube_x_min = x[i] * 0.001 + ref_position.x;
+		float cube_y_min = y[i] * 0.001 + ref_position.y;
+		float cube_z_min = z[i] * 0.001 + ref_position.z;
+		*/
+
+		if (!window_view->updatePointCloud(item_pointcloud, cloudname))
+		{
+			window_view->addPointCloud(item_pointcloud, cloudname);
+		}
+
+
+
+	
+	}
+	window_view->spinOnce();
+}
 

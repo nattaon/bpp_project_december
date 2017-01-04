@@ -48,6 +48,10 @@ public:
 		Eigen::Vector3f minor_vector,
 		double r, double g, double b, string cloudname);
 
+	void AddCircleWindowCloudViewer(
+		PointTypeXYZRGB position_OBB, float radius,
+		double r, double g, double b, string cloudname);
+
 	void ToggleAxisONWindowCloudViewer();
 	void ToggleAxisOFFWindowCloudViewer();
 
@@ -60,6 +64,8 @@ public:
 		PointTypeXYZRGB ref_position,
 		int n, int binW, int binH, int binD, 
 		int *w, int *h, int *d, int *x, int *y, int *z);
+
+	void ShowBinPackingTarget(PointTypeXYZRGB container_position, vector<ObjectTransformationData*> items);
 
 	void DrawItemCube(float w, float h, float d, float x, float y, float z, string shapename);
 	

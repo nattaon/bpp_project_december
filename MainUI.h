@@ -100,6 +100,8 @@ private slots:
 	///Outlier Removal
 	void ButtonApplyOutlierPressed();
 	///Transformation
+	void ButtonApplyZeroCloudRotationPressed();
+	void ButtonApplyZeroCloudTranslationPressed();
 	void ButtonApplyCloudRotationPressed();
 	void ButtonApplyCloudTranslationPressed();
 	void ButtonResetCloudTransformationPressed();	

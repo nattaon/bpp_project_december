@@ -3558,9 +3558,9 @@
      <widget class="QPushButton" name="bt_apply_cloudtranslate">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>360</x>
         <y>330</y>
-        <width>101</width>
+        <width>61</width>
         <height>21</height>
        </rect>
       </property>
@@ -3682,9 +3682,9 @@
      <widget class="QPushButton" name="bt_apply_cloudrot">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>360</x>
         <y>310</y>
-        <width>101</width>
+        <width>61</width>
         <height>21</height>
        </rect>
       </property>
@@ -3832,16 +3832,68 @@
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="bt_apply_zero_cloudrot">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>310</y>
+        <width>41</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>set 0</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_apply_zero_cloudtranslate">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>330</y>
+        <width>41</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>set 0</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_bpp">
      <attribute name="title">
       <string>BinPacking</string>
      </attribute>
-     <widget class="QLineEdit" name="in_bin_h">
+     <widget class="QLineEdit" name="in_bin_z_dim">
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>50</y>
+        <y>70</y>
         <width>30</width>
         <height>20</height>
        </rect>
@@ -3865,7 +3917,7 @@
       <property name="geometry">
        <rect>
         <x>90</x>
-        <y>240</y>
+        <y>260</y>
         <width>41</width>
         <height>31</height>
        </rect>
@@ -3888,7 +3940,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>70</y>
+        <y>90</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -3907,11 +3959,11 @@
        <string>Calculate BPP</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="in_bin_w">
+     <widget class="QLineEdit" name="in_bin_x_dim">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>50</y>
+        <y>70</y>
         <width>31</width>
         <height>20</height>
        </rect>
@@ -3935,7 +3987,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>170</y>
+        <y>190</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -3958,7 +4010,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>100</y>
+        <y>120</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -3981,7 +4033,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>140</y>
+        <y>160</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -4004,7 +4056,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>240</y>
+        <y>260</y>
         <width>41</width>
         <height>31</height>
        </rect>
@@ -4023,11 +4075,11 @@
        <string>&lt;</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="in_bin_d">
+     <widget class="QLineEdit" name="in_bin_y_dim">
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>50</y>
+        <y>70</y>
         <width>30</width>
         <height>20</height>
        </rect>
@@ -4051,7 +4103,7 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>240</y>
+        <y>260</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -4100,7 +4152,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>200</y>
+        <y>220</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -4123,9 +4175,9 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>30</y>
-        <width>121</width>
-        <height>20</height>
+        <y>35</y>
+        <width>91</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="font">
@@ -4141,7 +4193,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>container w*d*h (mm)</string>
+       <string>Container (mm)</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4350,8 +4402,8 @@
      <widget class="QPushButton" name="bt_save_packing_info">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>280</y>
+        <x>140</x>
+        <y>260</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -4373,8 +4425,8 @@
      <widget class="QPushButton" name="bt_load_packing_info">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>310</y>
+        <x>260</x>
+        <y>260</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -4391,6 +4443,34 @@
       </property>
       <property name="text">
        <string>load packing info</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_39">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>121</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>8</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>x_dim*y_dim*z_dim</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </widget>
@@ -4481,7 +4561,7 @@
     </column>
     <column>
      <property name="text">
-      <string>w</string>
+      <string>x_dim</string>
      </property>
      <property name="font">
       <font>
@@ -4495,7 +4575,7 @@
     </column>
     <column>
      <property name="text">
-      <string>d</string>
+      <string>y_dim</string>
      </property>
      <property name="font">
       <font>
@@ -4509,7 +4589,7 @@
     </column>
     <column>
      <property name="text">
-      <string>h</string>
+      <string>z_dim</string>
      </property>
      <property name="font">
       <font>
@@ -4537,7 +4617,7 @@
     </column>
     <column>
      <property name="text">
-      <string>pos_x</string>
+      <string>x_pos</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4545,7 +4625,7 @@
     </column>
     <column>
      <property name="text">
-      <string>pos_y</string>
+      <string>y_pos</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4553,7 +4633,7 @@
     </column>
     <column>
      <property name="text">
-      <string>pos_z</string>
+      <string>z_pos</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4561,7 +4641,7 @@
     </column>
     <column>
      <property name="text">
-      <string>rot_x</string>
+      <string>x_rot</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4569,7 +4649,7 @@
     </column>
     <column>
      <property name="text">
-      <string>rot_y</string>
+      <string>y_rot</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4577,7 +4657,7 @@
     </column>
     <column>
      <property name="text">
-      <string>rot_z</string>
+      <string>z_rot</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -5006,7 +5086,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -5137,8 +5217,8 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>

@@ -58,6 +58,10 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_reset_cloudtransform, SIGNAL(clicked()), this, SLOT(ButtonResetCloudTransformationPressed()));
 	connect(ui->bt_apply_cloudrot, SIGNAL(clicked()), this, SLOT(ButtonApplyCloudRotationPressed()));
 	connect(ui->bt_apply_cloudtranslate, SIGNAL(clicked()), this, SLOT(ButtonApplyCloudTranslationPressed()));
+	connect(ui->bt_apply_zero_cloudrot, SIGNAL(clicked()), this, SLOT(ButtonApplyZeroCloudRotationPressed()));
+	connect(ui->bt_apply_zero_cloudtranslate, SIGNAL(clicked()), this, SLOT(ButtonApplyZeroCloudTranslationPressed()));
+
+	
 	connect(ui->bt_reset_passthrough, SIGNAL(clicked()), this, SLOT(ButtonResetCloudPassthroughPressed()));
 	connect(ui->bt_apply_passthrough, SIGNAL(clicked()), this, SLOT(ButtonApplyCloudPassthroughPressed()));
 	connect(ui->bt_set_cloud_center, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCenterPressed()));
@@ -110,12 +114,12 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_load_packing_info, SIGNAL(clicked()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
 	
 	//resize tree column size	
-	ui->treeWidget->header()->resizeSection(0, 45);
-	for (int j = 1; j < 3; j++)
+
+	for (int j = 0; j < 5; j++)
 	{
-		ui->treeWidget->header()->resizeSection(j, 40);
+		ui->treeWidget->header()->resizeSection(j, 45);
 	}
-	ui->treeWidget->header()->resizeSection(4, 45);
+
 	for (int j = 5; j < 11; j++)
 	{
 		ui->treeWidget->header()->resizeSection(j, 80);
@@ -612,6 +616,20 @@ void MainUI::ButtonResetCloudTransformationPressed()
 {
 	cout << "call ButtonResetCloudTransformationPressed()" << endl;
 }	
+void MainUI::ButtonApplyZeroCloudRotationPressed()
+{
+	ui->edit_cloud_rot_x->setText("0");
+	ui->edit_cloud_rot_y->setText("0");
+	ui->edit_cloud_rot_z->setText("0");
+
+}
+void MainUI::ButtonApplyZeroCloudTranslationPressed()
+{
+	ui->edit_cloud_tran_x->setText("0.0");
+	ui->edit_cloud_tran_y->setText("0.0");
+	ui->edit_cloud_tran_z->setText("0.0");
+}
+
 void MainUI::ButtonApplyCloudRotationPressed()
 {
 	cout << "call ButtonApplyCloudRotationPressed()" << endl;
@@ -692,6 +710,43 @@ void MainUI::ButtonApplyCloudRotationPressed()
 void MainUI::ButtonApplyCloudTranslationPressed()
 {
 	cout << "call ButtonApplyCloudTranslationPressed()" << endl;
+
+	PointCloudXYZRGB::Ptr pointcloud;
+
+	// translate cloud at viewer window
+	if (last_select_item_index == -1)
+	{
+		pointcloud = dataprocess->GetCurrentDisplayPointCloud();
+
+	}
+	else // translate cloud at viewer embeded
+	{
+		pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	}
+
+	if (pointcloud->size() <= 0)
+	{
+		QMessageBox::information(0, QString("ButtonApplyCloudRotationPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+
+	}
+
+	float translate_x = ui->edit_cloud_tran_x->text().toDouble();
+	float translate_y = ui->edit_cloud_tran_y->text().toDouble();
+	float translate_z = ui->edit_cloud_tran_z->text().toDouble();
+
+	dataprocess->TranslatePointCloud(pointcloud,
+		translate_x, translate_y, translate_z);
+
+	// rotate cloud at viewer window
+	if (last_select_item_index == -1)
+	{
+		viewerwindow->UpdateWindowCloudViewer(pointcloud);
+	}
+	else // rotate cloud at viewer embeded
+	{
+		viewerembeded->UpdateCloudViewer(pointcloud);
+	}
 }
 void MainUI::ButtonResetCloudPassthroughPressed()
 {
@@ -735,6 +790,15 @@ void MainUI::ButtonSetCloudCornerPressed()
 
 	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
 	dataprocess->items[last_select_item_index]->transform->CalculateMinMaxPoint(pointcloud);
+
+	double item_width = dataprocess->items[last_select_item_index]->transform->max3d_point.x - dataprocess->items[last_select_item_index]->transform->min3d_point.x;
+	double item_height = dataprocess->items[last_select_item_index]->transform->max3d_point.y - dataprocess->items[last_select_item_index]->transform->min3d_point.y;
+	double item_depth = dataprocess->items[last_select_item_index]->transform->max3d_point.z - dataprocess->items[last_select_item_index]->transform->min3d_point.z;
+
+	QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index);
+	item->setText(1, QString::number(item_width));
+	item->setText(2, QString::number(item_height));
+	item->setText(3, QString::number(item_depth));
 
 	PointTypeXYZRGB move_from_point = dataprocess->items[last_select_item_index]->transform->min3d_point;
 	PointTypeXYZRGB move_to_point;
@@ -1173,9 +1237,9 @@ void MainUI::ButtonExtractClusterPressed()
 	
 
 	ShowMinMaxCenterPoint(dataprocess->container, "container");
-	ui->in_bin_w->setText(QString::number(dataprocess->container->width));
-	ui->in_bin_d->setText(QString::number(dataprocess->container->depth));
-	ui->in_bin_h->setText(QString::number(dataprocess->container->height));
+	ui->in_bin_x_dim->setText(QString::number(dataprocess->container->x_length_mm));
+	ui->in_bin_y_dim->setText(QString::number(dataprocess->container->y_length_mm));
+	ui->in_bin_z_dim->setText(QString::number(dataprocess->container->z_length_mm));
 	ui->in_pos_container_1->setText(QString::number(dataprocess->container->transform->position_OBB.x));
 	ui->in_pos_container_2->setText(QString::number(dataprocess->container->transform->position_OBB.y));
 	ui->in_pos_container_3->setText(QString::number(dataprocess->container->transform->position_OBB.z));
@@ -1188,9 +1252,9 @@ void MainUI::ButtonExtractClusterPressed()
 		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 
 		item->setText(0, QString::number(i+1));
-		item->setText(1, QString::number(dataprocess->items[i]->width));
-		item->setText(2, QString::number(dataprocess->items[i]->depth));
-		item->setText(3, QString::number(dataprocess->items[i]->height));
+		item->setText(1, QString::number(dataprocess->items[i]->x_length_mm));
+		item->setText(2, QString::number(dataprocess->items[i]->y_length_mm));
+		item->setText(3, QString::number(dataprocess->items[i]->z_length_mm));
 		item->setText(4, QString::number(dataprocess->items[i]->object_pointcloud->size()));
 		item->setText(5, QString::number(dataprocess->items[i]->transform->position_OBB.x));
 		item->setText(6, QString::number(dataprocess->items[i]->transform->position_OBB.y));
@@ -1369,6 +1433,7 @@ void MainUI::ButtonAlignAllItemAxisPressed()
 		last_select_item_index = i;
 		ButtonSetCloudCornerPressed();
 	}
+	dataprocess->isSetAlignCorner = true;
 
 }
 void MainUI::ButtonSaveAllItemPcdPressed()
@@ -1515,9 +1580,9 @@ void MainUI::ButtonSaveAllItemPressed()
 
 	dataprocess->pointcloudbpptext->WritePointCloudListForBPP(
 		filename.toStdString(), total_boxes,
-		ui->in_bin_w->text().toDouble(),
-		ui->in_bin_h->text().toDouble(),
-		ui->in_bin_d->text().toDouble(),
+		ui->in_bin_x_dim->text().toDouble(),
+		ui->in_bin_y_dim->text().toDouble(),
+		ui->in_bin_z_dim->text().toDouble(),
 		array_pcd_filename,
 		boxes_width, boxes_height, boxes_depth
 		);
@@ -1555,6 +1620,7 @@ void MainUI::ButtonClearAllItemPressed()
 	}
 
 	viewerembeded->ClearPointCloudEmbededCloudViewer();
+	last_select_item_index = -1;
 
 }
 void MainUI::ButtonCalculateBinPackingPressed()
@@ -1562,6 +1628,18 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	cout << "call ButtonCalculateBinPackingPressed()" << endl;
 
 	int total_boxes = ui->treeWidget->topLevelItemCount();
+
+	if (total_boxes != dataprocess->items.size())
+	{
+		cout << "total_boxes != dataprocess->items.size()  return" << endl;
+		return;
+	}
+
+	if (dataprocess->isSetAlignCorner == false)
+	{
+		ButtonAlignAllItemAxisPressed();
+	}
+
 
 	int *boxes_x_orient = new int[total_boxes];
 	int *boxes_y_orient = new int[total_boxes];
@@ -1607,36 +1685,75 @@ void MainUI::ButtonCalculateBinPackingPressed()
 
 	dataprocess->CalculateBinpack(
 		total_boxes,
-		ui->in_bin_w->text().toDouble(), 
-		ui->in_bin_h->text().toDouble(),
-		ui->in_bin_d->text().toDouble(), 
+		ui->in_bin_x_dim->text().toDouble(),
+		ui->in_bin_y_dim->text().toDouble(),
+		ui->in_bin_z_dim->text().toDouble(),
 		boxes_w, boxes_h, boxes_d,
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
 		boxes_bin_num, boxes_item_num);
 
 	// check if use bin >1
-	int item_not_fit = 0;
+	int item_fit = 0;
 	for (int i = 0; i < total_boxes; i++)
 	{
-		/*std::cout
-		<< i << ":"
-		<< boxes_width[i] << " " << boxes_height[i] << " " << boxes_depth[i] << " "
-		<< "bin_num:" << boxes_bin_num[i] << " "
-		<< "pos:"
-		<< boxes_x_pos[i] << " " << boxes_y_pos[i] << " " << boxes_z_pos[i] << " "
-		<< std::endl;
-		*/
-		if (boxes_bin_num[i] != 1) item_not_fit++;
+
+		if (boxes_bin_num[i] == 1)
+		{
+			item_fit++;
+
+			ObjectTransformationData *itm = dataprocess->items[i];
+
+			//do data in ui and data in items[i] is equal??
+			itm->target_position.x = boxes_x_pos[i] * 0.001;
+			itm->target_position.y = boxes_y_pos[i] * 0.001;
+			itm->target_position.z = boxes_z_pos[i] * 0.001;
+
+			itm->target_orientation.x = boxes_x_orient[i];
+			itm->target_orientation.y = boxes_y_orient[i];
+			itm->target_orientation.z = boxes_z_orient[i];
+
+			if (itm->x_length_mm == boxes_x_orient[i] &&
+				itm->y_length_mm == boxes_y_orient[i] &&
+				itm->z_length_mm == boxes_z_orient[i])
+			{
+				itm->rotation_case = 1;
+			}
+			else if (itm->x_length_mm == boxes_z_orient[i] &&
+				itm->y_length_mm == boxes_y_orient[i] &&
+				itm->z_length_mm == boxes_x_orient[i])
+			{
+				itm->rotation_case = 2;
+			}
+			else if (itm->x_length_mm == boxes_x_orient[i] &&
+				itm->y_length_mm == boxes_z_orient[i] &&
+				itm->z_length_mm == boxes_y_orient[i])
+			{
+				itm->rotation_case = 3;
+			}
+			else if (itm->x_length_mm == boxes_y_orient[i] &&
+				itm->y_length_mm == boxes_x_orient[i] &&
+				itm->z_length_mm == boxes_z_orient[i])
+			{
+				itm->rotation_case = 4;
+			}
+			else if (itm->x_length_mm == boxes_z_orient[i] &&
+				itm->y_length_mm == boxes_x_orient[i] &&
+				itm->z_length_mm == boxes_y_orient[i])
+			{
+				itm->rotation_case = 5;
+			}
+			else if (itm->x_length_mm == boxes_y_orient[i] &&
+				itm->y_length_mm == boxes_z_orient[i] &&
+				itm->z_length_mm == boxes_x_orient[i])
+			{
+				itm->rotation_case = 6;
+			}
+		}
 
 	}
-	if (item_not_fit != 0)
-	{
-		//std::cout << " cannot fit another " << item_not_fit << " boxes to bin" << std::endl;
-		QString text = "Another " + QString::number(item_not_fit) + " boxes cannot fit in to bin"; // CORRECT
-		QMessageBox::information(0, QString("Cannot fit all boxes"), text, QMessageBox::Ok);
-	}
-	//remove remain boxes
+	cout << endl;
+	cout << "packed " << item_fit << "/" << total_boxes << endl;
 
 	//binpack->SortBoxesOrder();
 
@@ -1699,15 +1816,47 @@ void MainUI::ButtonShowPackingTargetPressed()
 {
 	cout << "call ButtonShowPackingPressed()" << endl;
 	
-	/*viewerwindow->ShowBinpackingTarget(
+	//hilight circle at each item (input_position)
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+		//cout << "i=" << i << " x=" << dataprocess->items[i]->x_length << " z=" << dataprocess->items[i]->z_length << endl;
+		float radius;
+		if (dataprocess->items[i]->x_length > dataprocess->items[i]->z_length)
+		{
+			radius = dataprocess->items[i]->x_length*0.5;
+		}
+		else
+		{
+			radius = dataprocess->items[i]->z_length*0.5;
+		}
+
+		viewerwindow->AddCircleWindowCloudViewer(dataprocess->items[i]->transform->position_OBB,
+			radius, 1.0, 0.0, 0.0, "circle " + i);
+
+		
+
+	}
+
+	//print packing output at console
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+		/*cout << "i = " << i << endl
+			<< " dim = " << dataprocess->items[i]->x_length_mm << 
+			" " << dataprocess->items[i]->y_length_mm << 
+			" " << dataprocess->items[i]->z_length_mm << endl
+			<< " pos =" << dataprocess->items[i]->target_position << endl
+			<< " orient = " << dataprocess->items[i]->target_orientation << endl
+			<< endl;*/
+		cout << "i = " << i << endl
+			<< " pos =" << dataprocess->items[i]->target_position << endl
+			<< " rotation_case = " << dataprocess->items[i]->rotation_case << endl
+			<< endl;
+	}
+
+	viewerwindow->ShowBinPackingTarget(
 	dataprocess->container->transform->min3d_point,
-	total_boxes,
-	ui->in_bin_w->text().toDouble(),
-	ui->in_bin_d->text().toDouble(),
-	ui->in_bin_h->text().toDouble(),
-	boxes_x_orient, boxes_y_orient, boxes_z_orient,
-	boxes_x_pos, boxes_y_pos, boxes_z_pos);
-	*/
+	dataprocess->items);
+	
 	
 }
 void MainUI::ButtonShowPackingIndicatePressed()
