@@ -115,6 +115,25 @@ private slots:
 	void ButtonSetCloudCenterPressed();
 	void ButtonSetCloudAlignCornerPressed();
 	void ButtonCalculateCloudTransformPressed();
+	void ButtonFillEmptyPressed();
+	void ButtonFillInvertPressed();
+
+	//cluster list
+	void PressedTreeItem(QTreeWidgetItem *current_select_item);
+	void ButtonLoadPointCloudToListPressed();
+	void ButtonSavePointCloudFromListPressed();
+
+	void ButtonAlignAllItemAxisPressed();
+	void ButtonSaveAllItemPcdPressed();
+
+	void ButtonFillEmptyAllPressed();
+	void ButtonFillInvertAllPressed();
+
+	void ButtonLoadAllItemPressed();
+	void ButtonSaveAllItemPressed();
+
+	void ButtonRemoveItemPressed();
+	void ButtonClearAllItemPressed();
 
 	//BinPacking
 	void ButtonCalculateBinPackingPressed();
@@ -131,19 +150,6 @@ private slots:
 	void ButtonSaveBinPackingInfoPressed();
 	void ButtonLoadBinPackingInfoPressed();
 
-	//cluster list
-	void PressedTreeItem(QTreeWidgetItem *current_select_item);
-	void ButtonLoadPointCloudToListPressed();
-	void ButtonSavePointCloudFromListPressed();
-
-	void ButtonAlignAllItemAxisPressed();
-	void ButtonSaveAllItemPcdPressed();
-
-	void ButtonLoadAllItemPressed();
-	void ButtonSaveAllItemPressed();
-
-	void ButtonRemoveItemPressed();
-	void ButtonClearAllItemPressed();
 
 };
 

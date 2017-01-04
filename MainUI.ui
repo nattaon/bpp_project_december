@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>786</height>
+    <width>1030</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>70</y>
-      <width>491</width>
+      <width>501</width>
       <height>391</height>
      </rect>
     </property>
@@ -3884,6 +3884,58 @@
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="bt_fill_invert">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>220</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Fill invert 3 face</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_fill_empty">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>190</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Fill empty 5 face</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_bpp">
      <attribute name="title">
@@ -4478,8 +4530,8 @@
    <widget class="QVTKWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>10</y>
+      <x>520</x>
+      <y>20</y>
       <width>500</width>
       <height>500</height>
      </rect>
@@ -4492,7 +4544,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>520</y>
+      <y>530</y>
       <width>1001</width>
       <height>231</height>
      </rect>
@@ -4681,9 +4733,9 @@
    <widget class="QPushButton" name="bt_all_load">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>320</x>
       <y>490</y>
-      <width>111</width>
+      <width>121</width>
       <height>23</height>
      </rect>
     </property>
@@ -4727,9 +4779,9 @@
    <widget class="QPushButton" name="bt_all_save">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>320</x>
       <y>470</y>
-      <width>111</width>
+      <width>121</width>
       <height>23</height>
      </rect>
     </property>
@@ -4750,7 +4802,7 @@
    <widget class="QPushButton" name="bt_item_clearall">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>450</x>
       <y>490</y>
       <width>60</width>
       <height>23</height>
@@ -4796,8 +4848,8 @@
    <widget class="QPushButton" name="bt_item_remove">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>490</y>
+      <x>450</x>
+      <y>470</y>
       <width>60</width>
       <height>23</height>
      </rect>
@@ -5038,7 +5090,7 @@
      <rect>
       <x>80</x>
       <y>490</y>
-      <width>111</width>
+      <width>131</width>
       <height>23</height>
      </rect>
     </property>
@@ -5053,7 +5105,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>save items to .pcd</string>
+     <string>save all items to .pcd</string>
     </property>
    </widget>
    <widget class="QPushButton" name="bt_align_all_items_to_axis">
@@ -5061,7 +5113,30 @@
      <rect>
       <x>80</x>
       <y>470</y>
-      <width>111</width>
+      <width>131</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>align all items to axis</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_fill_empty_all">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>470</y>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
@@ -5076,7 +5151,30 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>align items to axis</string>
+     <string>fill empty all</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_fill_invert_all">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>490</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>fill invert all</string>
     </property>
    </widget>
   </widget>
@@ -5085,7 +5183,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1030</width>
      <height>26</height>
     </rect>
    </property>

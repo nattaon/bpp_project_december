@@ -68,6 +68,9 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_set_cloud_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCornerPressed()));
 	connect(ui->bt_set_cloud_align_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudAlignCornerPressed()));
 	connect(ui->bt_calculate_cloud_transform, SIGNAL(clicked()), this, SLOT(ButtonCalculateCloudTransformPressed()));
+	connect(ui->bt_fill_empty, SIGNAL(clicked()), this, SLOT(ButtonFillEmptyPressed()));
+	connect(ui->bt_fill_invert, SIGNAL(clicked()), this, SLOT(ButtonFillInvertPressed()));
+
 
 	//tab:segmentation
 	connect(ui->bt_apply_voxelgrid, SIGNAL(clicked()), this, SLOT(ButtonApplyVoxelGridPressed()));
@@ -92,6 +95,9 @@ MainUI::MainUI(QWidget *parent) :
 	
 	connect(ui->bt_align_all_items_to_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignAllItemAxisPressed()));
 	connect(ui->bt_save_all_items_to_pcd, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPcdPressed()));
+
+	connect(ui->bt_fill_empty_all, SIGNAL(clicked()), this, SLOT(ButtonFillEmptyAllPressed()));
+	connect(ui->bt_fill_invert_all, SIGNAL(clicked()), this, SLOT(ButtonFillInvertAllPressed()));
 
 	connect(ui->bt_all_load, SIGNAL(clicked()), this, SLOT(ButtonLoadAllItemPressed()));
 	connect(ui->bt_all_save, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPressed()));
@@ -143,7 +149,7 @@ bool MainUI::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress) {
 		QKeyEvent* key_event = static_cast<QKeyEvent*>(event);
-		cout << "key " << key_event->key() << " object:" << object->objectName().toStdString() << endl;
+		//cout << "key " << key_event->key() << " object:" << object->objectName().toStdString() << endl;
 
 
 		if (key_event->key() == Qt::Key_Right)
@@ -161,7 +167,7 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 {
 	//after opengl show boxes, this function is not working tooo!!!!
 	//solve: set ui as nofocus
-	cout << "MainWindow event->key() " << event->key() << endl;
+	//cout << "MainWindow event->key() " << event->key() << endl;
 
 	if (event->key() == Qt::Key_Up)
 	{
@@ -772,6 +778,14 @@ void MainUI::ButtonApplyCloudPassthroughPressed()
 
 }
 
+void MainUI::ButtonFillEmptyPressed()
+{}
+void MainUI::ButtonFillInvertPressed()
+{}
+void MainUI::ButtonFillEmptyAllPressed()
+{}
+void MainUI::ButtonFillInvertAllPressed()
+{}
 
 
 void MainUI::ButtonSetCloudCenterPressed()
@@ -791,19 +805,22 @@ void MainUI::ButtonSetCloudCornerPressed()
 	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
 	dataprocess->items[last_select_item_index]->transform->CalculateMinMaxPoint(pointcloud);
 
-	double item_width = dataprocess->items[last_select_item_index]->transform->max3d_point.x - dataprocess->items[last_select_item_index]->transform->min3d_point.x;
-	double item_height = dataprocess->items[last_select_item_index]->transform->max3d_point.y - dataprocess->items[last_select_item_index]->transform->min3d_point.y;
-	double item_depth = dataprocess->items[last_select_item_index]->transform->max3d_point.z - dataprocess->items[last_select_item_index]->transform->min3d_point.z;
+	int item_x_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.x - dataprocess->items[last_select_item_index]->transform->min3d_point.x);
+	int item_y_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.y);// -dataprocess->items[last_select_item_index]->transform->min3d_point.y;
+	int item_z_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.z - dataprocess->items[last_select_item_index]->transform->min3d_point.z);
 
+	
 	QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index);
-	item->setText(1, QString::number(item_width));
-	item->setText(2, QString::number(item_height));
-	item->setText(3, QString::number(item_depth));
+	item->setText(1, QString::number(item_x_dim_mm));
+	item->setText(2, QString::number(item_y_dim_mm));
+	item->setText(3, QString::number(item_z_dim_mm));
+
+	
 
 	PointTypeXYZRGB move_from_point = dataprocess->items[last_select_item_index]->transform->min3d_point;
 	PointTypeXYZRGB move_to_point;
 	move_to_point.x = 0;
-	move_to_point.y = 0;
+	move_to_point.y = dataprocess->items[last_select_item_index]->transform->min3d_point.y; // not move y
 	move_to_point.z = 0;
 
 	dataprocess->MovePointCloudFromTo(pointcloud, move_from_point, move_to_point);
@@ -1169,6 +1186,13 @@ void MainUI::ButtonShowClusterPressed()
 		cout << "no point cloud" << endl;
 		return;
 	}
+	dataprocess->StoreLastedOperationCloud(dataprocess->GetCurrentDisplayPointCloud());
+	PointCloudXYZRGB::Ptr pointcloud_display = dataprocess->GetCurrentDisplayPointCloud();
+	PointCloudXYZRGB::Ptr pointcloud_for_extract_cluster(new PointCloudXYZRGB);
+
+	pcl::copyPointCloud(*pointcloud_display, *pointcloud_for_extract_cluster);
+	
+
 
 	double cluster_tolerance = ui->in_clusterextract_tolerance->text().toDouble();
 	int cluster_min_percentage = ui->in_clusterextract_min->text().toInt();
@@ -1176,9 +1200,10 @@ void MainUI::ButtonShowClusterPressed()
 	int cluster_min_size = cluster_min_percentage*pointcloudsize / 100;
 	int cluster_max_size = cluster_max_percentage*pointcloudsize / 100;
 
+	
 
 	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
-	dataprocess->clusterextract->ExtractCluster(dataprocess->GetCurrentDisplayPointCloud());
+	dataprocess->clusterextract->ExtractCluster(pointcloud_for_extract_cluster);
 
 	viewerwindow->DrawPlanarAtOrigin(0.5, 1.0, 1.0, 1.0, "planeorigin");
 
@@ -1328,7 +1353,7 @@ void MainUI::ButtonShowClusterVectorPressed()
 //cluster list
 void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 {
-	cout << "call PressedTreeItem()" << endl;
+	//cout << "call PressedTreeItem()" << endl;
 
 	if (last_select_item_index != -1)// if has already hilight previous one
 	{
@@ -1354,7 +1379,7 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 
 
 
-	cout << "select " << last_select_item_index << endl;
+	//cout << "select " << last_select_item_index << endl;
 	//show seleted cloud
 	//program->ShowSelectedListedCloudIndex(last_select_item_index);
 
@@ -1591,12 +1616,16 @@ void MainUI::ButtonSaveAllItemPressed()
 }
 void MainUI::ButtonRemoveItemPressed()
 {
-	cout << "call ButtonRemoveItemPressed()" << endl;
+	cout << "call ButtonRemoveItemPressed() " << last_select_item_index << endl;
 
 	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
 
 	delete last_selected_item;
 
+	//cout << "items size=" << dataprocess->items.size() << endl;
+	// Deletes the second element (vec[1])
+	dataprocess->items.erase(dataprocess->items.begin() + last_select_item_index);
+	//cout << "items size=" << dataprocess->items.size() << endl;
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 
 	//rerun index number
@@ -1605,6 +1634,31 @@ void MainUI::ButtonRemoveItemPressed()
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
 		item->setText(0, QString::number(i + 1));
 
+	}
+	//if delete last item:next select item = deleteitem index-1 
+	if (last_select_item_index == total_boxes)
+	{
+		last_select_item_index--;
+	}
+	//cout << "last_select_item_index=" << last_select_item_index << endl;
+
+
+
+	if (dataprocess->items.size() != total_boxes)
+	{
+		QMessageBox::information(0, QString("ButtonRemoveItemPressed"), QString("dataprocess->items.size() != total_boxes"), QMessageBox::Ok);
+		return;
+	}
+
+	//if has item in ui update viewer embeded to show remain pointcloud
+	if (last_select_item_index >= 0)
+	{
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(last_select_item_index);
+		PressedTreeItem(item);
+	}
+	else
+	{
+		viewerembeded->ClearPointCloudEmbededCloudViewer();
 	}
 
 }
@@ -1631,13 +1685,17 @@ void MainUI::ButtonCalculateBinPackingPressed()
 
 	if (total_boxes != dataprocess->items.size())
 	{
-		cout << "total_boxes != dataprocess->items.size()  return" << endl;
+		cout << "total_boxes = " << total_boxes << endl;
+		cout << "dataprocess->items.size() = " << dataprocess->items.size() << endl;
+		cout << "total_boxes != dataprocess->items.size()  RETURN FUNCTION" << endl;
 		return;
 	}
 
+	//arrange at 0,0,0
 	if (dataprocess->isSetAlignCorner == false)
 	{
-		ButtonAlignAllItemAxisPressed();
+		QMessageBox::information(0, QString("Point cloud not corner"), QString("Please Set Pointcloud at corner first"), QMessageBox::Ok);
+		return;
 	}
 
 
@@ -1651,26 +1709,17 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	int *boxes_z_pos = new int[total_boxes];
 	int *boxes_item_num = new int[total_boxes];
 
-	int *boxes_w, *boxes_h, *boxes_d;
-
-	int *boxes_width = new int[total_boxes];
-	int *boxes_height = new int[total_boxes];
-	int *boxes_depth = new int[total_boxes];
+	int *boxes_x_dim = new int[total_boxes];
+	int *boxes_y_dim = new int[total_boxes];
+	int *boxes_z_dim = new int[total_boxes];
 
 	for (int i = 0; i < total_boxes; i++)
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
-		boxes_width[i] = item->text(1).toInt();
-		boxes_height[i] = item->text(3).toInt();
-		boxes_depth[i] = item->text(2).toInt();
-	}
+		boxes_x_dim[i] = item->text(1).toInt();
+		boxes_y_dim[i] = item->text(2).toInt();
+		boxes_z_dim[i] = item->text(3).toInt();
 
-	boxes_w = boxes_width;
-	boxes_h = boxes_height;
-	boxes_d = boxes_depth;
-
-	for (int i = 0; i < total_boxes; ++i)
-	{
 		boxes_x_orient[i] = 0;
 		boxes_y_orient[i] = 0;
 		boxes_z_orient[i] = 0;
@@ -1679,19 +1728,42 @@ void MainUI::ButtonCalculateBinPackingPressed()
 		boxes_x_pos[i] = 0;
 		boxes_y_pos[i] = 0;
 		boxes_z_pos[i] = 0;
-		boxes_item_num[i] = 0;
+		boxes_item_num[i] = i;
 	}
 
+
+	for (int i = 0; i < total_boxes; i++)
+	{
+		cout
+			<< "No." << boxes_item_num[i] << ", "
+			<< "bin_num:" << boxes_bin_num[i] << ", "
+			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
+			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
+			<< "orient:" << boxes_x_orient[i] << "," << boxes_y_orient[i] << "," << boxes_z_orient[i] << ", "
+			<< endl;
+
+	}
 
 	dataprocess->CalculateBinpack(
 		total_boxes,
 		ui->in_bin_x_dim->text().toDouble(),
 		ui->in_bin_y_dim->text().toDouble(),
 		ui->in_bin_z_dim->text().toDouble(),
-		boxes_w, boxes_h, boxes_d,
+		boxes_x_dim, boxes_y_dim, boxes_z_dim,
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
 		boxes_bin_num, boxes_item_num);
+
+	for (int i = 0; i < total_boxes; i++)
+	{
+		cout
+			<< "No." << boxes_item_num[i] << ", "
+			<< "bin_num:" << boxes_bin_num[i] << ", "
+			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
+			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
+			<< "orient:" << boxes_x_orient[i] << "," << boxes_y_orient[i] << "," << boxes_z_orient[i] << ", "
+			<< endl;
+	}
 
 	// check if use bin >1
 	int item_fit = 0;
@@ -1814,7 +1886,7 @@ void MainUI::ButtonTrackItemPositionPressed()
 
 void MainUI::ButtonShowPackingTargetPressed()
 {
-	cout << "call ButtonShowPackingPressed()" << endl;
+	cout << "call ButtonShowPackingTargetPressed()" << endl;
 	
 	//hilight circle at each item (input_position)
 	for (int i = 0; i < dataprocess->items.size(); i++)
@@ -1853,15 +1925,31 @@ void MainUI::ButtonShowPackingTargetPressed()
 			<< endl;
 	}
 
-	viewerwindow->ShowBinPackingTarget(
-	dataprocess->container->transform->min3d_point,
-	dataprocess->items);
+	viewerwindow->ShowBinPackingTarget(	dataprocess->container,	dataprocess->items);
 	
 	
 }
 void MainUI::ButtonShowPackingIndicatePressed()
 {
 	cout << "call ButtonShowPackingIndicatePressed()" << endl;
+	/*for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+
+		//direction symbol at input cloud
+		viewerwindow->AddSymbolWindowCloudViewer(
+			dataprocess->items[i]->transform->position_OBB,
+			dataprocess->items[i]->transform->min3d_point,
+			dataprocess->items[i]->transform->max3d_point,
+			dataprocess->items[i]->transform->mass_center,
+			dataprocess->items[i]->transform->major_vector,
+			dataprocess->items[i]->transform->middle_vector,
+			1.0, 1.0, 1.0, "symbol " + i);
+
+
+	}*/
+
+	viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items);
+	
 
 }
 void MainUI::ButtonShowPackingAnimationPressed()
@@ -1869,6 +1957,11 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	cout << "call ButtonShowPackingAnimationPressed()" << endl;
 
 
+	viewerwindow->DrawItemCubeShader(
+		0.3, 0.3, 0.3,
+		0, 0, 0,
+		0.5,0.5,0.5,
+		"testcube");
 
 }
 

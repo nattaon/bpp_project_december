@@ -60,14 +60,19 @@ public:
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
 
-	void ShowBinpacking(
-		PointTypeXYZRGB ref_position,
-		int n, int binW, int binH, int binD, 
-		int *w, int *h, int *d, int *x, int *y, int *z);
+	void ShowBinpackingIndication(ObjectTransformationData *container, vector<ObjectTransformationData*> items);
 
-	void ShowBinPackingTarget(PointTypeXYZRGB container_position, vector<ObjectTransformationData*> items);
+	void ShowBinPackingTarget(ObjectTransformationData *container, vector<ObjectTransformationData*> items);
 
-	void DrawItemCube(float w, float h, float d, float x, float y, float z, string shapename);
+	void DrawItemCubeShader(float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b,
+		string shapename);
+
+	void DrawItemCube(float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b,
+		string shapename);
 	
 	void DrawItemArrowDirectionSymbol(
 		float w, float h, float d, 
@@ -77,7 +82,7 @@ public:
 
 
 
-	void randomcolor(double &r,double &g,double &b);
+	void randomcolor(float &r, float &g, float &b);
 
 
 

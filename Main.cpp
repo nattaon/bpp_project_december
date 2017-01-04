@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     mainui.SetDataProcess(&d);
     mainui.SetViewerWindow(&v);
     mainui.show();
-	mainui.move(600, 200);
+	mainui.move(900, 200);
 
     return a.exec();
 }

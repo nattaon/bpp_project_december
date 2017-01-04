@@ -1069,7 +1069,7 @@ void write_visualization_data_file(void)
 {
   char n[5];
 
-  item_no[current_item] = cboxi;
+  //item_no[current_item] = cboxi;
   if (!unpacked) // packable box
   {
     sprintf(strcox, "%d", boxlist[cboxi].cox);
