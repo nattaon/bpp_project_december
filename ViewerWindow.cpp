@@ -742,42 +742,42 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		item_pointcloud.reset(new PointCloudXYZRGB);
 		pcl::copyPointCloud(*items[i]->object_pointcloud, *item_pointcloud);
 
-		//if (items[i]->rotation_case == 1) // do nothing
-		if (items[i]->rotation_case == 2)
+		//if (items[i]->rotation_case == 0) // do nothing
+		if (items[i]->rotation_case == 1)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
-							90, rotation_y_axis);
-			dataprocess->TranslatePointCloud(item_pointcloud,
-				0.0, 0.0, items[i]->input_dimension.x);
-
-		}
-		else if (items[i]->rotation_case == 3)
-		{
-			dataprocess->RotatePointCloud(item_pointcloud,
-				-90, rotation_x_axis);
+							-90, rotation_x_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
 				0.0, 0.0, items[i]->input_dimension.y);
+
 		}
-		else if (items[i]->rotation_case == 4)
+		else if (items[i]->rotation_case == 2)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_z_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
 				items[i]->input_dimension.y, 0.0, 0.0);
 		}
-		else if (items[i]->rotation_case == 5)
+		else if (items[i]->rotation_case == 3)
+		{
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_x_axis);
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_z_axis);
+		}
+		else if (items[i]->rotation_case == 4)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_y_axis);
-			dataprocess->RotatePointCloud(item_pointcloud,
-				90, rotation_x_axis);
+			dataprocess->TranslatePointCloud(item_pointcloud,
+				0.0, 0.0, items[i]->input_dimension.x);
 		}
-		else if (items[i]->rotation_case == 6)
+		else if (items[i]->rotation_case == 5)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
-				-90, rotation_x_axis);
-			dataprocess->RotatePointCloud(item_pointcloud,
 				-90, rotation_y_axis);
+			dataprocess->RotatePointCloud(item_pointcloud,
+				-90, rotation_z_axis);
 		}
 
 		dataprocess->TranslatePointCloud(item_pointcloud,
@@ -893,7 +893,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 		//link line between input and target
 		window_view->addLine(input_center_symbol, target_center_symbol, 1.0f, 0.0f, 0.0f, line_name);
-		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2.0, line_name);
+		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
 
 		
 		window_view->spinOnce();

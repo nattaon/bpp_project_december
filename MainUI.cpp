@@ -1789,23 +1789,29 @@ void MainUI::ButtonCalculateBinPackingPressed()
 				itm->y_length_mm == boxes_y_orient[i] &&
 				itm->z_length_mm == boxes_z_orient[i])
 			{
-				itm->rotation_case = 1;
-			}
-			else if (itm->x_length_mm == boxes_z_orient[i] &&
-				itm->y_length_mm == boxes_y_orient[i] &&
-				itm->z_length_mm == boxes_x_orient[i])
-			{
-				itm->rotation_case = 2;
+				itm->rotation_case = 0;
 			}
 			else if (itm->x_length_mm == boxes_x_orient[i] &&
 				itm->y_length_mm == boxes_z_orient[i] &&
 				itm->z_length_mm == boxes_y_orient[i])
 			{
-				itm->rotation_case = 3;
+				itm->rotation_case = 1;
 			}
 			else if (itm->x_length_mm == boxes_y_orient[i] &&
 				itm->y_length_mm == boxes_x_orient[i] &&
 				itm->z_length_mm == boxes_z_orient[i])
+			{
+				itm->rotation_case = 2;
+			}
+			else if (itm->x_length_mm == boxes_y_orient[i] &&
+				itm->y_length_mm == boxes_z_orient[i] &&
+				itm->z_length_mm == boxes_x_orient[i])
+			{
+				itm->rotation_case = 3;
+			}
+			else if (itm->x_length_mm == boxes_z_orient[i] &&
+				itm->y_length_mm == boxes_y_orient[i] &&
+				itm->z_length_mm == boxes_x_orient[i])
 			{
 				itm->rotation_case = 4;
 			}
@@ -1814,12 +1820,6 @@ void MainUI::ButtonCalculateBinPackingPressed()
 				itm->z_length_mm == boxes_y_orient[i])
 			{
 				itm->rotation_case = 5;
-			}
-			else if (itm->x_length_mm == boxes_y_orient[i] &&
-				itm->y_length_mm == boxes_z_orient[i] &&
-				itm->z_length_mm == boxes_x_orient[i])
-			{
-				itm->rotation_case = 6;
 			}
 		}
 
