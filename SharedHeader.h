@@ -41,7 +41,7 @@
 
 //#include <pcl/features/board.h>
 //#include <pcl/features/intensity_gradient.h>
-//#include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d.h>
 //#include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/moment_of_inertia_estimation.h>
 //#include <pcl/features/rift.h>
@@ -53,7 +53,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 
 //#include <pcl/kdtree/impl/kdtree_flann.hpp>
-//#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 #include <pcl/io/pcd_io.h>
 
@@ -68,7 +68,7 @@
 
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-
+#include <pcl/surface/gp3.h>
 //#include <boost/thread/thread.hpp>
 
 #include <pcl/visualization/pcl_visualizer.h>

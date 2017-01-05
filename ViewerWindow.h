@@ -18,6 +18,9 @@ public:
 
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
+	void AddPolygonMesh(float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b);
 
 	void ClearPointCloudWindowCloudViewer();
 	void ClearShapeWindowCloudViewer();
@@ -66,7 +69,7 @@ public:
 
 	void DrawItemCubeShader(float w, float h, float d,
 		float x, float y, float z,
-		float r, float g, float b,
+		int r, int g, int b,
 		string shapename);
 
 	void DrawItemCube(float w, float h, float d,
@@ -82,8 +85,8 @@ public:
 
 
 
-	void randomcolor(float &r, float &g, float &b);
-
+	void randomcolorfloat(float &r, float &g, float &b);
+	void randomcolorint(int &r, int &g, int &b);
 
 
 

@@ -1960,8 +1960,13 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	viewerwindow->DrawItemCubeShader(
 		0.3, 0.3, 0.3,
 		0, 0, 0,
-		0.5,0.5,0.5,
+		255,0,0,
 		"testcube");
+/*
+	viewerwindow->AddPolygonMesh(
+		0.3, 0.3, 0.3,
+		0, 0, 0,
+		0.5, 0.5, 0.5);*/
 
 }
 
