@@ -12,8 +12,6 @@ MainUI::MainUI(QWidget *parent) :
 
     ui->setupUi(this);
 
-	isRegisterCameraCallback = false;
-
 	timerId_kinect = 0;
 	last_select_item_index = -1;
 
@@ -53,6 +51,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_reset_viewerparam, SIGNAL(clicked()), this, SLOT(ButtonResetCamParamPressed()));
 	connect(ui->bt_apply_camrot, SIGNAL(clicked()), this, SLOT(ButtonApplyCamRotationPressed()));
 	connect(ui->bt_apply_campos, SIGNAL(clicked()), this, SLOT(ButtonApplyCamTranslationPressed()));
+	connect(ui->bt_get_cam_param, SIGNAL(clicked()), this, SLOT(ButtonGetRegisterCameraCallbackPressed()));
 
 	//tab:cloud transformation
 	connect(ui->bt_reset_cloudtransform, SIGNAL(clicked()), this, SLOT(ButtonResetCloudTransformationPressed()));
@@ -202,6 +201,11 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 	QWidget::keyPressEvent(event);
 
 }
+void MainUI::ButtonGetRegisterCameraCallbackPressed()
+{
+	viewerwindow->window_view->registerMouseCallback(&MainUI::mouseEventOccurred, *this, (void*)&viewerwindow->window_view);
+
+}
 void MainUI::mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void)
 {	//trigged when : mouse position is move in viewer area
 	//boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
@@ -264,12 +268,6 @@ void MainUI::ButtonConnectPressed()
 {
 
 	cout << "call ButtonConnectPressed()" << endl;
-	if (!isRegisterCameraCallback)
-	{
-		viewerwindow->window_view->registerMouseCallback(&MainUI::mouseEventOccurred, *this, (void*)&viewerwindow->window_view);
-		isRegisterCameraCallback = true;
-	}
-
 	if (timerId_kinect != 0)
 	{
 		QMessageBox::information(0, QString("Connect kinect"), QString("Kinect is already connected"), QMessageBox::Ok);
@@ -354,12 +352,7 @@ void MainUI::ButtonSavePointCloudFromViewerPressed()
 void MainUI::ButtonLoadPointCloudToViewerPressed()
 {
 	cout << "call ButtonLoadPointCloudToViewerPressed()" << endl;
-	if (!isRegisterCameraCallback)
-	{
-		viewerwindow->window_view->registerMouseCallback(&MainUI::mouseEventOccurred, *this, (void*)&viewerwindow->window_view);
-		isRegisterCameraCallback = true;
-	}
-	
+
 
 	//disconnect kinect first
 	if (timerId_kinect != 0)
@@ -1999,6 +1992,8 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	test_item->target_orientation.y = 115;
 	test_item->target_orientation.z = 196;
 
+	test_item->rotation_case = 5;
+
 	viewerwindow->ShowBinpackingAnimation(test_container, test_item);
 
 	return;
@@ -2018,7 +2013,6 @@ void MainUI::ButtonShowZeroPackingPressed()
 {
 	cout << "call ButtonShowZeroPackingPressed()" << endl;
 	viewerwindow->DrawPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
-
 
 }
 void MainUI::ButtonShowPrevPackingPressed()

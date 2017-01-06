@@ -29,7 +29,6 @@ private:
 
 	timermode mode;
 
-	bool isRegisterCameraCallback;
 
 	QTime time;
 	int timerId_kinect;
@@ -80,6 +79,8 @@ private slots:
 
 	void ButtonApplyCamRotationPressed();
 	void ButtonApplyCamTranslationPressed();
+
+	void ButtonGetRegisterCameraCallbackPressed();
 
 	//tab:segmentation
 	void ButtonApplyPlaneSegmentPressed();

@@ -10,6 +10,7 @@ class ViewerWindow : public QObject
 private:
 	DataProcess *dataprocess;
 
+
 	void timerEvent(QTimerEvent *event);
 	//QTime time_animate;
 	int timer_animate;
@@ -22,15 +23,21 @@ private:
 
 	//transform.rotate(Eigen::AngleAxisf(theta, rotation_vector));
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
-	float current_theta_cube_rot, target_theta_cube_rot;
-	float target_cube_rotation_vector;
+	float current_theta_cube_rot;
+	//float target_theta_cube_rot;
+	//float target_cube_rotation_vector;
+	Eigen::Matrix<float, 1, 3>  cube_first_rotate_vector;
+	Eigen::Matrix<float, 1, 3>  cube_second_rotate_vector;
+	Eigen::Matrix<float, 1, 3>  cube_adjust_translate;
 
 	float cube_x_dif, cube_z_dif, cube_theta_dif;
-	float translate_count;
-	float adjust_translate;
+	int translate_count,rotate_count;
 
-	bool first_translate, second_rotate, third_rotate;
+
+	bool first_translate, second_rotate, third_rotate,adjust_translate;
 	bool first_translate_done, second_rotate_done, third_rotate_done, adjust_translate_done;
+
+	pcl::PolygonMesh current_animate_cube;
 
 public:
     ViewerWindow();
@@ -100,9 +107,21 @@ public:
 
 	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
 
-	void DrawItemCubeShader(float w, float h, float d,
-		float x, float y, float z,
+	pcl::PolygonMesh DrawCubePolymesh(
+		float x_dim, float y_dim, float z_dim, 
+		int r, int g, int b);
+	
+	void DrawItemCubeShader(
+		float x_dim, float y_dim, float z_dim,
+		float target_x, float target_y, float target_z,
+		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
 		int r, int g, int b,
+		string shapename);
+
+	pcl::PolygonMesh UpdateItemCubeShader(
+		pcl::PolygonMesh cube_mesh,
+		float translate_x, float translate_y, float translate_z,
+		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
 		string shapename);
 
 	void DrawItemCube(float w, float h, float d,
