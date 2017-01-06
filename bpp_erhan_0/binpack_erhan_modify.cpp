@@ -99,7 +99,7 @@ double elapsed_time;
 
 struct boxinfo {
   char is_packed;
-  short int dim1, dim2, dim3, n, cox, coy, coz, packx, packy, packz, id;//n is number of boxes which have same size
+  short int dim1, dim2, dim3, n, cox, coy, coz, packx, packy, packz;
   long int vol;
 } boxlist[5000];
 
@@ -165,20 +165,18 @@ int total_box_to_pack,
   yy = bin_h;
   zz = bin_d;
 
-  //copy input to boxlist struct
-  total_boxes = 0;
+  total_boxes = 1;
   for (int i = 0; i < total_box_to_pack; i++)
   {
-	  total_boxes++;
 	  boxlist[total_boxes].dim1 = box_w[i];
 	  boxlist[total_boxes].dim2 = box_h[i];
 	  boxlist[total_boxes].dim3 = box_d[i];
 
 	  boxlist[total_boxes].vol = boxlist[total_boxes].dim1 * boxlist[total_boxes].dim2 * boxlist[total_boxes].dim3;
 	  boxlist[total_boxes].n = 1;
-	  boxlist[total_boxes].id = item_no[i];
-	  
+	  total_boxes++;
   }
+  --total_boxes;
 
   initialize();
   time(&start);
@@ -188,7 +186,7 @@ int total_box_to_pack,
 
   free(scrapfirst);
 
-  cout << "malloc count = " << malloccount << endl;
+  cout << "malloc couunt = " << malloccount << endl;
 
  // free(smallestz);
 
@@ -263,11 +261,10 @@ void execute_iterations(void)
         break;
     }
 
-
     list_candidate_layers();
     layers[0].layereval = -1;
-	cout << "layers " << layers << endl;
-	cout << "layerlistlen " << layerlistlen << endl;
+	//cout << "layers " << layers << endl;
+	//cout << "layerlistlen " << layerlistlen << endl;
 	//sortlayers(layerlistlen*3);
     qsort(layers, layerlistlen+1, sizeof(struct layerlist), compute_layer_list);
 
@@ -831,7 +828,7 @@ int find_layer(short int thickness)
 
 void find_box(short int hmx, short int hy, short int hmy, short int hz, short int hmz)
 {
-  short int y; //short int = -32768 to 32767
+  short int y;
   bfx = 32767; bfy = 32767; bfz = 32767;
   bbfx = 32767; bbfy = 32767; bbfz = 32767;
   boxi = 0; bboxi = 0;
@@ -1052,7 +1049,7 @@ void volume_check(void)
   packednumbox++;
   if (packingbest)
   {
-    //write_visualization_data_file();
+    write_visualization_data_file();
     write_boxlist_file();
   }
   else if (packedvolume == total_pallet_volume || packedvolume == total_box_volume)
@@ -1075,12 +1072,12 @@ void write_visualization_data_file(void)
   //item_no[current_item] = cboxi;
   if (!unpacked) // packable box
   {
- /*   sprintf(strcox, "%d", boxlist[cboxi].cox);
+    sprintf(strcox, "%d", boxlist[cboxi].cox);
     sprintf(strcoy, "%d", boxlist[cboxi].coy);
     sprintf(strcoz, "%d", boxlist[cboxi].coz);
     sprintf(strpackx, "%d", boxlist[cboxi].packx);
     sprintf(strpacky, "%d", boxlist[cboxi].packy);
-    sprintf(strpackz, "%d", boxlist[cboxi].packz);*/
+    sprintf(strpackz, "%d", boxlist[cboxi].packz);
 
 	box_x[current_item] = boxlist[cboxi].cox;
 	box_y[current_item] = boxlist[cboxi].coy;
@@ -1092,10 +1089,10 @@ void write_visualization_data_file(void)
   }
   else // unpackbox
   {
- /*   sprintf(n, "%d", cboxi);
+    sprintf(n, "%d", cboxi);
     sprintf(strpackx, "%d", boxlist[cboxi].dim1);
     sprintf(strpacky, "%d", boxlist[cboxi].dim2);
-    sprintf(strpackz, "%d", boxlist[cboxi].dim3);*/
+    sprintf(strpackz, "%d", boxlist[cboxi].dim3);
 
 	box_x[current_item] = 0;
 	box_y[current_item] = 0;
@@ -1318,8 +1315,8 @@ void report_results(void)
     find_layer(remainpy);
   }
   while (packing);
- 
-  //fprintf(report_output_file,"\n\n *** LIST OF UNPACKED BOXES ***\n");
+  /*
+  fprintf(report_output_file,"\n\n *** LIST OF UNPACKED BOXES ***\n");
   unpacked = 1;
   for (cboxi = 1; cboxi <= total_boxes; cboxi++)
   {
@@ -1329,25 +1326,19 @@ void report_results(void)
     }
   }
   unpacked = 0;
-  //fclose(report_output_file);
-  //fclose(visualizer_file);
-  
+  fclose(report_output_file);
+  fclose(visualizer_file);
+  */
   printf("\n");
-      printf(" n |    dim   | position | pack direction \n");
   for (n = 1; n <= total_boxes; n++)
   {
     if (boxlist[n].is_packed)
     {
-      printf("%d | %d %d %d | %d %d %d | %d %d %d\n", n, 
+      printf("%d %d %d %d %d %d %d %d %d %d\n", n, 
 		  boxlist[n].dim1, boxlist[n].dim2, boxlist[n].dim3, 
 		  boxlist[n].cox, boxlist[n].coy, boxlist[n].coz, 
 		  boxlist[n].packx, boxlist[n].packy, boxlist[n].packz);	
-
-	  bin_no[n - 1] = 1;
-	}
-	else
-	{
-		bin_no[n - 1] = 0;
+	
 	}
 	box_x[n-1] = boxlist[n].cox;
 	box_y[n-1] = boxlist[n].coy;
@@ -1355,7 +1346,7 @@ void report_results(void)
 	orien_x[n-1] = boxlist[n].packx;
 	orien_y[n-1] = boxlist[n].packy;
 	orien_z[n-1] = boxlist[n].packz;
-
+	bin_no[n-1] = boxlist[n].n;
   }
 
 

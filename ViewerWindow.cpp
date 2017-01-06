@@ -31,6 +31,7 @@ void ViewerWindow::SetCameraParameter(
 
 	window_view->setCameraClipDistances(clipping_near, clipping_far);
 	window_view->setCameraFieldOfView(cam_angle_rad);//radian
+	window_view->spinOnce();
 }
 
 void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
@@ -252,16 +253,17 @@ void ViewerWindow::AddArrowPolygonMesh(
 
 
 
-void ViewerWindow::DrawPlanarAtOrigin(double plane_halflegth,
+void ViewerWindow::DrawPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 	double r, double g, double b, string planename)
 {
-	double minus_halflength = -1 * plane_halflegth;
+	double minus_halflength_x = -1 * plane_halflegth_x;
+	double minus_halflength_z = -1 * plane_halflegth_z;
 	PointTypeXYZRGB p1, p2, p3, p4;
 
-	p1.x = minus_halflength; p1.y = 0; p1.z = minus_halflength;
-	p2.x = minus_halflength; p2.y = 0; p2.z = plane_halflegth;
-	p3.x = plane_halflegth; p3.y = 0; p3.z = plane_halflegth;
-	p4.x = plane_halflegth; p4.y = 0; p4.z = minus_halflength;
+	p1.x = minus_halflength_x; p1.y = 0; p1.z = minus_halflength_z;
+	p2.x = minus_halflength_x; p2.y = 0; p2.z = plane_halflegth_z;
+	p3.x = plane_halflegth_x; p3.y = 0; p3.z = plane_halflegth_z;
+	p4.x = plane_halflegth_x; p4.y = 0; p4.z = minus_halflength_z;
 
 	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
 	polygon_pointcloud.reset(new PointCloudXYZRGB);
@@ -425,7 +427,7 @@ void ViewerWindow::AddCircleWindowCloudViewer(
 	polygon_pointcloud.reset(new PointCloudXYZRGB);
 	
 	//cout << "radius=" << radius << endl;
-	int circle_segment = 12;
+	int circle_segment = 36;
 	for (int i = 0; i < circle_segment; i++)
 	{
 		float theta = 2.0 * M_PI*float(i) / float(circle_segment);
@@ -576,6 +578,17 @@ void ViewerWindow::DrawItemCubeShader(float w, float h, float d,
 
 
 	pcl::toROSMsg(*cloud, triangles.cloud);
+
+	/*
+	pcl::PolygonMesh mesh;
+	pcl::PointCloud<PointT> point_cloud;
+	pcl::io::loadPolygonFilePLY("filename.ply", mesh);
+	pcl::fromPCLPointCloud2(mesh.cloud, point_cloud);
+	// Do registration manipulations to point_cloud
+	pcl::toPCLPointCloud2(point_cloud, mesh.cloud);
+
+	*/
+
 	window_view->removePolygonMesh(shapename);
 	window_view->addPolygonMesh(triangles, shapename);
 	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, shapename); //cannotset on polygonmesh
@@ -786,6 +799,12 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 
 	for (int i = 0; i < items.size(); i++)
 	{
+		if (items[i]->rotation_case == -1)
+		{
+			cout << "item " << i << " not be pack" << endl;
+			continue;
+		}
+
 		string cloudname = "itemcloud" + std::to_string(i);
 	
 
@@ -799,6 +818,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		//if (items[i]->rotation_case == 0) // do nothing
 		if (items[i]->rotation_case == 1)
 		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
 			dataprocess->RotatePointCloud(item_pointcloud,
 							-90, rotation_x_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
@@ -807,6 +827,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		}
 		else if (items[i]->rotation_case == 2)
 		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
 			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_z_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
@@ -814,6 +835,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		}
 		else if (items[i]->rotation_case == 3)
 		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
 			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_z_axis);
 			dataprocess->RotatePointCloud(item_pointcloud,
@@ -821,6 +843,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		}
 		else if (items[i]->rotation_case == 4)
 		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
 			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_y_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
@@ -828,11 +851,13 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		}
 		else if (items[i]->rotation_case == 5)
 		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
 			dataprocess->RotatePointCloud(item_pointcloud,
 				-90, rotation_x_axis);
 			dataprocess->RotatePointCloud(item_pointcloud,
 				-90, rotation_y_axis);
 		}
+
 
 		dataprocess->TranslatePointCloud(item_pointcloud,
 			items[i]->target_position.x, items[i]->target_position.y, items[i]->target_position.z);
@@ -860,6 +885,11 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 	for (int i = 0; i < items.size(); i++)
 	{
+		if (items[i]->rotation_case == -1)
+		{
+			cout << "item " << i << " not be pack" << endl;
+			continue;
+		}
 		string input_cube_name = "input_cube_name" + std::to_string(i);
 		string input_symbol_name = "input_symbol_name" + std::to_string(i);
 		string target_cube_name = "target_cube_name" + std::to_string(i);
@@ -908,6 +938,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		else if (items[i]->rotation_case == 1 || items[i]->rotation_case == 5)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
+			//draw x axis rotated cube at item position
 			DrawItemCubeShader(
 				in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
@@ -922,6 +953,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		else if (items[i]->rotation_case == 2 || items[i]->rotation_case == 3)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
+			//draw z axis rotated cube at item position
 			DrawItemCubeShader(
 				in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 				in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
@@ -934,10 +966,11 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 				r, g, b, input_symbol_name);
 		}
 
+
 		cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
 		cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
 
-
+		
 		//target cube
 		DrawItemCubeShader(
 			tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
@@ -966,88 +999,177 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 {
 	cout << "ViewerWindow::timerEvent" << endl;
 
-	if (first_transform_process==false)
+	cout << "current_animate_cube_pos = " << current_animate_cube_pos.x <<
+		", " << current_animate_cube_pos.z << endl;
+
+
+	DrawItemCubeShader(
+		cube_x_dim, cube_y_dim, cube_z_dim,
+		current_animate_cube_pos.x, current_animate_cube_pos.y, current_animate_cube_pos.z,
+		255, 255, 255,
+		"moving_cube_animate");
+
+	current_animate_cube_pos.x += cube_x_dif;
+	current_animate_cube_pos.z += cube_z_dif;
+	translate_count--;
+
+
+
+
+	if (translate_count<=0)
 	{
 		killTimer(timer_animate);
 	}
 }
 void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item)
 {
+	if (item->rotation_case == -1)
+	{
+		cout << "item  not be pack" << endl;
+		return;
+	}
+	current_animate_cube_pos.x = item->transform->min3d_point.x;
+	current_animate_cube_pos.y = item->transform->min3d_point.y;
+	current_animate_cube_pos.z = item->transform->min3d_point.z;
 
-	//current_animate_cube_x = 0;
-	//current_animate_cube_z = 0;
-	//target_animate_cube_x = 0.5;
-	//target_animate_cube_z = 0.5;
+	target_animate_cube_pos.x = item->target_position.x + container->transform->min3d_point.x;
+	target_animate_cube_pos.y = item->target_position.y + container->transform->min3d_point.y;
+	target_animate_cube_pos.z = item->target_position.z + container->transform->min3d_point.z;
 
+	cube_x_dim = item->x_length * 0.001;
+	cube_y_dim = item->y_length * 0.001;
+	cube_z_dim = item->z_length * 0.001;
+
+	first_translate_done = false;
+	second_rotate_done = false;
+	third_rotate_done = false;
+	adjust_translate_done = false;
+
+	current_theta_cube_rot = 0;
+	
+	translate_count = 20;
+
+	cube_theta_dif = 15;
+	cube_x_dif = (target_animate_cube_pos.x - current_animate_cube_pos.x) / translate_count;
+	cube_z_dif = (target_animate_cube_pos.z - current_animate_cube_pos.z) / translate_count;
+
+	cout << "cube_x,z_dif = " << cube_x_dif << ", " << cube_z_dif << endl;
+
+
+	//draw cube at initial and final position
+	DrawItemCubeShader(
+		cube_x_dim, cube_y_dim, cube_z_dim,
+		current_animate_cube_pos.x, current_animate_cube_pos.y, current_animate_cube_pos.z,
+		64, 64, 64,
+		"input_cube_animate");
+	
+	DrawItemCubeShader(
+		item->target_orientation.x * 0.001, item->target_orientation.y * 0.001, item->target_orientation.z * 0.001,
+		target_animate_cube_pos.x, target_animate_cube_pos.y, target_animate_cube_pos.z,
+		64, 64, 64,
+		"target_cube_animate");
+
+	window_view->removeShape("line_animate");
+	window_view->addLine(current_animate_cube_pos, target_animate_cube_pos, 0.25, 0.25, 0.25, "line_animate");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "line_animate");
+
+
+
+
+
+	if (item->rotation_case == 0) 
+	{
+		first_translate = true;
+		second_rotate = false;
+		third_rotate = false;
+
+		target_theta_cube_rot = 0;// no rotation
+		adjust_translate = 0;
+	}
+	else if (item->rotation_case == 1) 
+	{
+		first_translate = true;
+		second_rotate = true;
+		third_rotate = false;
+
+		target_theta_cube_rot = -90; // rotate x-axis -90deg
+		adjust_translate = cube_y_dim; //at z-axis
+	}
+	else if (item->rotation_case == 2)
+	{
+		first_translate = true;
+		second_rotate = true;
+		third_rotate = false;
+
+		target_theta_cube_rot = 90; // rotate z-axis 90deg
+		adjust_translate = cube_y_dim; //at x-axis
+	}
+	else if (item->rotation_case == 3)
+	{
+		first_translate = true;
+		second_rotate = true;
+		third_rotate = true;
+
+		target_theta_cube_rot = 90;// rotate z-axis 90deg + rotate y-axis 90 degree
+		adjust_translate = 0;
+	}
+	else if (item->rotation_case == 4)
+	{
+		first_translate = true;
+		second_rotate = true;
+		third_rotate = false;
+
+		target_theta_cube_rot = 90; // rotate y-axis 90deg
+		adjust_translate = cube_x_dim; //at z-axis
+	}
+	else if (item->rotation_case == 5)
+	{
+		first_translate = true;
+		second_rotate = true;
+		third_rotate = true;
+
+		target_theta_cube_rot = -90;// rotate x-axis -90deg + rotate y-axis -90 degree
+		adjust_translate = 0;
+	}
+
+
+	//looping move item
 	timer_animate = startTimer(100);
 
 	return;
 
 	string input_cube_name = "input_cube_animate";
-	string input_symbol_name = "input_symbol_animate";
-	string target_cube_name = "target_cube_animate";
-	string target_symbol_name = "target_symbol_animate";
-	string line_name = "line_animate";
 
-	float in_cube_x_dim = item->x_length;
-	float in_cube_y_dim = item->y_length;
-	float in_cube_z_dim = item->z_length;
-	float in_cube_x_min_pos = item->transform->min3d_point.x;
-	float in_cube_y_min_pos = item->transform->min3d_point.y;
-	float in_cube_z_min_pos = item->transform->min3d_point.z;
-
-	float tar_cube_x_dim = item->target_orientation.x * 0.001;
-	float tar_cube_y_dim = item->target_orientation.y * 0.001;
-	float tar_cube_z_dim = item->target_orientation.z * 0.001;
-	float tar_cube_x_min_pos = item->target_position.x + container->transform->min3d_point.x;
-	float tar_cube_y_min_pos = item->target_position.y + container->transform->min3d_point.y;
-	float tar_cube_z_min_pos = item->target_position.z + container->transform->min3d_point.z;
-
-
-	float r, g, b;
-
-	randomcolorfloat(r, g, b);
 
 
 	if (item->rotation_case == 0 || item->rotation_case == 4)
 	{
 		//draw input cube at item position
-		DrawItemCubeShader(
-			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
-			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			255, 255, 255,
-			input_cube_name);
+
 
 	}
 	else if (item->rotation_case == 1 || item->rotation_case == 5)
 	{
-		DrawItemCubeShader(
+		/*DrawItemCubeShader(
 			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
 			255, 255, 255,
-			input_cube_name);
+			input_cube_name);*/
 
 	}
 	else if (item->rotation_case == 2 || item->rotation_case == 3)
 	{
-		DrawItemCubeShader(
+		/*DrawItemCubeShader(
 			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
 			255, 255, 255,
-			input_cube_name);
+			input_cube_name);*/
 
 	
 	}
 
 
-	/*
-	//target cube
-	DrawItemCubeShader(
-		tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
-		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-		255, 255, 255,
-		target_cube_name);
-		*/
+
 
 	window_view->spinOnce();
 }

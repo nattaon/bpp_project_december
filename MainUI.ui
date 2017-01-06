@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1030</width>
-    <height>800</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -854,6 +854,32 @@
       </property>
       <property name="text">
        <string>Save camera txt</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_get_cam_param">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>140</y>
+        <width>81</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Get  Param</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
@@ -4345,7 +4371,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>position</string>
+       <string>position min3d_point</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4620,7 +4646,7 @@
       <x>10</x>
       <y>530</y>
       <width>1001</width>
-      <height>231</height>
+      <height>341</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -4651,7 +4677,7 @@
      <bool>true</bool>
     </property>
     <property name="columnCount">
-     <number>12</number>
+     <number>13</number>
     </property>
     <attribute name="headerCascadingSectionResizes">
      <bool>false</bool>
@@ -4743,7 +4769,7 @@
     </column>
     <column>
      <property name="text">
-      <string>x_pos</string>
+      <string>x_pos_min3d</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4751,7 +4777,7 @@
     </column>
     <column>
      <property name="text">
-      <string>y_pos</string>
+      <string>y_pos_min3d</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4759,7 +4785,7 @@
     </column>
     <column>
      <property name="text">
-      <string>z_pos</string>
+      <string>z_pos_min3d</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4767,7 +4793,7 @@
     </column>
     <column>
      <property name="text">
-      <string>x_rot</string>
+      <string>x_pos_max3d</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4775,7 +4801,7 @@
     </column>
     <column>
      <property name="text">
-      <string>y_rot</string>
+      <string>y_pos_max3d</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4783,7 +4809,15 @@
     </column>
     <column>
      <property name="text">
-      <string>z_rot</string>
+      <string>z_pos_max3d</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>rotate</string>
      </property>
      <property name="textAlignment">
       <set>AlignCenter</set>
@@ -4800,7 +4834,7 @@
       </font>
      </property>
      <property name="textAlignment">
-      <set>AlignCenter</set>
+      <set>AlignLeading|AlignVCenter</set>
      </property>
     </column>
    </widget>
@@ -5389,9 +5423,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_4"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>

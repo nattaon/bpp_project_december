@@ -17,14 +17,20 @@ private:
 	//transform.translation() << translate_x, translate_y, translate_z;
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
 	PointTypeXYZRGB current_animate_cube_pos, target_animate_cube_pos;
+	float cube_x_dim, cube_y_dim, cube_z_dim;
+
 
 	//transform.rotate(Eigen::AngleAxisf(theta, rotation_vector));
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
 	float current_theta_cube_rot, target_theta_cube_rot;
 	float target_cube_rotation_vector;
 
-	bool first_transform_process, second_transform_process;
-	bool first_transform_done, second_transform_done;
+	float cube_x_dif, cube_z_dif, cube_theta_dif;
+	float translate_count;
+	float adjust_translate;
+
+	bool first_translate, second_rotate, third_rotate;
+	bool first_translate_done, second_rotate_done, third_rotate_done, adjust_translate_done;
 
 public:
     ViewerWindow();
@@ -50,7 +56,7 @@ public:
 	void ClearPointCloudWindowCloudViewer();
 	void ClearShapeWindowCloudViewer();
 
-	void DrawPlanarAtOrigin(double plane_halflegth,
+	void DrawPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 		double r, double g, double b, string planename);
 
 	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
