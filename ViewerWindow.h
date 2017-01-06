@@ -3,11 +3,33 @@
 #include "DataProcess.h"
 #include "SharedHeader.h"
 
-class ViewerWindow
+class ViewerWindow : public QObject
 {
+	Q_OBJECT
+
+private:
+	DataProcess *dataprocess;
+
+	void timerEvent(QTimerEvent *event);
+	//QTime time_animate;
+	int timer_animate;
+
+	//transform.translation() << translate_x, translate_y, translate_z;
+	//pcl::transformPointCloud(*cloud, *cloud, transform);
+	PointTypeXYZRGB current_animate_cube_pos, target_animate_cube_pos;
+
+	//transform.rotate(Eigen::AngleAxisf(theta, rotation_vector));
+	//pcl::transformPointCloud(*cloud, *cloud, transform);
+	float current_theta_cube_rot, target_theta_cube_rot;
+	float target_cube_rotation_vector;
+
+	bool first_transform_process, second_transform_process;
+	bool first_transform_done, second_transform_done;
+
 public:
     ViewerWindow();
-    void SetDataProcess(DataProcess* d);
+
+	void SetDataProcess(DataProcess* d);
 
 	void SetCameraParameter(
 		double focal_x, double focal_y, double focal_z,
@@ -18,7 +40,10 @@ public:
 
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
-	void AddPolygonMesh(float w, float h, float d,
+	
+	void AddArrowObj();
+	
+	void AddArrowPolygonMesh(
 		float x, float y, float z,
 		float r, float g, float b);
 
@@ -67,6 +92,8 @@ public:
 
 	void ShowBinPackingTarget(ObjectTransformationData *container, vector<ObjectTransformationData*> items);
 
+	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
+
 	void DrawItemCubeShader(float w, float h, float d,
 		float x, float y, float z,
 		int r, int g, int b,
@@ -77,7 +104,7 @@ public:
 		float r, float g, float b,
 		string shapename);
 	
-	void DrawItemArrowDirectionSymbol(
+	PointTypeXYZRGB DrawItemArrowDirectionSymbol(
 		float w, float h, float d, 
 		float x, float y, float z, 
 		float r, float g, float b,
@@ -88,15 +115,8 @@ public:
 	void randomcolorfloat(float &r, float &g, float &b);
 	void randomcolorint(int &r, int &g, int &b);
 
-
-
-
-
-
-
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
-private:
-    DataProcess *dataprocess;
+
 
 	
 

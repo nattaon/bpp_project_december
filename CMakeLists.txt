@@ -41,7 +41,7 @@ file(GLOB project_FORMS *.ui)
 
 set   (VTK_LIBRARIES)
 
-QT5_WRAP_CPP (project_HEADERS_MOC MainUI.h)
+QT5_WRAP_CPP (project_HEADERS_MOC MainUI.h ViewerWindow.h)
 QT5_WRAP_UI  (project_FORMS_HEADERS ${project_FORMS})
 
 ADD_DEFINITIONS (${QT_DEFINITIONS})

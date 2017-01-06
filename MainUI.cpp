@@ -802,12 +802,13 @@ void MainUI::ButtonSetCloudCornerPressed()
 		return;
 	}
 
-	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
-	dataprocess->items[last_select_item_index]->transform->CalculateMinMaxPoint(pointcloud);
+	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
+	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
+	item_transform_data->transform->CalculateMinMaxPoint(pointcloud);
 
-	int item_x_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.x - dataprocess->items[last_select_item_index]->transform->min3d_point.x);
-	int item_y_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.y);// -dataprocess->items[last_select_item_index]->transform->min3d_point.y;
-	int item_z_dim_mm = 1000 * (dataprocess->items[last_select_item_index]->transform->max3d_point.z - dataprocess->items[last_select_item_index]->transform->min3d_point.z);
+	int item_x_dim_mm = 1000 * (item_transform_data->transform->max3d_point.x - item_transform_data->transform->min3d_point.x);
+	int item_y_dim_mm = 1000 * (item_transform_data->transform->max3d_point.y);// -item_transform_data->transform->min3d_point.y;
+	int item_z_dim_mm = 1000 * (item_transform_data->transform->max3d_point.z - item_transform_data->transform->min3d_point.z);
 
 	
 	QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index);
@@ -817,10 +818,10 @@ void MainUI::ButtonSetCloudCornerPressed()
 
 	
 
-	PointTypeXYZRGB move_from_point = dataprocess->items[last_select_item_index]->transform->min3d_point;
+	PointTypeXYZRGB move_from_point = item_transform_data->transform->min3d_point;
 	PointTypeXYZRGB move_to_point;
 	move_to_point.x = 0;
-	move_to_point.y = dataprocess->items[last_select_item_index]->transform->min3d_point.y; // not move y
+	move_to_point.y = item_transform_data->transform->min3d_point.y; // not move y
 	move_to_point.z = 0;
 
 	dataprocess->MovePointCloudFromTo(pointcloud, move_from_point, move_to_point);
@@ -838,17 +839,18 @@ void MainUI::ButtonSetCloudAlignCornerPressed()
 			QString("No Item selected"), QMessageBox::Ok);
 		return;
 	}
+	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
 	cout << endl;
-	cout << "major_vector " << dataprocess->items[last_select_item_index]->transform->major_vector << endl;
-	cout << "minor_vector " << dataprocess->items[last_select_item_index]->transform->minor_vector << endl;
-	cout << "middle_vector " << dataprocess->items[last_select_item_index]->transform->middle_vector << endl;
+	cout << "major_vector " << item_transform_data->transform->major_vector << endl;
+	cout << "minor_vector " << item_transform_data->transform->minor_vector << endl;
+	cout << "middle_vector " << item_transform_data->transform->middle_vector << endl;
 	
-	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
 
 	Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector, target_plane_normal_vector;
-	floor_plane_normal_vector[0] = dataprocess->items[last_select_item_index]->transform->major_vector(0);
-	floor_plane_normal_vector[1] = dataprocess->items[last_select_item_index]->transform->major_vector(1);
-	floor_plane_normal_vector[2] = dataprocess->items[last_select_item_index]->transform->major_vector(2);
+	floor_plane_normal_vector[0] = item_transform_data->transform->major_vector(0);
+	floor_plane_normal_vector[1] = item_transform_data->transform->major_vector(1);
+	floor_plane_normal_vector[2] = item_transform_data->transform->major_vector(2);
 
 
 	if (floor_plane_normal_vector[0]>0.9)
@@ -1837,46 +1839,19 @@ void MainUI::ButtonTrackItemPositionPressed()
 {
 	cout << "call ButtonTrackItemPositionPressed()" << endl;
 
-	double red = 1.0;
-	double green = 1.0;
-	double blue = 1.0;
 
-	for (int i = 0; i < dataprocess->items.size(); i++)
-	{
-		/*viewerwindow->AddTextWindowCloudViewer(
-		dataprocess->items[i].transform->min_point_OBB,
-		dataprocess->items[i].transform->major_vector,
-		red, green, blue, "min",
-		"items min text " + i);
+	//viewerwindow->AddArrowObj();
+	/*	viewerwindow->DrawItemCubeShader(
+	0.3, 0.3, 0.3,
+	0, 0, 0,
+	255,0,0,
+	"testcube");
 
-		viewerwindow->AddTextWindowCloudViewer(
-		dataprocess->items[i].transform->max_point_OBB,
-		dataprocess->items[i].transform->major_vector,
-		red, green, blue, "max",
-		"items max text " + i);
-		*/
+	viewerwindow->AddPolygonMesh(
+	0.3, 0.3, 0.3,
+	0, 0, 0,
+	0.5, 0.5, 0.5);*/
 
-		viewerwindow->AddSymbolWindowCloudViewer(
-			dataprocess->items[i]->transform->position_OBB,
-			dataprocess->items[i]->transform->min3d_point,
-			dataprocess->items[i]->transform->max3d_point,
-			dataprocess->items[i]->transform->mass_center,
-			dataprocess->items[i]->transform->major_vector,
-			dataprocess->items[i]->transform->middle_vector,
-			red, green, blue, "symbol " + i);
-
-
-	}
-
-	/*viewerwindow->ShowBinpackingIndication(
-		dataprocess->container->transform->min3d_point,
-		total_boxes,
-		ui->in_bin_w->text().toDouble(),
-		ui->in_bin_d->text().toDouble(),
-		ui->in_bin_h->text().toDouble(),
-		boxes_x_orient, boxes_y_orient, boxes_z_orient,
-		boxes_x_pos, boxes_y_pos, boxes_z_pos);
-*/
 }
 
 
@@ -1932,21 +1907,6 @@ void MainUI::ButtonShowPackingTargetPressed()
 void MainUI::ButtonShowPackingIndicatePressed()
 {
 	cout << "call ButtonShowPackingIndicatePressed()" << endl;
-	/*for (int i = 0; i < dataprocess->items.size(); i++)
-	{
-
-		//direction symbol at input cloud
-		viewerwindow->AddSymbolWindowCloudViewer(
-			dataprocess->items[i]->transform->position_OBB,
-			dataprocess->items[i]->transform->min3d_point,
-			dataprocess->items[i]->transform->max3d_point,
-			dataprocess->items[i]->transform->mass_center,
-			dataprocess->items[i]->transform->major_vector,
-			dataprocess->items[i]->transform->middle_vector,
-			1.0, 1.0, 1.0, "symbol " + i);
-
-
-	}*/
 
 	viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items);
 	
@@ -1956,17 +1916,30 @@ void MainUI::ButtonShowPackingAnimationPressed()
 {
 	cout << "call ButtonShowPackingAnimationPressed()" << endl;
 
+	ObjectTransformationData *test_container = new ObjectTransformationData();
+	//container->transform->min3d_point.x;
 
-	viewerwindow->DrawItemCubeShader(
-		0.3, 0.3, 0.3,
-		0, 0, 0,
-		255,0,0,
-		"testcube");
-/*
-	viewerwindow->AddPolygonMesh(
-		0.3, 0.3, 0.3,
-		0, 0, 0,
-		0.5, 0.5, 0.5);*/
+	ObjectTransformationData *test_item = new ObjectTransformationData();
+	test_item->transform->min3d_point.x = 0.235024;
+	test_item->transform->min3d_point.y = 0.00211017;
+	test_item->transform->min3d_point.z = 0.102774;
+	//item->target_orientation.x
+	//item->target_position.x
+	
+	
+
+
+	viewerwindow->ShowBinpackingAnimation(test_container, test_item);
+
+
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+
+		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[i]);
+
+
+	}
+
 
 }
 

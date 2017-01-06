@@ -56,7 +56,8 @@
 #include <pcl/kdtree/kdtree_flann.h>
 
 #include <pcl/io/pcd_io.h>
-
+#include <pcl/io/obj_io.h>
+#include <pcl/io/vtk_lib_io.h>
 //#include <pcl/keypoints/uniform_sampling.h>
 
 #include <pcl/point_cloud.h>

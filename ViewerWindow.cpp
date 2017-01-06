@@ -1,4 +1,4 @@
-#include "ViewerWindow.h"
+﻿#include "ViewerWindow.h"
 
 ViewerWindow::ViewerWindow()
 {
@@ -57,17 +57,69 @@ void ViewerWindow::ClearShapeWindowCloudViewer()
 	window_view->spinOnce();
 }
 
-void ViewerWindow::AddPolygonMesh(
-	float w, float h, float d,
+void ViewerWindow::AddArrowObj()
+{
+	/*pcl::TextureMesh mesh7;
+	//pcl::io::loadPolygonFileOBJ("3DScan_test3a.obj", mesh7);
+	pcl::io::loadOBJFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.obj", mesh7);
+	window_view->addTextureMesh(mesh7, "texture", 0);
+	window_view->spinOnce();*/
+
+	pcl::PolygonMesh mesh;
+	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.obj", mesh);
+	
+	
+	//scale size down
+	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+	
+	float scale = 0.1;
+	transform(0, 0) = scale;
+	transform(1, 1) = scale;
+	transform(2, 2) = scale;
+	
+	// Define a rotation matrix (see en.wikipedia.org/wiki/Rotation_matrix)
+//	float theta = M_PI / 4; // The angle of rotation in radians
+//	transform_1(0, 0) = cos(theta);
+//	transform_1(0, 1) = -sin(theta);
+//	transform_1(1, 0) = sin(theta);
+//	transform_1(1, 1) = cos(theta);
+	//    (row, column)
+
+	// Define a translation of 2.5 meters on the x axis.
+//	transform_1(0, 3) = 2.5;
+
+	// Print the transformation
+//	printf("Method #1: using a Matrix4f\n");
+//	std::cout << transform_1 << std::endl;
+//     | cos(θ) - sin(θ)  0.0 |
+// R = | sin(θ)  cos(θ)  0.0 |
+//	   | 0.0     0.0     1.0 |
+//
+// t = < 2.5, 0.0, 0.0 >
+
+	//no instance match pcl::PCLPointCloud2
+	//pcl::transformPointCloud(mesh.cloud, mesh.cloud, transform_1);
+	
+	
+	
+	
+	window_view->addPolygonMesh(mesh, "mesh");
+	window_view->spinOnce();
+
+
+}
+
+void ViewerWindow::AddArrowPolygonMesh(
 	float x, float y, float z,
 	float r, float g, float b)
 {
+	float w = 0.3;
 	float xmin = x;
 	float ymin = y;
 	float zmin = z;
 	float xmax = (x + w);
-	float ymax = (y + h);
-	float zmax = (z + d);
+	float ymax = (y + w);
+	float zmax = (z + w);
 
 	pcl::PointXYZ p1, p2, p3, p4, p5, p6, p7, p8;
 
@@ -125,22 +177,6 @@ void ViewerWindow::AddPolygonMesh(
 	// Initialize objects
 	pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
 	pcl::PolygonMesh triangles;
-
-	/*triangles.polygons.resize(2);
-	triangles.polygons[0].vertices.push_back(0);
-	triangles.polygons[0].vertices.push_back(1);
-	triangles.polygons[0].vertices.push_back(2);
-	triangles.polygons[1].vertices.push_back(1);
-	triangles.polygons[1].vertices.push_back(2);
-	triangles.polygons[1].vertices.push_back(3);
-
-	pcl::PointCloud<pcl::PointXYZRGB> mesh_cld;
-	mesh_cld.push_back(p1);
-	mesh_cld.push_back(p2);
-	mesh_cld.push_back(p3);
-	mesh_cld.push_back(p4);
-
-	pcl:toROSMsg(mesh_cld, triangles.cloud);*/
 
 	// Set the maximum distance between connected points (maximum edge length)
 	gp3.setSearchRadius(w*2);
@@ -540,7 +576,7 @@ void ViewerWindow::DrawItemCubeShader(float w, float h, float d,
 
 
 	pcl::toROSMsg(*cloud, triangles.cloud);
-
+	window_view->removePolygonMesh(shapename);
 	window_view->addPolygonMesh(triangles, shapename);
 	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, shapename); //cannotset on polygonmesh
 	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.8, shapename);
@@ -602,7 +638,7 @@ void ViewerWindow::DrawItemCube(float w, float h, float d,
 	viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "crown");
 */
 }
-void ViewerWindow::DrawItemArrowDirectionSymbol(
+PointTypeXYZRGB ViewerWindow::DrawItemArrowDirectionSymbol(
 	float w, float h, float d,
 	float x, float y, float z,
 	float r, float g, float b,
@@ -610,7 +646,7 @@ void ViewerWindow::DrawItemArrowDirectionSymbol(
 {
 	PointTypeXYZRGB position_major;
 	PointTypeXYZRGB position_minor_plus, position_minor_minus;
-	PointTypeXYZRGB position_center;
+	PointTypeXYZRGB position_center,position_triangle_center;
 	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
 	polygon_pointcloud.reset(new PointCloudXYZRGB);
 
@@ -631,19 +667,21 @@ void ViewerWindow::DrawItemArrowDirectionSymbol(
 	position_center.y = y + half_length_y;
 	position_center.z = z + half_length_z;
 
+
+
 	//y is height direction : no effect
 	//decide which x or z has a longer side
-	if (half_length_x > half_length_z)
+	if (half_length_x > half_length_z) //x is longer side
 	{
-		position_major.x = position_center.x + half_length_x;
+		position_major.x = position_center.x + half_length_x - half_length_x*0.5;
 		position_major.y = position_center.y + translate_pos;
 		position_major.z = position_center.z;
 
-		position_minor_plus.x = position_center.x;
+		position_minor_plus.x = position_center.x - half_length_x*0.5;
 		position_minor_plus.y = position_center.y + translate_pos;
 		position_minor_plus.z = position_center.z + half_length_z;
 
-		position_minor_minus.x = position_center.x;
+		position_minor_minus.x = position_center.x - half_length_x*0.5;
 		position_minor_minus.y = position_center.y + translate_pos;
 		position_minor_minus.z = position_center.z - half_length_z;
 
@@ -651,26 +689,35 @@ void ViewerWindow::DrawItemArrowDirectionSymbol(
 		polygon_pointcloud->points.push_back(position_major);
 		polygon_pointcloud->points.push_back(position_minor_minus);
 		polygon_pointcloud->points.push_back(position_minor_plus);
+
+		position_triangle_center.x = position_center.x;
+		position_triangle_center.y = position_center.y + translate_pos;
+		position_triangle_center.z = position_center.z;
+
 	}
-	else
+	else // z is longer side
 	{
 
 		position_major.x = position_center.x;
 		position_major.y = position_center.y + translate_pos;
-		position_major.z = position_center.z + half_length_z;
+		position_major.z = position_center.z + half_length_z - half_length_z*0.5;
 
 		position_minor_plus.x = position_center.x + half_length_x;
 		position_minor_plus.y = position_center.y + translate_pos;
-		position_minor_plus.z = position_center.z;
+		position_minor_plus.z = position_center.z - half_length_z*0.5;
 
 		position_minor_minus.x = position_center.x - half_length_x;
 		position_minor_minus.y = position_center.y + translate_pos;
-		position_minor_minus.z = position_center.z;
+		position_minor_minus.z = position_center.z - half_length_z*0.5;
 
 
 		polygon_pointcloud->points.push_back(position_major);
 		polygon_pointcloud->points.push_back(position_minor_minus);
 		polygon_pointcloud->points.push_back(position_minor_plus);
+
+		position_triangle_center.x = position_center.x;
+		position_triangle_center.y = position_center.y + translate_pos;
+		position_triangle_center.z = position_center.z;
 	}
 
 
@@ -679,17 +726,24 @@ void ViewerWindow::DrawItemArrowDirectionSymbol(
 	polygon_pointcloud->height = 1;
 
 	window_view->removeShape(symbolname + " polygon");
-	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, symbolname + " polygon");
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, symbolname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, symbolname + " polygon");
 
+
+	return position_triangle_center;
 }
 
 void ViewerWindow::randomcolorfloat(float &r, float &g, float &b)
 {
-	int r256 = rand() % 200 + 56;
-	int g256 = rand() % 200 + 56;
-	int b256 = rand() % 200 + 56;
-
+	//pastel
+	//int r256 = rand() % 200 + 56;
+	//int g256 = rand() % 200 + 56;
+	//int b256 = rand() % 200 + 56;
+	
+	//dark tone
+	int r256 = rand() % 256 - 56;
+	int g256 = rand() % 256 - 56;
+	int b256 = rand() % 256 - 56;
 
 	r = r256 / 255.0;
 	g = g256 / 255.0;
@@ -761,9 +815,9 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		else if (items[i]->rotation_case == 3)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
-				90, rotation_x_axis);
-			dataprocess->RotatePointCloud(item_pointcloud,
 				90, rotation_z_axis);
+			dataprocess->RotatePointCloud(item_pointcloud,
+				90, rotation_y_axis);
 		}
 		else if (items[i]->rotation_case == 4)
 		{
@@ -775,9 +829,9 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		else if (items[i]->rotation_case == 5)
 		{
 			dataprocess->RotatePointCloud(item_pointcloud,
-				-90, rotation_y_axis);
+				-90, rotation_x_axis);
 			dataprocess->RotatePointCloud(item_pointcloud,
-				-90, rotation_z_axis);
+				-90, rotation_y_axis);
 		}
 
 		dataprocess->TranslatePointCloud(item_pointcloud,
@@ -803,12 +857,6 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 
 void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, vector<ObjectTransformationData*> items)
 {
-	//cout << "ref_position= " << ref_position << endl;
-	/*PointTypeXYZRGB point_sphere;
-	point_sphere.x = 0;
-	point_sphere.y = 0;
-	point_sphere.z = 0;
-	AddSphereWindowCloudViewer(point_sphere,0.3,1.0,0,0,"point_sphere");*/
 
 	for (int i = 0; i < items.size(); i++)
 	{
@@ -831,72 +879,175 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		float tar_cube_x_min_pos = items[i]->target_position.x + container->transform->min3d_point.x;
 		float tar_cube_y_min_pos = items[i]->target_position.y + container->transform->min3d_point.y;
 		float tar_cube_z_min_pos = items[i]->target_position.z + container->transform->min3d_point.z;
-		
+
 		PointTypeXYZRGB input_center_symbol;
-		input_center_symbol.x = in_cube_x_min_pos + in_cube_x_dim*0.5;
-		input_center_symbol.y = in_cube_y_min_pos + in_cube_y_dim;
-		input_center_symbol.z = in_cube_z_min_pos + in_cube_z_dim*0.5;
-
 		PointTypeXYZRGB target_center_symbol;
-		target_center_symbol.x = tar_cube_x_min_pos + tar_cube_x_dim*0.5;
-		target_center_symbol.y = tar_cube_y_min_pos + tar_cube_y_dim;
-		target_center_symbol.z = tar_cube_z_min_pos + tar_cube_z_dim*0.5;
 
-		/*cout << "input_symbol_name " << input_symbol_name << endl;
-		cout << "pos x,y,z= " << cube_x_min_pos << "," << cube_y_min_pos << "," << cube_z_min_pos << endl;
-		cout << "dim x,y,z = " << cube_x_dim << "," << cube_y_dim << "," << cube_z_dim << endl;
-		cout << endl;*/
+		float r, g, b;
 
-		int r, g, b;
-		randomcolorint(r, g, b);
+		randomcolorfloat(r, g, b);
+	
 
-		//input cube
-		DrawItemCubeShader(
-			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
-			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b,
-			input_cube_name);
 
-/*		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
-			pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, input_cube_name);
+		if (items[i]->rotation_case == 0 || items[i]->rotation_case == 4)
+		{
+			cout << i<<" : rot case = " << items[i]->rotation_case << endl;
+			//draw input cube at item position
+			DrawItemCubeShader(
+				in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+				255, 255, 255,
+				input_cube_name);
 
-		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
-			pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, input_cube_name);
-*/
+			//input direction symbol
+			input_center_symbol = DrawItemArrowDirectionSymbol(
+				in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+				r, g, b, input_symbol_name);
+		}
+		else if (items[i]->rotation_case == 1 || items[i]->rotation_case == 5)
+		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
+			DrawItemCubeShader(
+				in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+				255, 255, 255,
+				input_cube_name);
 
-		//input direction symbol
-		DrawItemArrowDirectionSymbol(
-			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
-			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			1.0, 1.0, 1.0, input_symbol_name);
+			input_center_symbol = DrawItemArrowDirectionSymbol(
+				in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+				r, g, b, input_symbol_name);
+		}
+		else if (items[i]->rotation_case == 2 || items[i]->rotation_case == 3)
+		{
+			cout << i << " : rot case = " << items[i]->rotation_case << endl;
+			DrawItemCubeShader(
+				in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+				in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+				255, 255, 255,
+				input_cube_name);
+
+			input_center_symbol = DrawItemArrowDirectionSymbol(
+				in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+				in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+				r, g, b, input_symbol_name);
+		}
+
+		cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
+		cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
+
 
 		//target cube
 		DrawItemCubeShader(
 			tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
 			tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-			r, g, b,
+			255, 255, 255,
 			target_cube_name);
 
-/*		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
-			pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, target_cube_name);
-
-		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
-			pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, target_cube_name);
-*/
-
-
 		//target direction symbol
-		DrawItemArrowDirectionSymbol(
+		target_center_symbol = DrawItemArrowDirectionSymbol(
 			tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
 			tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-			1.0, 1.0, 1.0, target_symbol_name);
+			r, g, b, target_symbol_name);
 
 		//link line between input and target
-		window_view->addLine(input_center_symbol, target_center_symbol, 1.0f, 0.0f, 0.0f, line_name);
+		window_view->removeShape(line_name);
+		window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
 		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
 
 		
 		window_view->spinOnce();
 	}
 	
+}
+
+void ViewerWindow::timerEvent(QTimerEvent *event)
+{
+	cout << "ViewerWindow::timerEvent" << endl;
+
+	if (first_transform_process==false)
+	{
+		killTimer(timer_animate);
+	}
+}
+void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item)
+{
+
+	//current_animate_cube_x = 0;
+	//current_animate_cube_z = 0;
+	//target_animate_cube_x = 0.5;
+	//target_animate_cube_z = 0.5;
+
+	timer_animate = startTimer(100);
+
+	return;
+
+	string input_cube_name = "input_cube_animate";
+	string input_symbol_name = "input_symbol_animate";
+	string target_cube_name = "target_cube_animate";
+	string target_symbol_name = "target_symbol_animate";
+	string line_name = "line_animate";
+
+	float in_cube_x_dim = item->x_length;
+	float in_cube_y_dim = item->y_length;
+	float in_cube_z_dim = item->z_length;
+	float in_cube_x_min_pos = item->transform->min3d_point.x;
+	float in_cube_y_min_pos = item->transform->min3d_point.y;
+	float in_cube_z_min_pos = item->transform->min3d_point.z;
+
+	float tar_cube_x_dim = item->target_orientation.x * 0.001;
+	float tar_cube_y_dim = item->target_orientation.y * 0.001;
+	float tar_cube_z_dim = item->target_orientation.z * 0.001;
+	float tar_cube_x_min_pos = item->target_position.x + container->transform->min3d_point.x;
+	float tar_cube_y_min_pos = item->target_position.y + container->transform->min3d_point.y;
+	float tar_cube_z_min_pos = item->target_position.z + container->transform->min3d_point.z;
+
+
+	float r, g, b;
+
+	randomcolorfloat(r, g, b);
+
+
+	if (item->rotation_case == 0 || item->rotation_case == 4)
+	{
+		//draw input cube at item position
+		DrawItemCubeShader(
+			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+			255, 255, 255,
+			input_cube_name);
+
+	}
+	else if (item->rotation_case == 1 || item->rotation_case == 5)
+	{
+		DrawItemCubeShader(
+			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+			255, 255, 255,
+			input_cube_name);
+
+	}
+	else if (item->rotation_case == 2 || item->rotation_case == 3)
+	{
+		DrawItemCubeShader(
+			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+			255, 255, 255,
+			input_cube_name);
+
+	
+	}
+
+
+	/*
+	//target cube
+	DrawItemCubeShader(
+		tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
+		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
+		255, 255, 255,
+		target_cube_name);
+		*/
+
+	window_view->spinOnce();
 }
