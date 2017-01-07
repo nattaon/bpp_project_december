@@ -134,7 +134,7 @@ void PointCloudOperation::MovePointCloudFromTo(PointCloudXYZRGB::Ptr cloud, Poin
 	*/
 }
 
-void PointCloudOperation::RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
+void PointCloudOperation::RotatePointCloudAlignAxis(PointCloudXYZRGB::Ptr cloud,
 	Eigen::Matrix<float, 1, 3>  floor_plane_normal_vector,
 	Eigen::Matrix<float, 1, 3>  target_plane_normal_vector)
 {
@@ -179,7 +179,7 @@ void PointCloudOperation::RotatePointCloudAtAxis(PointCloudXYZRGB::Ptr cloud,
 
 }
 
-void PointCloudOperation::RotatePointCloud(PointCloudXYZRGB::Ptr cloud,
+void PointCloudOperation::RotatePointCloudAroundZeroPoint(PointCloudXYZRGB::Ptr cloud,
 		float degree, Eigen::Matrix<float, 1, 3>  rotation_vector)
 {
 	cout << "Rotation Vector(perpendicular): " << rotation_vector << std::endl;
@@ -232,9 +232,64 @@ void PointCloudOperation::SurfaceFillCloud(PointCloudXYZRGB::Ptr cloud, float le
 	//method 2
 	//rotate cloud to 6 face -> concatenate them
 	//remove point that not in dimension area
+	PointCloudXYZRGB::Ptr cloud_surface_top(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr cloud_surface_left(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr cloud_surface_right(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr cloud_surface_front(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr cloud_surface_back(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr cloud_surface_bottom(new PointCloudXYZRGB);
 
 
-	
+	if (x_length >= z_length) // x is longer side, do rotate on x axis
+	{
+		pcl::copyPointCloud(*cloud, *cloud_surface_bottom);
+		RotatePointCloudAroundZeroPoint(cloud_surface_bottom, 180, { 1, 0, 0 });
+		TranslatePointCloud(cloud_surface_bottom, 0, y_length, z_length);
+	}
+	else if (z_length > x_length)//z is longer side, do rotate on z axis
+	{
+		pcl::copyPointCloud(*cloud, *cloud_surface_bottom);
+		RotatePointCloudAroundZeroPoint(cloud_surface_bottom, 180, { 0, 0, 1 });
+		TranslatePointCloud(cloud_surface_bottom, x_length, y_length, 0);
+	}
+
+	pcl::copyPointCloud(*cloud, *cloud_surface_right);
+	RotatePointCloudAroundZeroPoint(cloud_surface_right, 90, { 0, 0, 1 });
+	TranslatePointCloud(cloud_surface_right, y_length, 0, 0);
+
+	pcl::copyPointCloud(*cloud, *cloud_surface_front);
+	RotatePointCloudAroundZeroPoint(cloud_surface_front, -90, { 1, 0, 0 });
+	TranslatePointCloud(cloud_surface_front, 0, 0, y_length);
+
+
+	pcl::copyPointCloud(*cloud_surface_bottom, *cloud_surface_left);
+	RotatePointCloudAroundZeroPoint(cloud_surface_left, 90, { 0, 0, 1 });
+	TranslatePointCloud(cloud_surface_left, x_length, 0, 0);
+
+	pcl::copyPointCloud(*cloud_surface_bottom, *cloud_surface_back);
+	RotatePointCloudAroundZeroPoint(cloud_surface_back, -90, { 1, 0, 0 });
+	TranslatePointCloud(cloud_surface_back, 0, 0, z_length);
+
+
+
+	//*surface_cloud += *cloud_surface_top;
+	*surface_cloud += *cloud_surface_left;
+	*surface_cloud += *cloud_surface_right;
+	*surface_cloud += *cloud_surface_front;
+	*surface_cloud += *cloud_surface_back;
+	*surface_cloud += *cloud_surface_bottom;
+
+	for (int i = 0; i < surface_cloud->points.size(); i++)
+	{
+		if (surface_cloud->points[i].x >= 0 && surface_cloud->points[i].x <= maxpoint.x && 
+			surface_cloud->points[i].y >= 0 && surface_cloud->points[i].y <= maxpoint.y &&
+			surface_cloud->points[i].z >= 0 && surface_cloud->points[i].z <= maxpoint.z )
+		{
+			cloud->push_back(surface_cloud->points[i]);
+		}
+	}
+
+	/*
 	//method 1
 	float border_x_max = maxpoint.x - leaf_size*10;
 	float border_x_min = leaf_size*10;
@@ -258,10 +313,11 @@ void PointCloudOperation::SurfaceFillCloud(PointCloudXYZRGB::Ptr cloud, float le
 			}while (newpoint.y >= 0.0);
 		}
 	}
-
+	*cloud += *surface_cloud;
+*/
 	
 
-	*cloud += *surface_cloud;
+	
 	cout << "cloud->points.size() = " << cloud->points.size() << endl;
 
 }
@@ -275,12 +331,22 @@ void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, floa
 	}
 
 	PointCloudXYZRGB::Ptr invert_cloud(new PointCloudXYZRGB);
-	PointCloudXYZRGB::Ptr concate_cloud(new PointCloudXYZRGB);
+	//PointCloudXYZRGB::Ptr concate_cloud(new PointCloudXYZRGB);
 
 	pcl::copyPointCloud(*cloud, *invert_cloud);
 
-	RotatePointCloud(invert_cloud, 180, { 0, 0, 1 });
-	TranslatePointCloud(invert_cloud, x_length, y_length, 0);
+	if (x_length >= z_length) // x is longer side, do rotate on x axis
+	{
+		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 1, 0, 0 });
+		TranslatePointCloud(invert_cloud, 0, y_length, z_length);
+	}
+	else if (z_length > x_length)//z is longer side, do rotate on z axis
+	{
+		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 0, 0, 1 });
+		TranslatePointCloud(invert_cloud, x_length, y_length, 0);
+	}
+
+
 
 	*cloud += *invert_cloud;
 	//pcl::concatenateFields(cloud, invert_cloud, concate_cloud);//a+b=c

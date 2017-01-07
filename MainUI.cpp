@@ -732,7 +732,7 @@ void MainUI::ButtonApplyCloudRotationPressed()
 
 	}
 
-	dataprocess->RotatePointCloud(pointcloud,
+	dataprocess->RotatePointCloudAroundZeroPoint(pointcloud,
 		rotate_degree, rotation_vector);
 
 	// rotate cloud at viewer window
@@ -962,7 +962,7 @@ void MainUI::ButtonSetCloudAlignAxisPressed()
 
 	}
 
-	dataprocess->RotatePointCloudAtAxis(pointcloud,
+	dataprocess->RotatePointCloudAlignAxis(pointcloud,
 		floor_plane_normal_vector, target_plane_normal_vector);
 
 
@@ -1233,7 +1233,7 @@ void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 	target_plane_normal_vector[1] = 1.0;//xz plane
 	target_plane_normal_vector[2] = 0.0;
 
-	dataprocess->RotatePointCloudAtAxis(dataprocess->GetCurrentDisplayPointCloud(),
+	dataprocess->RotatePointCloudAlignAxis(dataprocess->GetCurrentDisplayPointCloud(),
 		floor_plane_normal_vector, target_plane_normal_vector);
 
 

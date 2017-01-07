@@ -861,7 +861,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		if (items[i]->rotation_case == 1)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 							-90, rotation_x_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
 				0.0, 0.0, items[i]->input_dimension.y);
@@ -870,7 +870,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		else if (items[i]->rotation_case == 2)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				90, rotation_z_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
 				items[i]->input_dimension.y, 0.0, 0.0);
@@ -878,15 +878,15 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		else if (items[i]->rotation_case == 3)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				90, rotation_z_axis);
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				90, rotation_y_axis);
 		}
 		else if (items[i]->rotation_case == 4)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				90, rotation_y_axis);
 			dataprocess->TranslatePointCloud(item_pointcloud,
 				0.0, 0.0, items[i]->input_dimension.x);
@@ -894,9 +894,9 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vec
 		else if (items[i]->rotation_case == 5)
 		{
 			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				-90, rotation_x_axis);
-			dataprocess->RotatePointCloud(item_pointcloud,
+			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
 				-90, rotation_y_axis);
 		}
 
