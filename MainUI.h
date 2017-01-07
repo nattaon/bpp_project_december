@@ -46,6 +46,13 @@ private:
 	
 	void SetCurrentCameraParameterToUI();
 	void WritePlaneParamToUI();
+	void WriteContainerDataToUI(
+		int bin_x_dim, int bin_y_dim, int bin_z_dim,
+		PointTypeXYZRGB bin_min_pos, PointTypeXYZRGB bin_max_pos);
+	void WriteItemDataToUI(int index,
+		int box_x_dim, int box_y_dim, int box_z_dim, size_t cloud_size,
+		PointTypeXYZRGB box_min_pos, PointTypeXYZRGB box_max_pos,
+		string file_name);
 
 	
 private slots:
@@ -125,13 +132,13 @@ private slots:
 	void ButtonSavePointCloudFromListPressed();
 
 	void ButtonAlignAllItemAxisPressed();
-	void ButtonSaveAllItemPcdPressed();
+	void ButtonSaveAllItemPointcloudToPcdPressed();
 
 	void ButtonFillEmptyAllPressed();
 	void ButtonFillInvertAllPressed();
 
-	void ButtonLoadAllItemPressed();
-	void ButtonSaveAllItemPressed();
+	void ButtonLoadAllItemsTextToUIPressed();
+	void ButtonSaveAllItemsUIToTextPressed();
 
 	void ButtonRemoveItemPressed();
 	void ButtonClearAllItemPressed();

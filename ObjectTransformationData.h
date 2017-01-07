@@ -7,6 +7,13 @@ class ObjectTransformationData
 {
 public:
     ObjectTransformationData();
+	void CalculateWDH();
+	void SetLengthMM(int box_x_dim, int box_y_dim, int box_z_dim);
+	void SetTransformMinMaxPos(PointTypeXYZRGB items_min_pos, PointTypeXYZRGB items_max_pos);
+	void SetTransformVector(Eigen::Vector3f items_major_vector,
+		Eigen::Vector3f items_middle_vector,
+		Eigen::Vector3f items_minor_vector);
+
 
 	PointCloudXYZRGB::Ptr object_pointcloud;
 	PointCloudTransformationExtraction *transform;
@@ -15,7 +22,7 @@ public:
 	PointTypeXYZRGB target_position;
 	PointTypeXYZRGB input_dimension;
 
-	void CalculateWDH();
+	
 	int x_length_mm, y_length_mm, z_length_mm;
 	double x_length, y_length, z_length;
 

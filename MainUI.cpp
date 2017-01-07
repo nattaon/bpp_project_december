@@ -1,7 +1,7 @@
 #include "MainUI.h"
 
 #define POINTCLOUD_DIR "../pcd_files"
-#define LISTCOLUMN 6
+#define COLUMN_FILENAME 13
 
 
 MainUI::MainUI(QWidget *parent) :
@@ -93,13 +93,13 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_item_save, SIGNAL(clicked()), this, SLOT(ButtonSavePointCloudFromListPressed()));
 	
 	connect(ui->bt_align_all_items_to_axis, SIGNAL(clicked()), this, SLOT(ButtonAlignAllItemAxisPressed()));
-	connect(ui->bt_save_all_items_to_pcd, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPcdPressed()));
+	connect(ui->bt_save_all_items_to_pcd, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPointcloudToPcdPressed()));
 
 	connect(ui->bt_fill_empty_all, SIGNAL(clicked()), this, SLOT(ButtonFillEmptyAllPressed()));
 	connect(ui->bt_fill_invert_all, SIGNAL(clicked()), this, SLOT(ButtonFillInvertAllPressed()));
 
-	connect(ui->bt_all_load, SIGNAL(clicked()), this, SLOT(ButtonLoadAllItemPressed()));
-	connect(ui->bt_all_save, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemPressed()));
+	connect(ui->bt_all_load, SIGNAL(clicked()), this, SLOT(ButtonLoadAllItemsTextToUIPressed()));
+	connect(ui->bt_all_save, SIGNAL(clicked()), this, SLOT(ButtonSaveAllItemsUIToTextPressed()));
 
 	connect(ui->bt_item_remove, SIGNAL(clicked()), this, SLOT(ButtonRemoveItemPressed()));
 	connect(ui->bt_item_clearall, SIGNAL(clicked()), this, SLOT(ButtonClearAllItemPressed()));
@@ -130,7 +130,8 @@ MainUI::MainUI(QWidget *parent) :
 		ui->treeWidget->header()->resizeSection(j, 90);
 	}
 	ui->treeWidget->header()->resizeSection(11, 45);
-	ui->treeWidget->header()->resizeSection(12, 500);
+	ui->treeWidget->header()->resizeSection(12, 45);
+	ui->treeWidget->header()->resizeSection(COLUMN_FILENAME, 500);
 
 	//QApplication::instance()->installEventFilter(this);
 	
@@ -812,9 +813,35 @@ void MainUI::ButtonApplyCloudPassthroughPressed()
 }
 
 void MainUI::ButtonFillEmptyPressed()
-{}
+{
+	cout << "call ButtonFillEmptyPressed()" << endl;
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonFillEmptyPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
+
+	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
+	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
+
+}
 void MainUI::ButtonFillInvertPressed()
-{}
+{
+	cout << "call ButtonFillEmptyPressed()" << endl;
+	if (last_select_item_index == -1)
+	{
+		QMessageBox::information(0, QString("ButtonFillEmptyPressed"),
+			QString("No Item selected"), QMessageBox::Ok);
+		return;
+	}
+
+	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
+	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
+
+
+
+}
 void MainUI::ButtonFillEmptyAllPressed()
 {}
 void MainUI::ButtonFillInvertAllPressed()
@@ -1001,12 +1028,12 @@ void MainUI::WritePlaneParamToUI()
 	ui->in_maxobb_3->setText(
 		QString::number(dataprocess->planeseg->transformextract->max_point_OBB.z));
 	//position_OBB
-	ui->in_posobb_1->setText(
+	/*ui->in_posobb_1->setText(
 		QString::number(dataprocess->planeseg->transformextract->position_OBB.x));
 	ui->in_posobb_2->setText(
 		QString::number(dataprocess->planeseg->transformextract->position_OBB.y));
 	ui->in_posobb_3->setText(
-		QString::number(dataprocess->planeseg->transformextract->position_OBB.z));
+		QString::number(dataprocess->planeseg->transformextract->position_OBB.z));*/
 
 	//pca vector (principal component analysis)
 	ui->in_majorvector_1->setText(
@@ -1259,10 +1286,10 @@ inline pcl::PointXYZRGB Eigen2PointXYZRGB(Eigen::Vector3f v)
 void MainUI::ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name)
 {
 	//position_OBB
-	viewerwindow->AddSphereWindowCloudViewer(obj->transform->position_OBB, 0.01,
+	/*viewerwindow->AddSphereWindowCloudViewer(obj->transform->position_OBB, 0.01,
 		1.0, 0, 0, " obb" + id_name);
 	viewerwindow->AddTextWindowCloudViewer(obj->transform->position_OBB, 0.01,
-		1.0, 1.0, 1.0, "obb" + id_name, " text obb" + id_name);
+		1.0, 1.0, 1.0, "obb" + id_name, " text obb" + id_name);*/
 
 	//mass_center_point
 	viewerwindow->AddSphereWindowCloudViewer(obj->transform->mass_center_point, 0.01,
@@ -1286,58 +1313,31 @@ void MainUI::ShowMinMaxCenterPoint(ObjectTransformationData *obj, string id_name
 void MainUI::ButtonExtractClusterPressed()
 {
 	cout << "call ButtonExtractClusterPressed()" << endl;
-
+	//extract data of each item TO dataprocess->container & items[]
+	//show min max center point of each item
+	//update it to ui
 	ButtonClearAllItemPressed();
 
 	dataprocess->SeparateContainerAndItems(dataprocess->clusterextract->GetExtractCluster());
 	
 	dataprocess->CalculateContainerTransformation();
-
-
-	
-
 	ShowMinMaxCenterPoint(dataprocess->container, "container");
-	ui->in_bin_x_dim->setText(QString::number(dataprocess->container->x_length_mm));
-	ui->in_bin_y_dim->setText(QString::number(dataprocess->container->y_length_mm));
-	ui->in_bin_z_dim->setText(QString::number(dataprocess->container->z_length_mm));
-	ui->in_pos_container_1->setText(QString::number(dataprocess->container->transform->min3d_point.x));
-	ui->in_pos_container_2->setText(QString::number(dataprocess->container->transform->min3d_point.y));
-	ui->in_pos_container_3->setText(QString::number(dataprocess->container->transform->min3d_point.z));
+	WriteContainerDataToUI(
+		dataprocess->container->x_length_mm, dataprocess->container->y_length_mm, dataprocess->container->z_length_mm,
+		dataprocess->container->transform->min3d_point, dataprocess->container->transform->max3d_point);
+
 
 	dataprocess->CalculateItemsTransformation();
 	for (int i = 0; i < dataprocess->items.size();i++)
 	{
 		ShowMinMaxCenterPoint(dataprocess->items[i], "item_" + to_string(i+1));
-
-		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
-
-		item->setText(0, QString::number(i+1));
-		item->setText(1, QString::number(dataprocess->items[i]->x_length_mm));
-		item->setText(2, QString::number(dataprocess->items[i]->y_length_mm));
-		item->setText(3, QString::number(dataprocess->items[i]->z_length_mm));
-		item->setText(4, QString::number(dataprocess->items[i]->object_pointcloud->size()));
-		item->setText(5, QString::number(dataprocess->items[i]->transform->min3d_point.x));
-		item->setText(6, QString::number(dataprocess->items[i]->transform->min3d_point.y));
-		item->setText(7, QString::number(dataprocess->items[i]->transform->min3d_point.z));
-		item->setText(8, QString::number(dataprocess->items[i]->transform->max3d_point.x));
-		item->setText(9, QString::number(dataprocess->items[i]->transform->max3d_point.y));
-		item->setText(10, QString::number(dataprocess->items[i]->transform->max3d_point.z));
-
-		item->setTextAlignment(0, Qt::AlignHCenter);
-		for (int j = 1; j < 5; j++)
-		{
-			item->setTextAlignment(j, Qt::AlignRight);
-		}
-		for (int j = 5; j < 13; j++)
-		{
-			item->setTextAlignment(j, Qt::AlignLeft);
-		}
-		item->setTextAlignment(11, Qt::AlignHCenter);
-
-		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-
-		ui->treeWidget->addTopLevelItem(item);
-
+		WriteItemDataToUI(i+1,
+			dataprocess->items[i]->x_length_mm,dataprocess->items[i]->y_length_mm,dataprocess->items[i]->z_length_mm,
+			dataprocess->items[i]->object_pointcloud->size(),
+			dataprocess->items[i]->transform->min3d_point,
+			dataprocess->items[i]->transform->max3d_point,
+			 "-"
+			);
 	}
 }
 
@@ -1444,7 +1444,7 @@ void MainUI::ButtonLoadPointCloudToListPressed()
 	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget); // at this  point  topLevelItemCount() is increase
 	item->setText(0, QString::number(pointcloud_number));
 	item->setText(4, QString::number(cloud->size()));
-	item->setText(12, filename);
+	item->setText(COLUMN_FILENAME, filename);
 	
 	item->setTextAlignment(0, Qt::AlignHCenter);
 	for (int j = 1; j < 5; j++)
@@ -1480,7 +1480,7 @@ void MainUI::ButtonSavePointCloudFromListPressed()
 		dataprocess->items[last_select_item_index]->object_pointcloud);
 
 	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
-	last_selected_item->setText(12, filename);
+	last_selected_item->setText(COLUMN_FILENAME, filename);
 
 
 }
@@ -1499,9 +1499,9 @@ void MainUI::ButtonAlignAllItemAxisPressed()
 	dataprocess->isSetAlignCorner = true;
 
 }
-void MainUI::ButtonSaveAllItemPcdPressed()
+void MainUI::ButtonSaveAllItemPointcloudToPcdPressed()
 {
-	cout << "call ButtonSaveAllItemPcdPressed()" << endl;
+	cout << "call ButtonSaveAllItemPointcloudToPcdPressed()" << endl;
 
 	QString filename = QFileDialog::getSaveFileName(this,
 		tr("Save pcd"), POINTCLOUD_DIR);
@@ -1514,124 +1514,217 @@ void MainUI::ButtonSaveAllItemPcdPressed()
 	{
 		string eachfilename = filename.toStdString() + to_string(i + 1)+".pcd";
 		dataprocess->SavePointCloud(eachfilename,
-			dataprocess->items[0]->object_pointcloud);
+			dataprocess->items[i]->object_pointcloud);
 
 		cout << eachfilename << endl;
 
 		QTreeWidgetItem* item = ui->treeWidget->topLevelItem(i);
-		item->setText(12, QString::fromStdString(eachfilename));
+		item->setText(COLUMN_FILENAME, QString::fromStdString(eachfilename));
 	}
 
 
 }
 
-void MainUI::ButtonLoadAllItemPressed()
+void MainUI::WriteContainerDataToUI(
+	int bin_x_dim, int bin_y_dim, int bin_z_dim, 
+	PointTypeXYZRGB bin_min_pos, PointTypeXYZRGB bin_max_pos)
 {
-	cout << "call ButtonLoadAllItemPressed()" << endl;
+	ui->in_bin_x_dim->setText(QString::number(bin_x_dim));
+	ui->in_bin_y_dim->setText(QString::number(bin_y_dim));
+	ui->in_bin_z_dim->setText(QString::number(bin_z_dim));
+	ui->in_min_pos_container_1->setText(QString::number(bin_min_pos.x));
+	ui->in_min_pos_container_2->setText(QString::number(bin_min_pos.y));
+	ui->in_min_pos_container_3->setText(QString::number(bin_min_pos.z));
+	ui->in_max_pos_container_1->setText(QString::number(bin_max_pos.x));
+	ui->in_max_pos_container_2->setText(QString::number(bin_max_pos.y));
+	ui->in_max_pos_container_3->setText(QString::number(bin_max_pos.z));
+}
+
+void MainUI::WriteItemDataToUI(int index,
+	int box_x_dim, int box_y_dim, int box_z_dim, size_t cloud_size, 
+	PointTypeXYZRGB box_min_pos, PointTypeXYZRGB box_max_pos,
+	string file_name)
+{
+
+	QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
+
+	item->setText(0, QString::number(index));
+	item->setText(1, QString::number(box_x_dim));
+	item->setText(2, QString::number(box_y_dim));
+	item->setText(3, QString::number(box_z_dim));
+	item->setText(4, QString::number(cloud_size));
+	item->setText(5, QString::number(box_min_pos.x));
+	item->setText(6, QString::number(box_min_pos.y));
+	item->setText(7, QString::number(box_min_pos.z));
+	item->setText(8, QString::number(box_max_pos.x));
+	item->setText(9, QString::number(box_max_pos.y));
+	item->setText(10, QString::number(box_max_pos.z));
+	//item->setText(11, QString::number(rotate_case));
+	item->setText(12, QString::fromStdString(file_name));
+
+	item->setTextAlignment(0, Qt::AlignHCenter);
+	for (int j = 1; j < 5; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignRight);
+	}
+	for (int j = 5; j < 13; j++)
+	{
+		item->setTextAlignment(j, Qt::AlignLeft);
+	}
+	item->setTextAlignment(11, Qt::AlignHCenter);
+
+	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+	ui->treeWidget->addTopLevelItem(item);
+}
+
+
+void MainUI::ButtonLoadAllItemsTextToUIPressed()
+{
+	cout << "call ButtonLoadAllItemsTextToUIPressed()" << endl;
+	//clear ui
+	//clear dataprocess->container & items[]
+	//new PointCloudBPPTextListIO in order to clear variable value
+	//load from txt file
+	//update it to ui
+	//add it in dataprocess
+	//set dataprocess->isSetAlignCorner = true; -> align cornor again min_point will change to 0,...
+
+	ButtonClearAllItemPressed();
 
 	QString filename = QFileDialog::getOpenFileName(this,
 		tr("Load container & items list file"), POINTCLOUD_DIR, tr("text file (*.txt)"));
 	if (filename.trimmed().isEmpty()) return;
 
 	int total_items;
-	int container_w, container_h, container_d;
-	int container_x, container_y, container_z;
-	double container_orient_x, container_orient_y, container_orient_z;
-	vector<string> array_items_filename;
-	int *items_w, *items_h, *items_d;
-	int *items_x, *items_y, *items_z;
-	double *items_orient_x, *items_orient_y, *items_orient_z;
+
 	
-	total_items=dataprocess->pointcloudbpptext->ReadPointCloudListForBPP(filename.toStdString());
+	PointCloudBPPTextListIO *txt_items = new PointCloudBPPTextListIO();
 
-	container_w = dataprocess->pointcloudbpptext->bin_width;
-	container_h = dataprocess->pointcloudbpptext->bin_height;
-	container_d = dataprocess->pointcloudbpptext->bin_depth;
-
-	array_items_filename = dataprocess->pointcloudbpptext->array_pcd_filename;
-
-	items_w = dataprocess->pointcloudbpptext->item_w;
-	items_h = dataprocess->pointcloudbpptext->item_h;
-	items_d = dataprocess->pointcloudbpptext->item_d;
-
-	//call read pcd file
-	//dataprocess->LoadTxtListofItems(filename.toStdString());
+	total_items=txt_items->ReadPointCloudListForBPP(filename.toStdString());
 
 
-	//add load txt item to ui
+	dataprocess->container = new ObjectTransformationData();
+	dataprocess->container->SetLengthMM(txt_items->bin_x_dim, txt_items->bin_y_dim, txt_items->bin_z_dim);
+	dataprocess->container->SetTransformMinMaxPos(txt_items->bin_min_pos, txt_items->bin_max_pos);
+	dataprocess->container->SetTransformVector(txt_items->bin_major_vector, txt_items->bin_middle_vector, txt_items->bin_minor_vector);
+
+	WriteContainerDataToUI(txt_items->bin_x_dim,txt_items->bin_y_dim,txt_items->bin_z_dim,
+		txt_items->bin_min_pos, txt_items->bin_max_pos);
 
 	for (int i = 0; i < total_items; i++)
 	{
-		//call read pcd file
-		PointCloudXYZRGB::Ptr cloud=dataprocess->LoadPcdFileToPointCloudVariable(array_items_filename[i]);
+		PointCloudXYZRGB::Ptr cloud = dataprocess->LoadPcdFileToPointCloudVariable(
+			txt_items->array_pcd_filename[i]);
 
-		//copy cloud to dataprocess->items[i]
-		dataprocess->AddLoadPointCloudToItems(cloud);
-	
-		int pointcloud_number = ui->treeWidget->topLevelItemCount() + 1;
-		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget); // when new item, topLevelItemCount() is increase
-		item->setText(0, QString::number(i + 1));
-		item->setText(1, QString::number(items_w[i]));
-		item->setText(2, QString::number(items_d[i]));
-		item->setText(3, QString::number(items_h[i]));
-		item->setText(4, QString::number(cloud->size()));
-		item->setText(12, QString::fromStdString(array_items_filename[i]));
+		//add item to dataprocess
+		//dataprocess->AddLoadPointCloudToItems(cloud);
+		
+		ObjectTransformationData *item = new ObjectTransformationData();
+		pcl::copyPointCloud(*cloud, *item->object_pointcloud);
+		item->SetLengthMM(txt_items->items_x_dim[i], txt_items->items_y_dim[i], txt_items->items_z_dim[i]);
+		item->SetTransformMinMaxPos(txt_items->items_min_pos[i], txt_items->items_max_pos[i]);
+		item->SetTransformVector(txt_items->items_major_vector[i], txt_items->items_middle_vector[i], txt_items->items_minor_vector[i]);
+		dataprocess->items.push_back(item);
+		cout << "dataprocess ->items.size()=" << dataprocess ->items.size() << endl;
 
-		item->setTextAlignment(0, Qt::AlignHCenter);
-		for (int j = 1; j < 5; j++)
-		{
-			item->setTextAlignment(j, Qt::AlignRight);
-		}
-		for (int j = 5; j < 12; j++)
-		{
-			item->setTextAlignment(j, Qt::AlignLeft);
-		}
-
-		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-
-		ui->treeWidget->addTopLevelItem(item);
+		WriteItemDataToUI(i + 1,
+			txt_items->items_x_dim[i], txt_items->items_y_dim[i], txt_items->items_z_dim[i],
+			cloud->size(), txt_items->items_min_pos[i], txt_items->items_max_pos[i],
+			txt_items->array_pcd_filename[i]
+			);
 	}
 
-
+	dataprocess->isSetAlignCorner = true;
 
 
 }
-void MainUI::ButtonSaveAllItemPressed()
+void MainUI::ButtonSaveAllItemsUIToTextPressed()
 {
-	cout << "call ButtonSaveAllItemPressed()" << endl;
+	cout << "call ButtonSaveAllItemsUIToTextPressed()" << endl;
 
+	int ui_total_boxes = ui->treeWidget->topLevelItemCount();
+
+	if (ui_total_boxes != dataprocess->items.size())
+	{
+		QMessageBox::information(0, QString("ButtonSaveAllItemsUIToTextPressed"), 
+			QString("ui_total_boxes != dataprocess->items.size()"), QMessageBox::Ok);
+
+		return;
+	}
+
+	//Do read value in ui not dataprocess->container/dataprocess->items[]
+	//Because user may change some item value
+
+	int bin_x_dim = ui->in_bin_x_dim->text().toInt();
+	int bin_y_dim = ui->in_bin_y_dim->text().toInt();
+	int bin_z_dim = ui->in_bin_z_dim->text().toInt();
+
+	PointTypeXYZRGB bin_min_pos;
+	bin_min_pos.x = ui->in_min_pos_container_1->text().toDouble();
+	bin_min_pos.y = ui->in_min_pos_container_2->text().toDouble();
+	bin_min_pos.z = ui->in_min_pos_container_3->text().toDouble();
+
+	PointTypeXYZRGB bin_max_pos;
+	bin_max_pos.x = ui->in_max_pos_container_1->text().toDouble();
+	bin_max_pos.y = ui->in_max_pos_container_2->text().toDouble();
+	bin_max_pos.z = ui->in_max_pos_container_3->text().toDouble();
+
+	Eigen::Vector3f bin_major_vector = dataprocess->container->transform->major_vector;
+	Eigen::Vector3f bin_middle_vector = dataprocess->container->transform->middle_vector;
+	Eigen::Vector3f bin_minor_vector = dataprocess->container->transform->minor_vector;
 
 
 	vector<string> array_pcd_filename;
-	int total_boxes = ui->treeWidget->topLevelItemCount();
-	int *boxes_width = new int[total_boxes];
-	int *boxes_height = new int[total_boxes];
-	int *boxes_depth = new int[total_boxes];
+	vector<int> items_x_dim, items_y_dim, items_z_dim;
+	vector<PointTypeXYZRGB> items_min_pos, items_max_pos;
+	vector<Eigen::Vector3f> items_major_vector, items_middle_vector, items_minor_vector;
 
-	for (int i = 0; i < total_boxes; i++)
+
+	for (int i = 0; i < ui_total_boxes; i++)
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
-		if (item->text(12) == "")
+		if (item->text(COLUMN_FILENAME) == "")
 		{
 			//cout << i << " no filename" << endl;
-			QMessageBox::information(0, QString("ButtonSaveAllItemPressed"), QString("Each Pcd File has not been saved"), QMessageBox::Ok);
+			QMessageBox::information(0, QString("ButtonSaveAllItemsUIToTextPressed"), 
+				QString("Each item Pcd File has not been saved"), QMessageBox::Ok);
 			return;
 		}
 		else
 		{
-			array_pcd_filename.push_back(item->text(12).toStdString());
+			array_pcd_filename.push_back(item->text(COLUMN_FILENAME).toStdString());
 		}
 
 		if (item->text(1) == "")
 		{
-			QMessageBox::information(0, QString("ButtonSaveAllItemPressed"), QString("Pointcloud has no WHD Data"), QMessageBox::Ok);
+			QMessageBox::information(0, QString("ButtonSaveAllItemsUIToTextPressed"), 
+				QString("Pointcloud did not calculate dimension yet"), QMessageBox::Ok);
 			return;
 		}
 		else
 		{
-			boxes_width[i] = item->text(1).toInt();
-			boxes_height[i] = item->text(3).toInt();
-			boxes_depth[i] = item->text(2).toInt();
+			items_x_dim.push_back(item->text(1).toInt());
+			items_y_dim.push_back(item->text(2).toInt());
+			items_z_dim.push_back(item->text(3).toInt());
+
+			PointTypeXYZRGB item_min_pos;
+			item_min_pos.x = item->text(5).toDouble();
+			item_min_pos.y = item->text(6).toDouble();
+			item_min_pos.z = item->text(7).toDouble();
+			items_min_pos.push_back(item_min_pos);
+
+			PointTypeXYZRGB item_max_pos;
+			item_max_pos.x = item->text(8).toDouble();
+			item_max_pos.y = item->text(9).toDouble();
+			item_max_pos.z = item->text(10).toDouble();
+			items_max_pos.push_back(item_max_pos);
+
+			items_major_vector.push_back(dataprocess->items[i]->transform->major_vector);
+			items_middle_vector.push_back(dataprocess->items[i]->transform->middle_vector);
+			items_minor_vector.push_back(dataprocess->items[i]->transform->minor_vector);
+
+
 		}
 	}
 
@@ -1642,12 +1735,14 @@ void MainUI::ButtonSaveAllItemPressed()
 
 
 	dataprocess->pointcloudbpptext->WritePointCloudListForBPP(
-		filename.toStdString(), total_boxes,
-		ui->in_bin_x_dim->text().toDouble(),
-		ui->in_bin_y_dim->text().toDouble(),
-		ui->in_bin_z_dim->text().toDouble(),
+		filename.toStdString(), ui_total_boxes,
+		bin_x_dim, bin_y_dim, bin_z_dim,
+		bin_min_pos, bin_max_pos,
+		bin_major_vector, bin_middle_vector, bin_minor_vector,
 		array_pcd_filename,
-		boxes_width, boxes_height, boxes_depth
+		items_x_dim, items_y_dim, items_z_dim,
+		items_min_pos, items_max_pos,
+		items_major_vector, items_middle_vector, items_minor_vector
 		);
 
 
@@ -1655,24 +1750,26 @@ void MainUI::ButtonSaveAllItemPressed()
 void MainUI::ButtonRemoveItemPressed()
 {
 	cout << "call ButtonRemoveItemPressed() " << last_select_item_index << endl;
+	//remove item from ui
+	//remove item from dataprocess->items[i]
+	//re run index number
+	//update viewer embeded to next pointcloud
 
 	QTreeWidgetItem* last_selected_item = ui->treeWidget->topLevelItem(last_select_item_index);
-
 	delete last_selected_item;
 
-	//cout << "items size=" << dataprocess->items.size() << endl;
-	// Deletes the second element (vec[1])
+	// Deletes the element at (0+last_select_item_index)
 	dataprocess->items.erase(dataprocess->items.begin() + last_select_item_index);
-	//cout << "items size=" << dataprocess->items.size() << endl;
-	int total_boxes = ui->treeWidget->topLevelItemCount();
 
 	//rerun index number
+	int total_boxes = ui->treeWidget->topLevelItemCount();
 	for (int i = 0; i < total_boxes; ++i)
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
 		item->setText(0, QString::number(i + 1));
 
 	}
+
 	//if delete last item:next select item = deleteitem index-1 
 	if (last_select_item_index == total_boxes)
 	{
@@ -1688,7 +1785,7 @@ void MainUI::ButtonRemoveItemPressed()
 		return;
 	}
 
-	//if has item in ui update viewer embeded to show remain pointcloud
+	//show next pointcloud in viewer embeded
 	if (last_select_item_index >= 0)
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(last_select_item_index);
@@ -1703,13 +1800,28 @@ void MainUI::ButtonRemoveItemPressed()
 void MainUI::ButtonClearAllItemPressed()
 {
 	cout << "call ButtonClearAllItemPressed()" << endl;
-	
+	//remove container and item from ui
+	//remove container and item from dataprocess->items[i]	
+	//clear viewer embeded
+	//set last_select_item_index to select nothing
+
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 	for (int i = 0; i < total_boxes; i++)
 	{
 		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(0);
 		delete item;
+
+		dataprocess->items[i] = NULL;
+		delete dataprocess->items[i];
 	}
+	PointTypeXYZRGB point;
+	WriteContainerDataToUI(0, 0, 0, point, point);
+
+	// Deletes all element 
+	dataprocess->items.clear();
+
+	dataprocess->container = NULL;
+	delete dataprocess->container;
 
 	viewerembeded->ClearPointCloudEmbededCloudViewer();
 	last_select_item_index = -1;
@@ -1718,7 +1830,9 @@ void MainUI::ButtonClearAllItemPressed()
 void MainUI::ButtonCalculateBinPackingPressed()
 {
 	cout << "call ButtonCalculateBinPackingPressed()" << endl;
-
+	//read data from ui
+	//calculate rotation case
+	//save it in ui and dataprocess->items[i]
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 
 	if (total_boxes != dataprocess->items.size())
@@ -1931,7 +2045,7 @@ void MainUI::ButtonShowPackingTargetPressed()
 		}
 
 
-		viewerwindow->AddCircleWindowCloudViewer(dataprocess->items[i]->transform->position_OBB,
+		viewerwindow->AddCircleWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
 			radius, 1.0, 0.0, 0.0, "circle " + i);
 
 		

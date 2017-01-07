@@ -42,6 +42,9 @@ public:
 		double ymin, double ymax,
 		double zmin, double zmax);
 
+
+	void DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, float x_length, float y_length, float z_length);
+
 private:
 
 

@@ -46,7 +46,8 @@ void PointCloudOperation::SeparateContainerAndItems(vector<PointCloudXYZRGB::Ptr
 	for (int i = 0; i < extract_cluster_cloud.size(); i++)
 	{
 		if (i == max_point_size_id)
-		{	
+		{
+			container = new ObjectTransformationData();
 			pcl::copyPointCloud(*extract_cluster_cloud[max_point_size_id], *container->object_pointcloud);
 		}
 		else
@@ -206,5 +207,28 @@ void PointCloudOperation::ApplyPassthroughFilter(PointCloudXYZRGB::Ptr cloud,
 	planeseg->Filter(cloud, "x", xmin, xmax);
 	planeseg->Filter(cloud, "y", ymin, ymax);
 	planeseg->Filter(cloud, "z", zmin, zmax);
+
+}
+
+void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, float x_length, float y_length, float z_length)
+{
+	if (cloud->size() <= 0)
+	{
+		QMessageBox::information(0, QString("DuplicateInvertCloud"), QString("No PointCloud Data"), QMessageBox::Ok);
+		return;
+	}
+
+	PointCloudXYZRGB::Ptr invert_cloud(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr concate_cloud(new PointCloudXYZRGB);
+
+	pcl::copyPointCloud(*cloud, *invert_cloud);
+
+	RotatePointCloud(invert_cloud, 90, { 0, 0, 1 });
+	TranslatePointCloud(invert_cloud, x_length, y_length, 0);
+
+	*cloud += *invert_cloud;
+	//pcl::concatenateFields(cloud, invert_cloud, concate_cloud);//a+b=c
+
+
 
 }

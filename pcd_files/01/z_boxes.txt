@@ -1,12 +1,48 @@
-301 122 239
+301 122 239 
+xmin xymin zmin 
+xmax ymax zmax
+major vector
+middle vector
+minor vector
 5
+
 C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z1.pcd
 140 59 85
+xmin xymin zmin 
+xcenter ycenter z center
+xmax ymax zmax
+major vector
+middle vector
+minor vector
+
 C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z2.pcd
 141 65 86
+xmin xymin zmin 
+xmax ymax zmax
+major vector
+middle vector
+minor vector
+
 C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z3.pcd
 106 51 132
+xmin xymin zmin 
+xmax ymax zmax
+major vector
+middle vector
+minor vector
+
 C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z4.pcd
 88 56 154
+xmin xymin zmin 
+xmax ymax zmax
+major vector
+middle vector
+minor vector
+
 C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/01/z5.pcd
 84 63 143
+xmin xymin zmin 
+xmax ymax zmax
+major vector
+middle vector
+minor vector
