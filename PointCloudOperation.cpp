@@ -209,6 +209,62 @@ void PointCloudOperation::ApplyPassthroughFilter(PointCloudXYZRGB::Ptr cloud,
 	planeseg->Filter(cloud, "z", zmin, zmax);
 
 }
+void PointCloudOperation::SurfaceFillCloud(PointCloudXYZRGB::Ptr cloud, float leaf_size, float x_length, float y_length, float z_length)
+{
+	if (cloud->size() <= 0)
+	{
+		QMessageBox::information(0, QString("DuplicateInvertCloud"), QString("No PointCloud Data"), QMessageBox::Ok);
+		return;
+	}
+
+	
+	PointCloudXYZRGB::Ptr surface_cloud(new PointCloudXYZRGB);
+	cout << "cloud->points.size() = " << cloud->points.size() << endl;
+
+	
+//	for (int i = 0; i < cloud->points.size(); i++)
+	PointTypeXYZRGB minpoint, maxpoint;
+	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
+	cout << "maxpoint " << maxpoint << endl;
+	cout << "leaf_size " << leaf_size << endl;
+	cout << endl;
+
+	//method 2
+	//rotate cloud to 6 face -> concatenate them
+	//remove point that not in dimension area
+
+
+	
+	//method 1
+	float border_x_max = maxpoint.x - leaf_size*10;
+	float border_x_min = leaf_size*10;
+	float border_z_max = maxpoint.z - leaf_size*10;
+	float border_z_min = leaf_size*10;
+	
+	//search for point at border
+	// loopy-- untily=0, add it to surface_cloud 
+	//point size from 2000 -> become 30000...
+	for (int i = 0; i < cloud->points.size(); i++)
+	{
+		if (cloud->points[i].x > border_x_max || cloud->points[i].x < border_x_min || 
+			cloud->points[i].z > border_z_max || cloud->points[i].z < border_z_min)
+		{
+			PointTypeXYZRGB newpoint = cloud->points[i];
+			do
+			{
+				surface_cloud->push_back(newpoint);
+				newpoint.y -= leaf_size;
+
+			}while (newpoint.y >= 0.0);
+		}
+	}
+
+	
+
+	*cloud += *surface_cloud;
+	cout << "cloud->points.size() = " << cloud->points.size() << endl;
+
+}
 
 void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, float x_length, float y_length, float z_length)
 {
@@ -223,12 +279,12 @@ void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, floa
 
 	pcl::copyPointCloud(*cloud, *invert_cloud);
 
-	RotatePointCloud(invert_cloud, 90, { 0, 0, 1 });
+	RotatePointCloud(invert_cloud, 180, { 0, 0, 1 });
 	TranslatePointCloud(invert_cloud, x_length, y_length, 0);
 
 	*cloud += *invert_cloud;
 	//pcl::concatenateFields(cloud, invert_cloud, concate_cloud);//a+b=c
-
+	cout << "cloud->points.size() = " << cloud->points.size() << endl;
 
 
 }

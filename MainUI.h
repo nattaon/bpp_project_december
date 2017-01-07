@@ -121,7 +121,7 @@ private slots:
 	///Set Cloud Position
 	void ButtonSetCloudCornerPressed();
 	void ButtonSetCloudCenterPressed();
-	void ButtonSetCloudAlignCornerPressed();
+	void ButtonSetCloudAlignAxisPressed();
 	void ButtonCalculateCloudTransformPressed();
 	void ButtonFillEmptyPressed();
 	void ButtonFillInvertPressed();

@@ -65,7 +65,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_apply_passthrough, SIGNAL(clicked()), this, SLOT(ButtonApplyCloudPassthroughPressed()));
 	connect(ui->bt_set_cloud_center, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCenterPressed()));
 	connect(ui->bt_set_cloud_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudCornerPressed()));
-	connect(ui->bt_set_cloud_align_corner, SIGNAL(clicked()), this, SLOT(ButtonSetCloudAlignCornerPressed()));
+	connect(ui->bt_set_cloud_align_axis, SIGNAL(clicked()), this, SLOT(ButtonSetCloudAlignAxisPressed()));
 	connect(ui->bt_calculate_cloud_transform, SIGNAL(clicked()), this, SLOT(ButtonCalculateCloudTransformPressed()));
 	connect(ui->bt_fill_empty, SIGNAL(clicked()), this, SLOT(ButtonFillEmptyPressed()));
 	connect(ui->bt_fill_invert, SIGNAL(clicked()), this, SLOT(ButtonFillInvertPressed()));
@@ -814,7 +814,7 @@ void MainUI::ButtonApplyCloudPassthroughPressed()
 
 void MainUI::ButtonFillEmptyPressed()
 {
-	cout << "call ButtonFillEmptyPressed()" << endl;
+	//cout << "call ButtonFillEmptyPressed()" << endl;
 	if (last_select_item_index == -1)
 	{
 		QMessageBox::information(0, QString("ButtonFillEmptyPressed"),
@@ -824,11 +824,15 @@ void MainUI::ButtonFillEmptyPressed()
 
 	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
 	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
+
+	dataprocess->SurfaceFillCloud(pointcloud, 0.001, item_transform_data->x_length, item_transform_data->y_length, item_transform_data->z_length);
+
+	viewerembeded->UpdateCloudViewer(pointcloud);
 
 }
 void MainUI::ButtonFillInvertPressed()
 {
-	cout << "call ButtonFillEmptyPressed()" << endl;
+	//cout << "call ButtonFillEmptyPressed()" << endl;
 	if (last_select_item_index == -1)
 	{
 		QMessageBox::information(0, QString("ButtonFillEmptyPressed"),
@@ -839,13 +843,27 @@ void MainUI::ButtonFillInvertPressed()
 	ObjectTransformationData *item_transform_data = dataprocess->items[last_select_item_index];
 	PointCloudXYZRGB::Ptr pointcloud = item_transform_data->object_pointcloud;
 
+	dataprocess->DuplicateInvertCloud(pointcloud, 
+		item_transform_data->x_length, item_transform_data->y_length, item_transform_data->z_length);
 
+	viewerembeded->UpdateCloudViewer(pointcloud);
 
 }
 void MainUI::ButtonFillEmptyAllPressed()
 {}
 void MainUI::ButtonFillInvertAllPressed()
-{}
+{
+	//cout << "call ButtonFillInvertAllPressed()" << endl;
+	int current_select_index = last_select_item_index;
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		last_select_item_index = i;
+		ButtonFillInvertPressed();
+	}
+	PressedTreeItem(ui->treeWidget->topLevelItem(current_select_index));
+
+}
 
 
 void MainUI::ButtonSetCloudCenterPressed()
@@ -855,6 +873,7 @@ void MainUI::ButtonSetCloudCenterPressed()
 void MainUI::ButtonSetCloudCornerPressed()
 {
 	cout << "call ButtonSetCloudCornerPressed()" << endl;
+	
 	if (last_select_item_index == -1)
 	{
 		QMessageBox::information(0, QString("ButtonSetCloudCornerPressed"),
@@ -890,12 +909,12 @@ void MainUI::ButtonSetCloudCornerPressed()
 
 }
 
-void MainUI::ButtonSetCloudAlignCornerPressed()
+void MainUI::ButtonSetCloudAlignAxisPressed()
 {
-	cout << "call ButtonSetCloudAlignCornerPressed()" << endl;
+	cout << "call ButtonSetCloudAlignAxisPressed()" << endl;
 	if (last_select_item_index == -1)
 	{
-		QMessageBox::information(0, QString("ButtonSetCloudAlignCornerPressed"),
+		QMessageBox::information(0, QString("ButtonSetCloudAlignAxisPressed"),
 			QString("No Item selected"), QMessageBox::Ok);
 		return;
 	}
@@ -1489,14 +1508,19 @@ void MainUI::ButtonSavePointCloudFromListPressed()
 void MainUI::ButtonAlignAllItemAxisPressed()
 {
 	cout << "call ButtonAlignAllItemAxisPressed()" << endl;
-
+	// align at corner
+	// align vector to paralel xyz axis
+	int current_select_index = last_select_item_index;
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 	for (int i = 0; i < total_boxes; i++)
 	{
 		last_select_item_index = i;
 		ButtonSetCloudCornerPressed();
+		ButtonSetCloudAlignAxisPressed();
 	}
 	dataprocess->isSetAlignCorner = true;
+
+	PressedTreeItem(ui->treeWidget->topLevelItem(current_select_index));
 
 }
 void MainUI::ButtonSaveAllItemPointcloudToPcdPressed()

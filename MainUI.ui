@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -3780,7 +3780,7 @@
        <string>Set Cloud Position</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="bt_set_cloud_align_corner">
+     <widget class="QPushButton" name="bt_set_cloud_align_axis">
       <property name="geometry">
        <rect>
         <x>250</x>
@@ -5471,9 +5471,9 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_4"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_4"/>
   <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
