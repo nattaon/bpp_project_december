@@ -831,218 +831,221 @@ void ViewerWindow::randomcolorint(int &r, int &g, int &b)
 }
 
 
-void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, vector<ObjectTransformationData*> items)
+void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
 	//cout << "container_position=" << container_position << endl;
-
+	//draw circle hilight at current item postion
+	//draw pointcloud at target
 	Eigen::Matrix<float, 1, 3>  rotation_x_axis(1.0, 0.0, 0.0);
 	Eigen::Matrix<float, 1, 3>  rotation_y_axis(0.0, 1.0, 0.0);
 	Eigen::Matrix<float, 1, 3>  rotation_z_axis(0.0, 0.0, 1.0);
 
-	for (int i = 0; i < items.size(); i++)
+
+	if (item->rotation_case == -1)
 	{
-		if (items[i]->rotation_case == -1)
-		{
-			cout << "item " << i << " not be pack" << endl;
-			continue;
-		}
-
-		string cloudname = "itemcloud" + std::to_string(i);
-	
-
-		cout << "cloudname " << cloudname << endl;
-
-
-		PointCloudXYZRGB::Ptr item_pointcloud;
-		item_pointcloud.reset(new PointCloudXYZRGB);
-		pcl::copyPointCloud(*items[i]->object_pointcloud, *item_pointcloud);
-
-		//if (items[i]->rotation_case == 0) // do nothing
-		if (items[i]->rotation_case == 1)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-							-90, rotation_x_axis);
-			dataprocess->TranslatePointCloud(item_pointcloud,
-				0.0, 0.0, items[i]->input_dimension.y);
-
-		}
-		else if (items[i]->rotation_case == 2)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				90, rotation_z_axis);
-			dataprocess->TranslatePointCloud(item_pointcloud,
-				items[i]->input_dimension.y, 0.0, 0.0);
-		}
-		else if (items[i]->rotation_case == 3)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				90, rotation_z_axis);
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				90, rotation_y_axis);
-		}
-		else if (items[i]->rotation_case == 4)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				90, rotation_y_axis);
-			dataprocess->TranslatePointCloud(item_pointcloud,
-				0.0, 0.0, items[i]->input_dimension.x);
-		}
-		else if (items[i]->rotation_case == 5)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				-90, rotation_x_axis);
-			dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
-				-90, rotation_y_axis);
-		}
-
-
-		dataprocess->TranslatePointCloud(item_pointcloud,
-			items[i]->target_position.x, items[i]->target_position.y, items[i]->target_position.z);
-
-		dataprocess->TranslatePointCloud(item_pointcloud,
-			container->transform->min3d_point.x, container->transform->min3d_point.y, container->transform->min3d_point.z);
-
-
-		if (!window_view->updatePointCloud(item_pointcloud, cloudname))
-		{
-			window_view->addPointCloud(item_pointcloud, cloudname);
-		}
-
-		window_view->spinOnce();
-
-	
+		cout << "item  not be pack" << endl;
+		return;
 	}
+
+	float radius;
+	if (item->x_length > item->z_length)
+	{
+		radius = item->x_length*0.5;
+	}
+	else
+	{
+		radius = item->z_length*0.5;
+	}
+	AddCircleWindowCloudViewer(item->transform->mass_center_point,
+		radius, 1.0, 1.0, 1.0, "circle " + i);
+
+
+	string cloudname = "itemcloud" + std::to_string(i);
+
+	PointCloudXYZRGB::Ptr item_pointcloud;
+	item_pointcloud.reset(new PointCloudXYZRGB);
+	pcl::copyPointCloud(*item->object_pointcloud, *item_pointcloud);
+
+	//if (item->rotation_case == 0) // do nothing
+	if (item->rotation_case == 1)
+	{
+		//cout << i << " : rot case = " << item->rotation_case << endl;
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+						-90, rotation_x_axis);
+		dataprocess->TranslatePointCloud(item_pointcloud,
+			0.0, 0.0, item->input_dimension.y);
+
+	}
+	else if (item->rotation_case == 2)
+	{
+		//cout << i << " : rot case = " << item->rotation_case << endl;
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			90, rotation_z_axis);
+		dataprocess->TranslatePointCloud(item_pointcloud,
+			item->input_dimension.y, 0.0, 0.0);
+	}
+	else if (item->rotation_case == 3)
+	{
+		//cout << i << " : rot case = " << item->rotation_case << endl;
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			90, rotation_z_axis);
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			90, rotation_y_axis);
+	}
+	else if (item->rotation_case == 4)
+	{
+		//cout << i << " : rot case = " << item->rotation_case << endl;
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			90, rotation_y_axis);
+		dataprocess->TranslatePointCloud(item_pointcloud,
+			0.0, 0.0, item->input_dimension.x);
+	}
+	else if (item->rotation_case == 5)
+	{
+		//cout << i << " : rot case = " << item->rotation_case << endl;
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			-90, rotation_x_axis);
+		dataprocess->RotatePointCloudAroundZeroPoint(item_pointcloud,
+			-90, rotation_y_axis);
+	}
+
+
+	dataprocess->TranslatePointCloud(item_pointcloud,
+		item->target_position.x, item->target_position.y, item->target_position.z);
+
+	dataprocess->TranslatePointCloud(item_pointcloud,
+		container->transform->min3d_point.x, container->transform->min3d_point.y, container->transform->min3d_point.z);
+
+
+	if (!window_view->updatePointCloud(item_pointcloud, cloudname))
+	{
+		window_view->addPointCloud(item_pointcloud, cloudname);
+	}
+
+	window_view->spinOnce();
+
 	
 }
 
 
 
-void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, vector<ObjectTransformationData*> items)
+void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
 
-	for (int i = 0; i < items.size(); i++)
+	if (item->rotation_case == -1)
 	{
-		if (items[i]->rotation_case == -1)
-		{
-			cout << "item " << i << " not be pack" << endl;
-			continue;
-		}
-		string input_cube_name = "input_cube_name" + std::to_string(i);
-		string input_symbol_name = "input_symbol_name" + std::to_string(i);
-		string target_cube_name = "target_cube_name" + std::to_string(i);
-		string target_symbol_name = "target_symbol_name" + std::to_string(i);
-		string line_name = "line_name" + std::to_string(i);
-
-		float in_cube_x_dim = items[i]->x_length;
-		float in_cube_y_dim = items[i]->y_length;
-		float in_cube_z_dim = items[i]->z_length;
-		float in_cube_x_min_pos = items[i]->transform->min3d_point.x;
-		float in_cube_y_min_pos = items[i]->transform->min3d_point.y;
-		float in_cube_z_min_pos = items[i]->transform->min3d_point.z;
-
-		float tar_cube_x_dim = items[i]->target_orientation.x * 0.001;
-		float tar_cube_y_dim = items[i]->target_orientation.y * 0.001;
-		float tar_cube_z_dim = items[i]->target_orientation.z * 0.001;
-		float tar_cube_x_min_pos = items[i]->target_position.x + container->transform->min3d_point.x;
-		float tar_cube_y_min_pos = items[i]->target_position.y + container->transform->min3d_point.y;
-		float tar_cube_z_min_pos = items[i]->target_position.z + container->transform->min3d_point.z;
-
-		PointTypeXYZRGB input_center_symbol;
-		PointTypeXYZRGB target_center_symbol;
-
-		float r, g, b;
-
-		randomcolorfloat(r, g, b);
-	
-
-
-		if (items[i]->rotation_case == 0 || items[i]->rotation_case == 4)
-		{
-			cout << i<<" : rot case = " << items[i]->rotation_case << endl;
-			
-			//draw input cube at item position
-			
-			DrawItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
-				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-				{0, 0, 0}, 0, 255, 255, 255, input_cube_name);
-
-			//input direction symbol
-			input_center_symbol = DrawItemArrowDirectionSymbol(
-				in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
-				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-				r, g, b, input_symbol_name);
-		}
-		else if (items[i]->rotation_case == 1 || items[i]->rotation_case == 5)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			//draw x axis rotated cube at item position
-	
-			
-			DrawItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
-				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
-				{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
-
-			input_center_symbol = DrawItemArrowDirectionSymbol(
-				in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
-				in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
-				r, g, b, input_symbol_name);
-		}
-		else if (items[i]->rotation_case == 2 || items[i]->rotation_case == 3)
-		{
-			cout << i << " : rot case = " << items[i]->rotation_case << endl;
-			//draw z axis rotated cube at item position
-
-			DrawItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
-				in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
-				{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
-
-
-			input_center_symbol = DrawItemArrowDirectionSymbol(
-				in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
-				in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
-				r, g, b, input_symbol_name);
-		}
-
-
-		cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
-		cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
-
-		
-		//target cube
-		DrawItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
-			tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-			{ 0, 0, 0 }, 0, 255, 255, 255, target_cube_name);
-
-
-
-
-		//target direction symbol
-		target_center_symbol = DrawItemArrowDirectionSymbol(
-			tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
-			tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-			r, g, b, target_symbol_name);
-
-		//link line between input and target
-		window_view->removeShape(line_name);
-		window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
-		window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
-
-		
-		window_view->spinOnce();
+		cout << "item " << i << " not be pack" << endl;
+		return;
 	}
+	string input_cube_name = "input_cube_name" + std::to_string(i);
+	string input_symbol_name = "input_symbol_name" + std::to_string(i);
+	string target_cube_name = "target_cube_name" + std::to_string(i);
+	string target_symbol_name = "target_symbol_name" + std::to_string(i);
+	string line_name = "line_name" + std::to_string(i);
+
+	float in_cube_x_dim = item->x_length;
+	float in_cube_y_dim = item->y_length;
+	float in_cube_z_dim = item->z_length;
+	float in_cube_x_min_pos = item->transform->min3d_point.x;
+	float in_cube_y_min_pos = item->transform->min3d_point.y;
+	float in_cube_z_min_pos = item->transform->min3d_point.z;
+
+	float tar_cube_x_dim = item->target_orientation.x * 0.001;
+	float tar_cube_y_dim = item->target_orientation.y * 0.001;
+	float tar_cube_z_dim = item->target_orientation.z * 0.001;
+	float tar_cube_x_min_pos = item->target_position.x + container->transform->min3d_point.x;
+	float tar_cube_y_min_pos = item->target_position.y + container->transform->min3d_point.y;
+	float tar_cube_z_min_pos = item->target_position.z + container->transform->min3d_point.z;
+
+	PointTypeXYZRGB input_center_symbol;
+	PointTypeXYZRGB target_center_symbol;
+
+	float r, g, b;
+
+	randomcolorfloat(r, g, b);
+	
+
+
+	if (item->rotation_case == 0 || item->rotation_case == 4)
+	{
+		cout << i<<" : rot case = " << item->rotation_case << endl;
+			
+		//draw input cube at item position
+			
+		DrawItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+			{0, 0, 0}, 0, 255, 255, 255, input_cube_name);
+
+		//input direction symbol
+		input_center_symbol = DrawItemArrowDirectionSymbol(
+			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+			r, g, b, input_symbol_name);
+	}
+	else if (item->rotation_case == 1 || item->rotation_case == 5)
+	{
+		cout << i << " : rot case = " << item->rotation_case << endl;
+		//draw x axis rotated cube at item position
+	
+			
+		DrawItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+
+		input_center_symbol = DrawItemArrowDirectionSymbol(
+			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+			r, g, b, input_symbol_name);
+	}
+	else if (item->rotation_case == 2 || item->rotation_case == 3)
+	{
+		cout << i << " : rot case = " << item->rotation_case << endl;
+		//draw z axis rotated cube at item position
+
+		DrawItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+
+
+		input_center_symbol = DrawItemArrowDirectionSymbol(
+			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+			r, g, b, input_symbol_name);
+	}
+
+
+	cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
+	cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
+
+		
+	//target cube
+	DrawItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
+		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
+		{ 0, 0, 0 }, 0, 255, 255, 255, target_cube_name);
+
+
+
+
+	//target direction symbol
+	target_center_symbol = DrawItemArrowDirectionSymbol(
+		tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
+		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
+		r, g, b, target_symbol_name);
+
+	//link line between input and target
+	window_view->removeShape(line_name);
+	window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
+
+		
+	window_view->spinOnce();
+	
 	
 }
 
 void ViewerWindow::timerEvent(QTimerEvent *event)
 {
 	//cout << "ViewerWindow::timerEvent" << endl;
-
-
 
 
 	if (first_translate && !first_translate_done)

@@ -28,7 +28,7 @@ private:
 	ViewerEmbeded *viewerembeded;
 
 	timermode mode;
-
+	int current_display_packing_order;
 
 	QTime time;
 	int timerId_kinect;

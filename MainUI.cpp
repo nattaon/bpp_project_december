@@ -17,6 +17,9 @@ MainUI::MainUI(QWidget *parent) :
 
 	isLoadPlaneParameter = false;
 
+	current_display_packing_order = 0;
+	ui->bt_order_one->setText(QString::number(current_display_packing_order));
+
 	viewerembeded = new ViewerEmbeded(ui->widget);
 
 	
@@ -192,11 +195,11 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 	}
 	else if (event->key() == Qt::Key_Left)
 	{
-		
+		ButtonShowPrevPackingPressed();
 	}
 	else if (event->key() == Qt::Key_Right)
 	{
-		
+		ButtonShowNextPackingPressed();
 	}
 
 	QWidget::keyPressEvent(event);
@@ -850,7 +853,19 @@ void MainUI::ButtonFillInvertPressed()
 
 }
 void MainUI::ButtonFillEmptyAllPressed()
-{}
+{
+	//cout << "call ButtonFillInvertAllPressed()" << endl;
+	int current_select_index = last_select_item_index;
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		last_select_item_index = i;
+		ButtonFillEmptyPressed();
+	}
+	PressedTreeItem(ui->treeWidget->topLevelItem(current_select_index));
+
+
+}
 void MainUI::ButtonFillInvertAllPressed()
 {
 	//cout << "call ButtonFillInvertAllPressed()" << endl;
@@ -1584,7 +1599,8 @@ void MainUI::WriteItemDataToUI(int index,
 	item->setText(9, QString::number(box_max_pos.y));
 	item->setText(10, QString::number(box_max_pos.z));
 	//item->setText(11, QString::number(rotate_case));
-	item->setText(12, QString::fromStdString(file_name));
+	//item->setText(12, QString::number(order));
+	item->setText(COLUMN_FILENAME, QString::fromStdString(file_name));
 
 	item->setTextAlignment(0, Qt::AlignHCenter);
 	for (int j = 1; j < 5; j++)
@@ -1857,6 +1873,10 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	//read data from ui
 	//calculate rotation case
 	//save it in ui and dataprocess->items[i]
+
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
+
 	int total_boxes = ui->treeWidget->topLevelItemCount();
 
 	if (total_boxes != dataprocess->items.size())
@@ -2046,69 +2066,42 @@ void MainUI::ButtonTrackItemPositionPressed()
 void MainUI::ButtonShowPackingTargetPressed()
 {
 	cout << "call ButtonShowPackingTargetPressed()" << endl;
+
+	ui->radioButton_packing_1->setChecked(true);
+	ui->radioButton_packing_2->setChecked(false);
+	ui->radioButton_packing_3->setChecked(false);
+	current_display_packing_order = 0;
 	
 	//hilight circle at each item (input_position)
 	for (int i = 0; i < dataprocess->items.size(); i++)
 	{
-		//cout << "i=" << i << " x=" << dataprocess->items[i]->x_length << " z=" << dataprocess->items[i]->z_length << endl;
-		
-		if (dataprocess->items[i]->rotation_case == -1)
-		{
-			cout << "item " << i << " not be pack" << endl;
-			continue;
-		}		
-
-		float radius;
-		if (dataprocess->items[i]->x_length > dataprocess->items[i]->z_length)
-		{
-			radius = dataprocess->items[i]->x_length*0.5;
-		}
-		else
-		{
-			radius = dataprocess->items[i]->z_length*0.5;
-		}
-
-
-		viewerwindow->AddCircleWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
-			radius, 1.0, 0.0, 0.0, "circle " + i);
-
-		
-
+		viewerwindow->ShowBinPackingTarget(	dataprocess->container,	dataprocess->items[i], i);
 	}
-
-	//print packing output at console
-	for (int i = 0; i < dataprocess->items.size(); i++)
-	{
-		/*cout << "i = " << i << endl
-			<< " dim = " << dataprocess->items[i]->x_length_mm << 
-			" " << dataprocess->items[i]->y_length_mm << 
-			" " << dataprocess->items[i]->z_length_mm << endl
-			<< " pos =" << dataprocess->items[i]->target_position << endl
-			<< " orient = " << dataprocess->items[i]->target_orientation << endl
-			<< endl;*/
-		cout << "i = " << i << endl
-			<< " pos =" << dataprocess->items[i]->target_position << endl
-			<< " rotation_case = " << dataprocess->items[i]->rotation_case << endl
-			<< endl;
-	}
-
-	viewerwindow->ShowBinPackingTarget(	dataprocess->container,	dataprocess->items);
-	
-	
 }
 void MainUI::ButtonShowPackingIndicatePressed()
 {
 	cout << "call ButtonShowPackingIndicatePressed() " << dataprocess->items.size() <<endl;
+	ui->radioButton_packing_1->setChecked(false);
+	ui->radioButton_packing_2->setChecked(true);
+	ui->radioButton_packing_3->setChecked(false);
+	current_display_packing_order = 0;
 
-	viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items);
+	for (int i = 0; i < dataprocess->items.size(); i++)
+	{
+		viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[i], i);
+	}
 	
 
 }
 void MainUI::ButtonShowPackingAnimationPressed()
 {
 	cout << "call ButtonShowPackingAnimationPressed()" << endl;
+	ui->radioButton_packing_1->setChecked(false);
+	ui->radioButton_packing_2->setChecked(false);
+	ui->radioButton_packing_3->setChecked(true);
+	current_display_packing_order = 0;
 
-	ObjectTransformationData *test_container = new ObjectTransformationData();
+/*	ObjectTransformationData *test_container = new ObjectTransformationData();
 	test_container->transform->min3d_point.x = -0.353263;
 	test_container->transform->min3d_point.y = 0.0587912;
 	test_container->transform->min3d_point.z = -0.0622235;
@@ -2131,17 +2124,14 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	test_item->target_orientation.z = 196;
 
 	test_item->rotation_case = 5;
+	
 
 	viewerwindow->ShowBinpackingAnimation(test_container, test_item);
-
-	return;
-
-	for (int i = 0; i < dataprocess->items.size(); i++)
-	{
-
-		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[i]);
-
-
+*/
+	int item_index = current_display_packing_order - 1;
+	if (item_index >= 0)
+	{ 
+		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[item_index]);
 	}
 
 
@@ -2149,18 +2139,56 @@ void MainUI::ButtonShowPackingAnimationPressed()
 
 void MainUI::ButtonShowZeroPackingPressed()
 {
-	cout << "call ButtonShowZeroPackingPressed()" << endl;
-	viewerwindow->DrawPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
+	//cout << "call ButtonShowZeroPackingPressed()" << endl;
+	//viewerwindow->DrawPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
+
+
+
+	int item_index = current_display_packing_order - 1;
+	if (item_index >= 0 && item_index < dataprocess->items.size())
+	{
+		//cout <<"item_index=" << item_index << endl;
+
+		if (ui->radioButton_packing_1->isChecked())
+		{
+			viewerwindow->ClearPointCloudWindowCloudViewer();
+			viewerwindow->ClearShapeWindowCloudViewer();
+			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[item_index], item_index);
+		}
+		else if (ui->radioButton_packing_2->isChecked())
+		{
+			viewerwindow->ClearPointCloudWindowCloudViewer();
+			viewerwindow->ClearShapeWindowCloudViewer();
+			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[item_index], item_index);
+		}
+		else if (ui->radioButton_packing_3->isChecked())
+		{
+			viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[item_index]);
+		}
+	}
 
 }
 void MainUI::ButtonShowPrevPackingPressed()
 {
-	cout << "call ButtonShowPrevPackingPressed()" << endl;
+	//cout << "call ButtonShowPrevPackingPressed()" << endl;
+	if (current_display_packing_order > 0)
+	{
+		current_display_packing_order--;
+		ui->bt_order_one->setText(QString::number(current_display_packing_order));
+
+		ButtonShowZeroPackingPressed();
+
+
+	}
 
 }
 void MainUI::ButtonShowNextPackingPressed()
 {
-	cout << "call ButtonShowNextPackingPressed()" << endl;
+	//cout << "call ButtonShowNextPackingPressed()" << endl;
+	current_display_packing_order++;
+	ui->bt_order_one->setText(QString::number(current_display_packing_order));
+
+	ButtonShowZeroPackingPressed();
 
 }
 

@@ -101,10 +101,8 @@ public:
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
 
-	void ShowBinpackingIndication(ObjectTransformationData *container, vector<ObjectTransformationData*> items);
-
-	void ShowBinPackingTarget(ObjectTransformationData *container, vector<ObjectTransformationData*> items);
-
+	void ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i);
+	void ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i);
 	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
 
 	pcl::PolygonMesh DrawCubePolymesh(
