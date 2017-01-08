@@ -1,0 +1,62 @@
+10
+
+packing_order 0
+ui_item_index 1
+rotation_case 1
+0 0 0
+174 98 51
+
+packing_order 1
+ui_item_index 3
+rotation_case 5
+0.174 0 0
+64 114 133
+
+packing_order 2
+ui_item_index 0
+rotation_case 5
+0.238 0 0
+34 115 196
+
+packing_order 3
+ui_item_index 2
+rotation_case 5
+0.174 0 0.133
+64 104 136
+
+packing_order 4
+ui_item_index 7
+rotation_case 3
+0 0.02 0.051
+158 78 24
+
+packing_order 5
+ui_item_index 4
+rotation_case 3
+0 0.015 0.075
+146 83 61
+
+packing_order 6
+ui_item_index 9
+rotation_case 3
+0 0 0.136
+144 76 30
+
+packing_order 7
+ui_item_index 6
+rotation_case 4
+0 0.01 0.166
+143 66 82
+
+packing_order 8
+ui_item_index 5
+rotation_case 0
+0 0.098 0
+136 11 76
+
+packing_order 9
+ui_item_index 8
+rotation_case 0
+0 0.076 0.136
+98 31 91
+

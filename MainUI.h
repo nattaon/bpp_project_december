@@ -59,6 +59,8 @@ private:
 		PointTypeXYZRGB box_min_pos, PointTypeXYZRGB box_max_pos,
 		string file_name);
 
+	void ShowPackingCurrentOrder();
+
 	
 private slots:
 	//top menu
