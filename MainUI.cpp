@@ -171,7 +171,7 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 {
 	//after opengl show boxes, this function is not working tooo!!!!
 	//solve: set ui as nofocus
-	//cout << "MainWindow event->key() " << event->key() << endl;
+	//cout << "MainUI event->key() " << event->key() << endl;
 
 	if (event->key() == Qt::Key_Up)
 	{
@@ -585,9 +585,7 @@ void MainUI::ButtonClearViewerPointCloudPressed()
 {
 	cout << "call ButtonClearViewerPointCloudPressed()" << endl;
 	viewerwindow->ClearPointCloudWindowCloudViewer();
-	//viewerwindow->ClearShapeWindowCloudViewer();
-	viewerwindow->ToggleAxisOFFWindowCloudViewer();
-
+	RadioButtonAxisOFFSelected();
 }	
 
 void MainUI::ButtonClearViewerShapePressed()
@@ -1254,7 +1252,7 @@ void MainUI::ButtonAlignPlaneToAxisCenterPressed()
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetCurrentDisplayPointCloud());
 	viewerwindow->ClearShapeWindowCloudViewer();
-	viewerwindow->ToggleAxisONWindowCloudViewer();
+	RadioButtonAxisONSelected();
 
 }
 void MainUI::ButtonApplyOutlierPressed()
@@ -1301,7 +1299,7 @@ void MainUI::ButtonShowClusterPressed()
 	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
 	dataprocess->clusterextract->ExtractCluster(pointcloud_for_extract_cluster);
 
-	viewerwindow->DrawPlanarAtOrigin(0.5, 0.5, 1.0, 1.0, 1.0, "planeorigin");
+	viewerwindow->AddPlanarAtOrigin(0.5, 0.5, 1.0, 1.0, 1.0, "planeorigin");
 
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
@@ -2045,7 +2043,7 @@ void MainUI::ButtonTrackItemPositionPressed()
 
 
 	//viewerwindow->AddArrowObj();
-	/*	viewerwindow->DrawItemCubeShader(
+	/*	viewerwindow->AddItemCubeShader(
 	0.3, 0.3, 0.3,
 	0, 0, 0,
 	255,0,0,
@@ -2140,7 +2138,7 @@ void MainUI::ButtonShowPackingAnimationPressed()
 void MainUI::ButtonShowZeroPackingPressed()
 {
 	//cout << "call ButtonShowZeroPackingPressed()" << endl;
-	//viewerwindow->DrawPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
+	//viewerwindow->AddPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
 
 
 
@@ -2185,10 +2183,13 @@ void MainUI::ButtonShowPrevPackingPressed()
 void MainUI::ButtonShowNextPackingPressed()
 {
 	//cout << "call ButtonShowNextPackingPressed()" << endl;
-	current_display_packing_order++;
-	ui->bt_order_one->setText(QString::number(current_display_packing_order));
+	if (current_display_packing_order <= ui->treeWidget->topLevelItemCount())
+	{
+		current_display_packing_order++;
+		ui->bt_order_one->setText(QString::number(current_display_packing_order));
 
-	ButtonShowZeroPackingPressed();
+		ButtonShowZeroPackingPressed();
+	}
 
 }
 

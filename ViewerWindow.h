@@ -40,8 +40,10 @@ private:
 	pcl::PolygonMesh current_animate_cube;
 
 public:
-    ViewerWindow();
+	//Addxxxfuntion() => did not spin a window, just Add!
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
 
+    ViewerWindow();
 	void SetDataProcess(DataProcess* d);
 
 	void SetCameraParameter(
@@ -53,17 +55,22 @@ public:
 
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
-	
+
+	void ClearPointCloudWindowCloudViewer();
+	void ClearShapeWindowCloudViewer();	
+
+	void ToggleAxisONWindowCloudViewer();
+	void ToggleAxisOFFWindowCloudViewer();
+
+	void randomcolorfloat(float &r, float &g, float &b);
+	void randomcolorint(int &r, int &g, int &b);
+
 	void AddArrowObj();
-	
 	void AddArrowPolygonMesh(
 		float x, float y, float z,
 		float r, float g, float b);
 
-	void ClearPointCloudWindowCloudViewer();
-	void ClearShapeWindowCloudViewer();
-
-	void DrawPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
+	void AddPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 		double r, double g, double b, string planename);
 
 	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
@@ -76,9 +83,12 @@ public:
 	
 	void AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 		double r, double g, double b, string drawtext, string cloudname);
+
+	void AddCircleWindowCloudViewer(
+		PointTypeXYZRGB position_OBB, float radius,
+		double r, double g, double b, string cloudname);
 	
 	void AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name);
-
 
 	void AddSymbolWindowCloudViewer(
 		PointTypeXYZRGB position_OBB,
@@ -89,59 +99,50 @@ public:
 		Eigen::Vector3f minor_vector,
 		double r, double g, double b, string cloudname);
 
-	void AddCircleWindowCloudViewer(
-		PointTypeXYZRGB position_OBB, float radius,
-		double r, double g, double b, string cloudname);
-
-	void ToggleAxisONWindowCloudViewer();
-	void ToggleAxisOFFWindowCloudViewer();
 
 	pcl::PolygonMesh visualizerGetCameraMesh(const Eigen::Matrix3f& R, const Eigen::Vector3f& t, 
 		float r, float g, float b,
 		Eigen::Vector3f& vforward, Eigen::Vector3f& rgb);
 
-
-	void ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i);
-	void ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i);
-	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
-
-	pcl::PolygonMesh DrawCubePolymesh(
-		float x_dim, float y_dim, float z_dim, 
-		int r, int g, int b);
-	
-	void DrawItemCubeShader(
-		float x_dim, float y_dim, float z_dim,
-		float target_x, float target_y, float target_z,
-		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
-		int r, int g, int b,
-		string shapename);
-
-	pcl::PolygonMesh UpdateItemCubeShader(
-		pcl::PolygonMesh cube_mesh,
-		float translate_x, float translate_y, float translate_z,
-		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
-		string shapename);
-
-	void DrawItemCube(float w, float h, float d,
-		float x, float y, float z,
-		float r, float g, float b,
-		string shapename);
-	
-	PointTypeXYZRGB DrawItemArrowDirectionSymbol(
+	PointTypeXYZRGB AddItemArrowDirectionSymbol(
 		float w, float h, float d, 
 		float x, float y, float z, 
 		float r, float g, float b,
 		string symbolname);
 
 
-
-	void randomcolorfloat(float &r, float &g, float &b);
-	void randomcolorint(int &r, int &g, int &b);
-
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
-
+	void AddItemCube(float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b,
+		string shapename);
 
 	
+	void AddItemCubeShader(
+		float x_dim, float y_dim, float z_dim,
+		float target_x, float target_y, float target_z,
+		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
+		int r, int g, int b,
+		string shapename);
+
+	pcl::PolygonMesh CreteNewCubePolymesh(
+		float x_dim, float y_dim, float z_dim, 
+		int r, int g, int b);
+
+	pcl::PolygonMesh TransformItemCubeShader(
+		pcl::PolygonMesh cube_mesh,
+		float translate_x, float translate_y, float translate_z,
+		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
+		string shapename);
+
+
+
+
+
+	void ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i);
+	void ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i);
+	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
+
+
 
 };
 
