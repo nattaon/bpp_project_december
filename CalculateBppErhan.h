@@ -23,6 +23,9 @@ public:
 	bool CheckAllCanFit();
 
 	void quickSort(int *arr, int left, int right);
+	void SortMaxtoMin(int *arr, int left, int right);
+	void SortMintoMax(int *arr, int left, int right);
+
 	void swap_xyzwhd(int i, int j);
 	void swap_pare(int *a, int *b);
 	void printboxes_array();

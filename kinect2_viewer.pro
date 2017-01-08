@@ -26,7 +26,8 @@ SOURCES += \
     CameraParameterIO.cpp \
     OutlierRemoval.cpp \
     PointCloudBPPListIO.cpp \
-    ViewerEmbeded.cpp
+    ViewerEmbeded.cpp \
+    BPPResultIO.cpp
 
 HEADERS  += \
     MainUI.h \
@@ -41,7 +42,8 @@ HEADERS  += \
     CameraParameterIO.h \
     OutlierRemoval.h \
     PointCloudBPPListIO.h \
-    ViewerEmbeded.h
+    ViewerEmbeded.h \
+    BPPResultIO.h
 
 FORMS    += \
     MainUI.ui

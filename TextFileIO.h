@@ -4,7 +4,7 @@
 #include "PlaneSegmentParameterIO.h"
 #include "CameraParameterIO.h"
 #include "PointCloudBPPTextListIO.h"
-
+#include "BPPResultIO.h"
 class TextFileIO
 {
 public:
@@ -13,6 +13,7 @@ public:
 	PlaneSegmentParameterIO *planeparam;
 	CameraParameterIO *cameraparam;
 	PointCloudBPPTextListIO * pointcloudbpptext;
+	BPPResultIO *bppresult;
 };
 
 #endif // TEXTFILEIO_H

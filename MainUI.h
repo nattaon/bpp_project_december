@@ -33,14 +33,15 @@ private:
 	QTime time;
 	int timerId_kinect;
 	int last_select_item_index;
+	int last_select_sorting_index;
 
 	void timerEvent(QTimerEvent *event);
 
 	bool isLoadPlaneParameter;
 
 
-	int *order_index;
-	int order_index_size;
+	//int *order_index;
+	//int order_index_size;
 
 	bool eventFilter(QObject *object, QEvent *event);
 	void keyPressEvent(QKeyEvent * event);
@@ -154,13 +155,21 @@ private slots:
 	void ButtonShowPackingTargetPressed();
 	void ButtonShowPackingIndicatePressed();
 	void ButtonShowPackingAnimationPressed();
+
+
+	//Sorting
+	void PressedTreeSorting(QTreeWidgetItem *current_select_item);
+
+	void ButtonSaveBinPackingInfoPressed();
+	void ButtonLoadBinPackingInfoPressed();
+
+	void ButtonMoveUpPackingOrderPressed();
+	void ButtonMoveDownPackingOrderPressed();
+	void ButtonUpdatePackingOrderPressed();
 	
 	void ButtonShowZeroPackingPressed();
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
-
-	void ButtonSaveBinPackingInfoPressed();
-	void ButtonLoadBinPackingInfoPressed();
 
 
 };

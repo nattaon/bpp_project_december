@@ -18,8 +18,9 @@ MainUI::MainUI(QWidget *parent) :
 	isLoadPlaneParameter = false;
 
 	current_display_packing_order = 0;
+	last_select_sorting_index = 0;
 	ui->bt_order_one->setText(QString::number(current_display_packing_order));
-	order_index_size = 0;
+	//order_index_size = 0;
 
 	viewerembeded = new ViewerEmbeded(ui->widget);
 
@@ -108,12 +109,21 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_item_remove, SIGNAL(clicked()), this, SLOT(ButtonRemoveItemPressed()));
 	connect(ui->bt_item_clearall, SIGNAL(clicked()), this, SLOT(ButtonClearAllItemPressed()));
 
+	//packing
+
 	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonCalculateBinPackingPressed()));
 	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
 
 	connect(ui->bt_show_packing_target, SIGNAL(clicked()), this, SLOT(ButtonShowPackingTargetPressed()));
 	connect(ui->bt_show_packing_indicate, SIGNAL(clicked()), this, SLOT(ButtonShowPackingIndicatePressed()));
 	connect(ui->bt_show_packing_animation, SIGNAL(clicked()), this, SLOT(ButtonShowPackingAnimationPressed()));
+
+	//sorting
+	connect(ui->treeWidgetSorting, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeSorting(QTreeWidgetItem *)));
+
+	connect(ui->bt_order_moveup, SIGNAL(clicked()), this, SLOT(ButtonMoveUpPackingOrderPressed()));
+	connect(ui->bt_order_movedown, SIGNAL(clicked()), this, SLOT(ButtonMoveDownPackingOrderPressed()));
+	connect(ui->bt_update_packing_order, SIGNAL(clicked()), this, SLOT(ButtonUpdatePackingOrderPressed()));
 
 	connect(ui->bt_order_one, SIGNAL(clicked()), this, SLOT(ButtonShowZeroPackingPressed()));
 	connect(ui->bt_order_previous, SIGNAL(clicked()), this, SLOT(ButtonShowPrevPackingPressed()));
@@ -122,6 +132,10 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_save_packing_info, SIGNAL(clicked()), this, SLOT(ButtonSaveBinPackingInfoPressed()));
 	connect(ui->bt_load_packing_info, SIGNAL(clicked()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
 	
+
+
+
+
 	//resize tree column size	
 
 	for (int j = 0; j < 5; j++)
@@ -1676,6 +1690,8 @@ void MainUI::ButtonLoadAllItemsTextToUIPressed()
 
 	dataprocess->isSetAlignCorner = true;
 
+	delete txt_items;
+
 
 }
 void MainUI::ButtonSaveAllItemsUIToTextPressed()
@@ -1853,6 +1869,14 @@ void MainUI::ButtonClearAllItemPressed()
 		dataprocess->items[i] = NULL;
 		delete dataprocess->items[i];
 	}
+
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+	for (int i = 0; i < total_order; i++)
+	{
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(0);
+		delete item;
+	}
+
 	PointTypeXYZRGB point;
 	WriteContainerDataToUI(0, 0, 0, point, point);
 
@@ -1873,6 +1897,8 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	//calculate rotation case
 	//save it in ui and dataprocess->items[i]
 	//reorder
+	//save new order to dataprocess->items[i]
+	//show new order at ui
 
 	viewerwindow->ClearPointCloudWindowCloudViewer();
 	viewerwindow->ClearShapeWindowCloudViewer();
@@ -1970,7 +1996,6 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	//dataprocess->bpp->SortBoxesOrder();
 
 	//just print for debug
-	int item_fit = 0;
 	for (int i = 0; i < total_boxes; i++)
 	{
 		cout
@@ -1978,27 +2003,22 @@ void MainUI::ButtonCalculateBinPackingPressed()
 			<< "bin_num:" << boxes_bin_num[i] << ", "
 			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
 			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
-			<< "orient:" << boxes_x_orient[i] << "," << boxes_y_orient[i] << "," << boxes_z_orient[i] << ", "
 			<< "rotation:" << boxes_item_rotation[i] << ", "
-			<< "item_order:" << boxes_item_order[i] << ", "
 			<< endl;
 	}
 
-
-	// write packed position to dataprocess
+	// write rotation_case, target_position, target_orientation to dataprocess
+	int item_packed_count = 0;
 	for (int i = 0; i < total_boxes; i++)
 	{
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		item->setText(11, QString::number(boxes_item_rotation[i]));
+
 		ObjectTransformationData *itm = dataprocess->items[i];
 		itm->rotation_case = boxes_item_rotation[i];
-
-		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
-		item->setText(11, QString::number(itm->rotation_case));
-
-
-
 		if (boxes_bin_num[i] == 1)
 		{
-			item_fit++;
+			item_packed_count++;
 			//do data in ui and data in items[i] is equal??
 			itm->target_position.x = boxes_x_pos[i] * 0.001;
 			itm->target_position.y = boxes_y_pos[i] * 0.001;
@@ -2007,51 +2027,77 @@ void MainUI::ButtonCalculateBinPackingPressed()
 			itm->target_orientation.x = boxes_x_orient[i];
 			itm->target_orientation.y = boxes_y_orient[i];
 			itm->target_orientation.z = boxes_z_orient[i];
-
 		}
 	}
 
 	cout << endl;
-	cout << "packed " << item_fit << "/" << total_boxes << endl;
-
+	cout << "packed " << item_packed_count << "/" << total_boxes << endl;
+	cout << endl;
 	cout << "sort box order" << endl;
-
-	order_index_size = item_fit;
-	order_index = new int[order_index_size];
+	//sort packing box order from position 0,0,0 to max,max,max
 	dataprocess->bpp->SortBoxesOrder();
 
 	//just print for debug
-
 	for (int i = 0; i < total_boxes; i++)
 	{
 		cout
 			<< "item_num." << boxes_item_num[i] << ", "
+			<< "item_order:" << boxes_item_order[i] << ", "
 			<< "bin_num:" << boxes_bin_num[i] << ", "
 			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
-			<< "rotation:" << boxes_item_rotation[i] << ", "
-			<< "item_order:" << boxes_item_order[i] << ", "
+			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
+			<< "rotation:" << boxes_item_rotation[i] 
 			<< endl;
+	}
 
-		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(boxes_item_num[i]);
-		item->setText(12, QString::number(boxes_item_order[i]));
-		
+	// write box packing_order to dataprocess & ui
+	// current array is not arrange by item index
+	int *item_number_of_order_index = new int[item_packed_count];
+	for (int i = 0; i < total_boxes; i++)
+	{
+		int box_item_number = boxes_item_num[i];
+		int box_item_order = boxes_item_order[i];
 
+		ObjectTransformationData *itm = dataprocess->items[box_item_number];
+		itm->packing_order = box_item_order;
 
-		//  [] = real index in ui & dataprocess
-		if (boxes_item_order[i]!=-1)
-		{ 
-			order_index[boxes_item_order[i]] = boxes_item_num[i];
-			//cout << "_order_index " << boxes_item_order[i] << " = " << boxes_item_num[i] << endl;
-		}
-		
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(box_item_number);
+		item->setText(12, QString::number(box_item_order));
 
+		item_number_of_order_index[box_item_order] = box_item_number;
 	}
 	cout << endl;
-	for (int i = 0; i < order_index_size; i++)
-	{
-		cout << "order_index[" << i << "]=" << order_index[i] << endl;
-	}
 
+	//write order of packing item in uiSorting
+	for (int i = 0; i < item_packed_count; i++)
+	{
+		ObjectTransformationData *itm = dataprocess->items[item_number_of_order_index[i]];
+
+
+		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidgetSorting); // at this  point  topLevelItemCount() is increase
+		item->setText(0, QString::number(i));  //order index
+		item->setText(1, QString::number(itm->target_position.x)); //item packing position
+		item->setText(2, QString::number(itm->target_position.y));
+		item->setText(3, QString::number(itm->target_position.z));
+		item->setText(4, QString::number(item_number_of_order_index[i])); // item index
+
+/*		item->setTextAlignment(0, Qt::AlignHCenter);
+		for (int j = 1; j < 5; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignRight);
+		}
+		for (int j = 5; j < 13; j++)
+		{
+			item->setTextAlignment(j, Qt::AlignLeft);
+		}*/
+
+		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+		ui->treeWidgetSorting->addTopLevelItem(item);
+
+
+	}
+	
 
 
 	delete dataprocess->bpp;
@@ -2094,9 +2140,11 @@ void MainUI::ButtonShowPackingTargetPressed()
 	viewerwindow->ClearShapeWindowCloudViewer();
 	
 	//hilight circle at each item (input_position)
-	for (int i = 0; i < order_index_size; i++)
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+	for (int i = 0; i < total_order; i++)
 	{
-		int dataprocess_index = order_index[i];
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(i);
+		int dataprocess_index = item->text(4).toInt();
 		cout << "order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
 		viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
@@ -2112,9 +2160,11 @@ void MainUI::ButtonShowPackingIndicatePressed()
 	viewerwindow->ClearPointCloudWindowCloudViewer();
 	viewerwindow->ClearShapeWindowCloudViewer();
 
-	for (int i = 0; i < order_index_size; i++)
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+	for (int i = 0; i < total_order; i++)
 	{
-		int dataprocess_index = order_index[i];
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(i);
+		int dataprocess_index = item->text(4).toInt();
 		cout << "order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
 		viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
@@ -2171,25 +2221,26 @@ void MainUI::ButtonShowZeroPackingPressed()
 	//viewerwindow->AddPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
 
 
-
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
 	int item_index = current_display_packing_order - 1;
-	if (item_index >= 0 && item_index < order_index_size)
+	if (item_index >= 0 && item_index < total_order)
 	{
 		
 
-		int dataprocess_index = order_index[item_index];
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(item_index);
+		int dataprocess_index = item->text(4).toInt();
 		cout << "order_index[" << item_index << "] dataprocess_index=" << dataprocess_index << endl;
 
 		if (ui->radioButton_packing_1->isChecked())
 		{
-			viewerwindow->ClearPointCloudWindowCloudViewer();
-			viewerwindow->ClearShapeWindowCloudViewer();
+			//viewerwindow->ClearPointCloudWindowCloudViewer();
+			//viewerwindow->ClearShapeWindowCloudViewer();
 			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_2->isChecked())
 		{
-			viewerwindow->ClearPointCloudWindowCloudViewer();
-			viewerwindow->ClearShapeWindowCloudViewer();
+			//viewerwindow->ClearPointCloudWindowCloudViewer();
+			//viewerwindow->ClearShapeWindowCloudViewer();
 			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_3->isChecked())
@@ -2199,8 +2250,8 @@ void MainUI::ButtonShowZeroPackingPressed()
 	}
 	else
 	{
-		viewerwindow->ClearPointCloudWindowCloudViewer();
-		viewerwindow->ClearShapeWindowCloudViewer();
+		//viewerwindow->ClearPointCloudWindowCloudViewer();
+		//viewerwindow->ClearShapeWindowCloudViewer();
 	}
 
 }
@@ -2221,7 +2272,7 @@ void MainUI::ButtonShowPrevPackingPressed()
 void MainUI::ButtonShowNextPackingPressed()
 {
 	//cout << "call ButtonShowNextPackingPressed()" << endl;
-	if (current_display_packing_order <= ui->treeWidget->topLevelItemCount())
+	if (current_display_packing_order <= ui->treeWidgetSorting->topLevelItemCount())
 	{
 		current_display_packing_order++;
 		ui->bt_order_one->setText(QString::number(current_display_packing_order));
@@ -2231,13 +2282,177 @@ void MainUI::ButtonShowNextPackingPressed()
 
 }
 
+
+void MainUI::PressedTreeSorting(QTreeWidgetItem *current_select_item)
+{
+	if (last_select_sorting_index != -1)// if has already hilight previous one
+	{
+		//remove hilight last selected item
+		QTreeWidgetItem* last_selected_item = ui->treeWidgetSorting->topLevelItem(last_select_sorting_index);
+		//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+	}
+
+
+
+	//hilight item clicked
+	//item->setBackgroundColor(0, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
+	current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
+
+	last_select_sorting_index = ui->treeWidgetSorting->currentIndex().row();
+
+}
+
 void MainUI::ButtonSaveBinPackingInfoPressed()
 {
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+	vector<int> item_index_s, packing_order_s, rotation_case_s;
+	vector<PointTypeXYZRGB> target_position_s, target_orientation_s;
+
+	for (int i = 0; i < total_order; i++)
+	{
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(i);
+		int item_number = item->text(4).toInt();
+
+		ObjectTransformationData *itm = dataprocess->items[item_number];
+		item_index_s.push_back(item_number);
+		packing_order_s.push_back(itm->packing_order);
+		rotation_case_s.push_back(itm->rotation_case);
+		target_position_s.push_back(itm->target_position);
+		target_orientation_s.push_back(itm->target_orientation);
+
+
+
+	}
+
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save packing info"), POINTCLOUD_DIR, tr("packing info (*.txt)"));
+
+	if (filename.trimmed().isEmpty()) return;
+
+
+	dataprocess->bppresult->WriteBinPackingResult(filename.toStdString(), total_order,
+		packing_order_s, item_index_s, rotation_case_s,
+		target_position_s, target_orientation_s);
 
 }
 void MainUI::ButtonLoadBinPackingInfoPressed()
 {
+	QString filename = QFileDialog::getOpenFileName(this,
+		tr("Load packing info"), POINTCLOUD_DIR, tr("packing info (*.txt)"));
+	if (filename.trimmed().isEmpty()) return;
+
+
+	int treeWidgetSorting_size = ui->treeWidgetSorting->topLevelItemCount();
+	for (int i = 0; i < treeWidgetSorting_size; i++)
+	{
+		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(0);
+		delete item;
+	}
+
+	BPPResultIO *txt_bppinfo = new BPPResultIO();
+	int total_order = txt_bppinfo->ReadBinPackingResult(filename.toStdString());
+
+	//write data to data process and uiSorting
+	int *item_number_of_order_index = new int[total_order];
+	for (int i = 0; i < total_order; i++)
+	{
+		int item_number = txt_bppinfo->item_index[i];
+		ObjectTransformationData *itm = dataprocess->items[item_number];
+		itm->packing_order = txt_bppinfo->packing_order[i];
+		itm->rotation_case = txt_bppinfo->rotation_case[i];
+		itm->target_position = txt_bppinfo->target_position[i];
+		itm->target_orientation = txt_bppinfo->target_orientation[i];
+
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(item_number);
+		item->setText(11, QString::number(itm->rotation_case));
+		item->setText(12, QString::number(itm->packing_order));
+
+		item_number_of_order_index[itm->packing_order] = item_number;
+	}
+
+
+	for (int i = 0; i < total_order; i++)
+	{
+
+		ObjectTransformationData *itm = dataprocess->items[item_number_of_order_index[i]];
+
+		QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidgetSorting); // at this  point  topLevelItemCount() is increase
+		item->setText(0, QString::number(i));  //order index
+		item->setText(1, QString::number(itm->target_position.x)); //item packing position
+		item->setText(2, QString::number(itm->target_position.y));
+		item->setText(3, QString::number(itm->target_position.z));
+		item->setText(4, QString::number(item_number_of_order_index[i])); // item index
+
+		item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+
+		ui->treeWidgetSorting->addTopLevelItem(item);
+
+	}
+
+
+
+
+
+
+
+
+
 
 }
 
+void MainUI::ButtonMoveUpPackingOrderPressed()
+{
+	QTreeWidgetItem* item = ui->treeWidgetSorting->currentItem();
+	int row = ui->treeWidgetSorting->currentIndex().row();
+
+	if (row > 0)
+	{
+		ui->treeWidgetSorting->takeTopLevelItem(row);
+		ui->treeWidgetSorting->insertTopLevelItem(row - 1, item);
+		ui->treeWidgetSorting->setCurrentItem(item);
+		last_select_sorting_index = row - 1;
+
+		//rerun index number
+		int total_boxes = ui->treeWidgetSorting->topLevelItemCount();
+		for (int i = 0; i < total_boxes; ++i)
+		{
+			QTreeWidgetItem *_item = ui->treeWidgetSorting->topLevelItem(i);
+			_item->setText(0, QString::number(i));
+
+		}
+	}
+
+}
+void MainUI::ButtonMoveDownPackingOrderPressed()
+{
+	QTreeWidgetItem* item = ui->treeWidgetSorting->currentItem();
+	int row = ui->treeWidgetSorting->currentIndex().row();
+	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+
+	if (row < total_order - 1)
+	{
+		ui->treeWidgetSorting->takeTopLevelItem(row);
+		ui->treeWidgetSorting->insertTopLevelItem(row + 1, item);
+		ui->treeWidgetSorting->setCurrentItem(item);
+		last_select_sorting_index = row + 1;
+
+		//rerun index number
+		int total_boxes = ui->treeWidgetSorting->topLevelItemCount();
+		for (int i = 0; i < total_boxes; ++i)
+		{
+			QTreeWidgetItem *_item = ui->treeWidgetSorting->topLevelItem(i);
+			_item->setText(0, QString::number(i));
+
+		}
+	}
+}
+void MainUI::ButtonUpdatePackingOrderPressed()
+{}
 

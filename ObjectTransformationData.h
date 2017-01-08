@@ -28,6 +28,7 @@ public:
 
 	double r, g, b;
 	int rotation_case;
+	int packing_order;
 };
 
 #endif // OBJECTTRANSFORMATIONDATA_H

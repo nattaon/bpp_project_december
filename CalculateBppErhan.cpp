@@ -143,11 +143,11 @@ void CalculateBppErhan::InvertBoxesOrder()
 }
 void CalculateBppErhan::SortBoxesOrder()
 {
-
+	
 
 	//1. sort by y position(height)
 	//cout << "sort y: 0 to " << bpp_total_box_to_pack << endl;
-	quickSort(bpp_box_y, 0, bpp_total_box_to_pack - 1);
+	SortMintoMax(bpp_box_y, 0, bpp_total_box_to_pack - 1);
 	//printboxes_array();
 
 	//find each same z range
@@ -167,7 +167,7 @@ void CalculateBppErhan::SortBoxesOrder()
 		{
 			//cout << "i " << i << "!=" << i + 1 << endl;
 			//cout << "sort z: " << y_start_index << " to " << i << endl;
-			quickSort(bpp_box_z, y_start_index, i);
+			SortMintoMax(bpp_box_z, y_start_index, i);
 			//printboxes_array();
 			
 			//4. in each group of same z(deep)
@@ -182,7 +182,7 @@ void CalculateBppErhan::SortBoxesOrder()
 				{
 					//cout << "j " << j << "!=" << j + 1 << endl;
 					//cout << "sort x: " << z_start_index << " to " << j << endl;
-					quickSort(bpp_box_x, z_start_index, j);
+					SortMintoMax(bpp_box_x, z_start_index, j);
 					//printboxes_array();
 
 					z_start_index = j + 1;
@@ -206,15 +206,15 @@ void CalculateBppErhan::SortBoxesOrder()
 		}
 	}
 
-	cout << "bpp_item_order[i] = i;" << endl;
-	printboxes_array(); 
-	cout << endl;
+	//cout << "bpp_item_order[i] = i;" << endl;
+	//printboxes_array(); 
+	//cout << endl;
 
 	//arrage array again by item order
-	quickSort(bpp_item_order, 0, bpp_total_box_to_pack - 1);
-	cout << "quickSort(bpp_item_order, 0, bpp_total_box_to_pack - 1);" << endl;
-	printboxes_array();
-	cout << endl;
+	SortMintoMax(bpp_item_order, 0, bpp_total_box_to_pack - 1);
+	//cout << "quickSort(bpp_item_order, 0, bpp_total_box_to_pack - 1);" << endl;
+	//printboxes_array();
+	//cout << endl;
 
 	//now array is arrange by order, so rewrite order (rerun number from 0->max , no space)
 	int order_index = 0;
@@ -226,15 +226,15 @@ void CalculateBppErhan::SortBoxesOrder()
 			order_index++;
 		}
 	}
-	cout << "after rerun order number" << endl;
-	printboxes_array();
-	cout << endl;
+	//cout << "after rerun order number" << endl;
+	//printboxes_array();
+	//cout << endl;
 
 }
 
 void CalculateBppErhan::quickSort(int *arr, int left, int right) //int *arr = int arr[]
 {
-
+	//sort min to max
 	int i = left, j = right;
 	int pivot = arr[(left + right) / 2];
 
@@ -262,6 +262,64 @@ void CalculateBppErhan::quickSort(int *arr, int left, int right) //int *arr = in
 	if (i < right)
 		quickSort(arr, i, right);
 
+}
+void CalculateBppErhan::SortMaxtoMin(int *arr, int left, int right)
+{
+	//cout << "\nSortMaxtoMin" << endl;
+	//PrintArrayValue();
+	if (left == right) return;
+
+	int i = left, j = right;
+	int pivot = arr[(left + right) / 2];
+
+	/* partition */
+	while (i <= j) {
+		while (arr[i] > pivot)
+			i++;
+		while (arr[j] < pivot)
+			j--;
+
+		if (i <= j)
+		{
+			swap_xyzwhd(i, j);
+			i++;
+			j--;
+		}
+	};
+
+	/* recursion */
+	if (left < j)
+		SortMaxtoMin(arr, left, j);
+	if (i < right)
+		SortMaxtoMin(arr, i, right);
+}
+void CalculateBppErhan::SortMintoMax(int *arr, int left, int right)
+{
+	//cout << "\nSortMintoMax" << endl;
+	//PrintArrayValue();
+	int i = left, j = right;
+	int pivot = arr[(left + right) / 2];
+
+	/* partition */
+	while (i <= j) {
+		while (arr[i] < pivot)
+			i++;
+		while (arr[j] > pivot)
+			j--;
+
+		if (i <= j)
+		{
+			swap_xyzwhd(i, j);
+			i++;
+			j--;
+		}
+	};
+
+	/* recursion */
+	if (left < j)
+		SortMintoMax(arr, left, j);
+	if (i < right)
+		SortMintoMax(arr, i, right);
 }
 
 void CalculateBppErhan::swap_xyzwhd(int i, int j)
