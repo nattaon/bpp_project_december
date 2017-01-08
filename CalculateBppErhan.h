@@ -3,18 +3,20 @@ using namespace std;
 class CalculateBppErhan
 {
 public:
-	CalculateBppErhan();
-	~CalculateBppErhan();
-
-	void CalculateBinpack(
-		int total_box_to_pack,
+	CalculateBppErhan(int total_box_to_pack,
 		int bin_w, int bin_h, int bin_d,
 		int *box_w, int *box_h, int *box_d,
 		int *box_x, int *box_y, int *box_z,
 		int *orien_x, int *orien_y, int *orien_z,
 		int *box_r, int *box_g, int *box_b,
-		int *bin_no, int *item_no);
+		int *bin_no, int *item_no, int *item_order, 
+		int *item_rotation);
+	~CalculateBppErhan();
 
+	void CalculateBinpack(
+);
+
+	void CalculateRotationCase();
 	void SortBoxesOrder();
 	void InvertBoxesOrder();
 
@@ -31,7 +33,8 @@ public:
 	int	*bpp_box_x, *bpp_box_y, *bpp_box_z;
 	int	*bpp_orien_x, *bpp_orien_y, *bpp_orien_z;
 	int	*bpp_box_r, *bpp_box_g, *bpp_box_b;
-	int	*bpp_bin_no, *bpp_item_no;
+	int	*bpp_bin_no, *bpp_item_no, *bpp_item_order;
+	int *bpp_item_rotation;
 
 };
 

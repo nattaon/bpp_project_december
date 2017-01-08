@@ -38,6 +38,10 @@ private:
 
 	bool isLoadPlaneParameter;
 
+
+	int *order_index;
+	int order_index_size;
+
 	bool eventFilter(QObject *object, QEvent *event);
 	void keyPressEvent(QKeyEvent * event);
 	void mouseEventOccurred(const pcl::visualization::MouseEvent &event, void *stop_void);

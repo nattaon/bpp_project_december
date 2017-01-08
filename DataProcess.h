@@ -5,11 +5,13 @@
 #include "PointCloudOperation.h"
 #include "TextFileIO.h"
 #include "CalculateBppErhan.h"
-class DataProcess :public PointCloudIO, public PointCloudOperation, public TextFileIO, public CalculateBppErhan
+class DataProcess :public PointCloudIO, public PointCloudOperation, public TextFileIO
 {
 public:
     DataProcess();
 	~DataProcess();
+	
+	CalculateBppErhan *bpp;
 
 	cv::Mat GetKinectRGBImage();
 	

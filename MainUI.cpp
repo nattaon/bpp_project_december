@@ -19,6 +19,7 @@ MainUI::MainUI(QWidget *parent) :
 
 	current_display_packing_order = 0;
 	ui->bt_order_one->setText(QString::number(current_display_packing_order));
+	order_index_size = 0;
 
 	viewerembeded = new ViewerEmbeded(ui->widget);
 
@@ -1868,15 +1869,16 @@ void MainUI::ButtonClearAllItemPressed()
 void MainUI::ButtonCalculateBinPackingPressed()
 {
 	cout << "call ButtonCalculateBinPackingPressed()" << endl;
-	//read data from ui
+	//read data from ui, create new variable
 	//calculate rotation case
 	//save it in ui and dataprocess->items[i]
+	//reorder
 
 	viewerwindow->ClearPointCloudWindowCloudViewer();
 	viewerwindow->ClearShapeWindowCloudViewer();
 
+	//check number of item in ui = item in dataprocess
 	int total_boxes = ui->treeWidget->topLevelItemCount();
-
 	if (total_boxes != dataprocess->items.size())
 	{
 		cout << "total_boxes = " << total_boxes << endl;
@@ -1885,13 +1887,14 @@ void MainUI::ButtonCalculateBinPackingPressed()
 		return;
 	}
 
-	//arrange at 0,0,0
+	//check that pointcloud already arrange at 0,0,0
 	if (dataprocess->isSetAlignCorner == false)
 	{
 		QMessageBox::information(0, QString("Point cloud not corner"), QString("Please Set Pointcloud at corner first"), QMessageBox::Ok);
 		return;
 	}
 
+	// new variable and get value from ui
 	int *boxes_r = new int[total_boxes];
 	int *boxes_g = new int[total_boxes];
 	int *boxes_b = new int[total_boxes];
@@ -1910,6 +1913,9 @@ void MainUI::ButtonCalculateBinPackingPressed()
 
 	int *boxes_bin_num = new int[total_boxes];
 	int *boxes_item_num = new int[total_boxes];
+	int *boxes_item_order = new int[total_boxes];
+
+	int *boxes_item_rotation = new int[total_boxes];
 
 	for (int i = 0; i < total_boxes; i++)
 	{
@@ -1927,10 +1933,12 @@ void MainUI::ButtonCalculateBinPackingPressed()
 		boxes_z_pos[i] = 0;
 
 		boxes_bin_num[i] = 0;
-		boxes_item_num[i] = i+1;
+		boxes_item_num[i] = i;
+		boxes_item_rotation[i] = -1;
+
 	}
 
-
+	//just print for debug
 	for (int i = 0; i < total_boxes; i++)
 	{
 		cout
@@ -1940,10 +1948,12 @@ void MainUI::ButtonCalculateBinPackingPressed()
 			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
 			<< "orient:" << boxes_x_orient[i] << "," << boxes_y_orient[i] << "," << boxes_z_orient[i] << ", "
 			<< endl;
-
 	}
 
-	dataprocess->CalculateBinpack(
+	// new class, in order to when make a 2nd caculate the data in class will be refresh
+	// call calculate bin packing, 
+	// this class also copy address of input to it's class variable
+	dataprocess->bpp = new CalculateBppErhan(
 		total_boxes,
 		ui->in_bin_x_dim->text().toDouble(),
 		ui->in_bin_y_dim->text().toDouble(),
@@ -1952,25 +1962,43 @@ void MainUI::ButtonCalculateBinPackingPressed()
 		boxes_x_pos, boxes_y_pos, boxes_z_pos,
 		boxes_x_orient, boxes_y_orient, boxes_z_orient,
 		boxes_r, boxes_g, boxes_b,
-		boxes_bin_num, boxes_item_num);
+		boxes_bin_num, boxes_item_num, boxes_item_order, 
+		boxes_item_rotation);
 
+	dataprocess->bpp->CalculateBinpack();
+	dataprocess->bpp->CalculateRotationCase();
+	//dataprocess->bpp->SortBoxesOrder();
+
+	//just print for debug
 	int item_fit = 0;
 	for (int i = 0; i < total_boxes; i++)
 	{
 		cout
-			<< "No." << boxes_item_num[i] << ", "
+			<< "item_num." << boxes_item_num[i] << ", "
 			<< "bin_num:" << boxes_bin_num[i] << ", "
 			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
 			<< "pos:" << boxes_x_pos[i] << "," << boxes_y_pos[i] << "," << boxes_z_pos[i] << ", "
 			<< "orient:" << boxes_x_orient[i] << "," << boxes_y_orient[i] << "," << boxes_z_orient[i] << ", "
+			<< "rotation:" << boxes_item_rotation[i] << ", "
+			<< "item_order:" << boxes_item_order[i] << ", "
 			<< endl;
+	}
 
+
+	// write packed position to dataprocess
+	for (int i = 0; i < total_boxes; i++)
+	{
 		ObjectTransformationData *itm = dataprocess->items[i];
-		// check if use bin >1
+		itm->rotation_case = boxes_item_rotation[i];
+
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		item->setText(11, QString::number(itm->rotation_case));
+
+
+
 		if (boxes_bin_num[i] == 1)
 		{
 			item_fit++;
-
 			//do data in ui and data in items[i] is equal??
 			itm->target_position.x = boxes_x_pos[i] * 0.001;
 			itm->target_position.y = boxes_y_pos[i] * 0.001;
@@ -1980,61 +2008,53 @@ void MainUI::ButtonCalculateBinPackingPressed()
 			itm->target_orientation.y = boxes_y_orient[i];
 			itm->target_orientation.z = boxes_z_orient[i];
 
-			if (itm->x_length_mm == boxes_x_orient[i] &&
-				itm->y_length_mm == boxes_y_orient[i] &&
-				itm->z_length_mm == boxes_z_orient[i])
-			{
-				itm->rotation_case = 0;
-			}
-			else if (itm->x_length_mm == boxes_x_orient[i] &&
-				itm->y_length_mm == boxes_z_orient[i] &&
-				itm->z_length_mm == boxes_y_orient[i])
-			{
-				itm->rotation_case = 1;
-			}
-			else if (itm->x_length_mm == boxes_y_orient[i] &&
-				itm->y_length_mm == boxes_x_orient[i] &&
-				itm->z_length_mm == boxes_z_orient[i])
-			{
-				itm->rotation_case = 2;
-			}
-			else if (itm->x_length_mm == boxes_y_orient[i] &&
-				itm->y_length_mm == boxes_z_orient[i] &&
-				itm->z_length_mm == boxes_x_orient[i])
-			{
-				itm->rotation_case = 3;
-			}
-			else if (itm->x_length_mm == boxes_z_orient[i] &&
-				itm->y_length_mm == boxes_y_orient[i] &&
-				itm->z_length_mm == boxes_x_orient[i])
-			{
-				itm->rotation_case = 4;
-			}
-			else if (itm->x_length_mm == boxes_z_orient[i] &&
-				itm->y_length_mm == boxes_x_orient[i] &&
-				itm->z_length_mm == boxes_y_orient[i])
-			{
-				itm->rotation_case = 5;
-			}
-
 		}
-		else
-		{
-			itm->rotation_case = -1;// item not be packed
-		}
-
-		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
-		item->setText(11, QString::number(itm->rotation_case));
-
 	}
 
 	cout << endl;
 	cout << "packed " << item_fit << "/" << total_boxes << endl;
 
-	//binpack->SortBoxesOrder();
+	cout << "sort box order" << endl;
+
+	order_index_size = item_fit;
+	order_index = new int[order_index_size];
+	dataprocess->bpp->SortBoxesOrder();
+
+	//just print for debug
+
+	for (int i = 0; i < total_boxes; i++)
+	{
+		cout
+			<< "item_num." << boxes_item_num[i] << ", "
+			<< "bin_num:" << boxes_bin_num[i] << ", "
+			<< "whd:" << boxes_x_dim[i] << "x" << boxes_y_dim[i] << "x" << boxes_z_dim[i] << ", "
+			<< "rotation:" << boxes_item_rotation[i] << ", "
+			<< "item_order:" << boxes_item_order[i] << ", "
+			<< endl;
+
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(boxes_item_num[i]);
+		item->setText(12, QString::number(boxes_item_order[i]));
+		
+
+
+		//  [] = real index in ui & dataprocess
+		if (boxes_item_order[i]!=-1)
+		{ 
+			order_index[boxes_item_order[i]] = boxes_item_num[i];
+			//cout << "_order_index " << boxes_item_order[i] << " = " << boxes_item_num[i] << endl;
+		}
+		
+
+	}
+	cout << endl;
+	for (int i = 0; i < order_index_size; i++)
+	{
+		cout << "order_index[" << i << "]=" << order_index[i] << endl;
+	}
 
 
 
+	delete dataprocess->bpp;
 }
 
 void MainUI::ButtonTrackItemPositionPressed()
@@ -2069,11 +2089,16 @@ void MainUI::ButtonShowPackingTargetPressed()
 	ui->radioButton_packing_2->setChecked(false);
 	ui->radioButton_packing_3->setChecked(false);
 	current_display_packing_order = 0;
+
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
 	
 	//hilight circle at each item (input_position)
-	for (int i = 0; i < dataprocess->items.size(); i++)
+	for (int i = 0; i < order_index_size; i++)
 	{
-		viewerwindow->ShowBinPackingTarget(	dataprocess->container,	dataprocess->items[i], i);
+		int dataprocess_index = order_index[i];
+		cout << "order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
+		viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
 }
 void MainUI::ButtonShowPackingIndicatePressed()
@@ -2084,9 +2109,14 @@ void MainUI::ButtonShowPackingIndicatePressed()
 	ui->radioButton_packing_3->setChecked(false);
 	current_display_packing_order = 0;
 
-	for (int i = 0; i < dataprocess->items.size(); i++)
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
+
+	for (int i = 0; i < order_index_size; i++)
 	{
-		viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[i], i);
+		int dataprocess_index = order_index[i];
+		cout << "order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
+		viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
 	
 
@@ -2143,26 +2173,34 @@ void MainUI::ButtonShowZeroPackingPressed()
 
 
 	int item_index = current_display_packing_order - 1;
-	if (item_index >= 0 && item_index < dataprocess->items.size())
+	if (item_index >= 0 && item_index < order_index_size)
 	{
-		//cout <<"item_index=" << item_index << endl;
+		
+
+		int dataprocess_index = order_index[item_index];
+		cout << "order_index[" << item_index << "] dataprocess_index=" << dataprocess_index << endl;
 
 		if (ui->radioButton_packing_1->isChecked())
 		{
 			viewerwindow->ClearPointCloudWindowCloudViewer();
 			viewerwindow->ClearShapeWindowCloudViewer();
-			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[item_index], item_index);
+			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_2->isChecked())
 		{
 			viewerwindow->ClearPointCloudWindowCloudViewer();
 			viewerwindow->ClearShapeWindowCloudViewer();
-			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[item_index], item_index);
+			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_3->isChecked())
 		{
-			viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[item_index]);
+			viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[dataprocess_index]);
 		}
+	}
+	else
+	{
+		viewerwindow->ClearPointCloudWindowCloudViewer();
+		viewerwindow->ClearShapeWindowCloudViewer();
 	}
 
 }

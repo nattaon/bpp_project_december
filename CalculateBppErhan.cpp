@@ -7,25 +7,16 @@ int binpacking(int total_box_to_pack,
 	int *_orien_x, int *_orien_y, int *_orien_z,
 	int *_bin_no, int *_item_no);
 
-CalculateBppErhan::CalculateBppErhan()
-{
-}
-
-
-CalculateBppErhan::~CalculateBppErhan()
-{
-}
-
-void CalculateBppErhan::CalculateBinpack(
+CalculateBppErhan::CalculateBppErhan(	
 	int total_box_to_pack,
 	int bin_w, int bin_h, int bin_d,
 	int *box_w, int *box_h, int *box_d,
 	int *box_x, int *box_y, int *box_z,
 	int *orien_x, int *orien_y, int *orien_z,
 	int *box_r, int *box_g, int *box_b,
-	int *bin_no, int *item_no)
+	int *bin_no, int *item_no, int *item_order,
+	int *item_rotation)
 {
-
 	bpp_total_box_to_pack = total_box_to_pack;
 
 	bpp_bin_w = bin_w;
@@ -50,13 +41,32 @@ void CalculateBppErhan::CalculateBinpack(
 
 	bpp_bin_no = bin_no;
 	bpp_item_no = item_no;
+	bpp_item_order = item_order;
 
-	binpacking(total_box_to_pack,
+	bpp_item_rotation = item_rotation;
+
+}
+
+
+CalculateBppErhan::~CalculateBppErhan()
+{
+}
+
+void CalculateBppErhan::CalculateBinpack()
+{
+	binpacking(bpp_total_box_to_pack,
+		bpp_bin_w, bpp_bin_h, bpp_bin_d,
+		bpp_box_w, bpp_box_h, bpp_box_d,
+		bpp_box_x, bpp_box_y, bpp_box_z,
+		bpp_orien_x, bpp_orien_y, bpp_orien_z,
+		bpp_bin_no, bpp_item_no);
+
+	/*binpacking(total_box_to_pack,
 		bin_w, bin_h, bin_d,
 		box_w, box_h, box_d,
 		box_x, box_y, box_z,
 		orien_x, orien_y, orien_z,
-		bin_no, item_no);
+		bin_no, item_no);*/
 
 	//cout << endl << "after binpacking" << endl;
 
@@ -71,6 +81,54 @@ void CalculateBppErhan::CalculateBinpack(
 
 	//printboxes_array();
 }
+void CalculateBppErhan::CalculateRotationCase()
+{
+	for (int i = 0; i < bpp_total_box_to_pack; i++)
+	{
+		if (bpp_bin_no[i] != 1) // not pack in same bin no.1
+		{
+			bpp_item_rotation[i] = -1;
+		}
+		else if (bpp_box_w[i] == bpp_orien_x[i] &&
+			bpp_box_h[i] == bpp_orien_y[i] &&
+			bpp_box_d[i] == bpp_orien_z[i])
+		{
+			bpp_item_rotation[i] = 0;
+		}
+		else if (bpp_box_w[i] == bpp_orien_x[i] &&
+			bpp_box_h[i] == bpp_orien_z[i] &&
+			bpp_box_d[i] == bpp_orien_y[i])
+		{
+			bpp_item_rotation[i] = 1;
+		}
+		else if (bpp_box_w[i] == bpp_orien_y[i] &&
+			bpp_box_h[i] == bpp_orien_x[i] &&
+			bpp_box_d[i] == bpp_orien_z[i])
+		{
+			bpp_item_rotation[i] = 2;
+		}
+		else if (bpp_box_w[i] == bpp_orien_y[i] &&
+			bpp_box_h[i] == bpp_orien_z[i] &&
+			bpp_box_d[i] == bpp_orien_x[i])
+		{
+			bpp_item_rotation[i] = 3;
+		}
+		else if (bpp_box_w[i] == bpp_orien_z[i] &&
+			bpp_box_h[i] == bpp_orien_y[i] &&
+			bpp_box_d[i] == bpp_orien_x[i])
+		{
+			bpp_item_rotation[i] = 4;
+		}
+		else if (bpp_box_w[i] == bpp_orien_z[i] &&
+			bpp_box_h[i] == bpp_orien_x[i] &&
+			bpp_box_d[i] == bpp_orien_y[i])
+		{
+			bpp_item_rotation[i] = 5;
+		}
+	}
+}
+
+
 void CalculateBppErhan::InvertBoxesOrder()
 {
 	int j = bpp_total_box_to_pack - 1;
@@ -85,6 +143,8 @@ void CalculateBppErhan::InvertBoxesOrder()
 }
 void CalculateBppErhan::SortBoxesOrder()
 {
+
+
 	//1. sort by y position(height)
 	//cout << "sort y: 0 to " << bpp_total_box_to_pack << endl;
 	quickSort(bpp_box_y, 0, bpp_total_box_to_pack - 1);
@@ -132,6 +192,44 @@ void CalculateBppErhan::SortBoxesOrder()
 		}
 		
 	}
+
+	//remember item order
+	for (int i = 0; i < bpp_total_box_to_pack; i++)
+	{
+		if (bpp_bin_no[i]==1)
+		{
+			bpp_item_order[i] = i;
+		}
+		else
+		{
+			bpp_item_order[i] = -1;
+		}
+	}
+
+	cout << "bpp_item_order[i] = i;" << endl;
+	printboxes_array(); 
+	cout << endl;
+
+	//arrage array again by item order
+	quickSort(bpp_item_order, 0, bpp_total_box_to_pack - 1);
+	cout << "quickSort(bpp_item_order, 0, bpp_total_box_to_pack - 1);" << endl;
+	printboxes_array();
+	cout << endl;
+
+	//now array is arrange by order, so rewrite order (rerun number from 0->max , no space)
+	int order_index = 0;
+	for (int i = 0; i < bpp_total_box_to_pack; i++)
+	{
+		if (bpp_bin_no[i] == 1)
+		{
+			bpp_item_order[i] = order_index;
+			order_index++;
+		}
+	}
+	cout << "after rerun order number" << endl;
+	printboxes_array();
+	cout << endl;
+
 }
 
 void CalculateBppErhan::quickSort(int *arr, int left, int right) //int *arr = int arr[]
@@ -186,7 +284,9 @@ void CalculateBppErhan::swap_xyzwhd(int i, int j)
 
 	swap_pare(&bpp_bin_no[i], &bpp_bin_no[j]);
 	swap_pare(&bpp_item_no[i], &bpp_item_no[j]);
+	swap_pare(&bpp_item_order[i], &bpp_item_order[j]);
 
+	swap_pare(&bpp_item_rotation[i], &bpp_item_rotation[j]);
 }
 void CalculateBppErhan::swap_pare(int *a, int *b)
 {
@@ -208,6 +308,7 @@ void CalculateBppErhan::printboxes_array()
 			<< "whd:" << bpp_box_w[i] << "x" << bpp_box_h[i] << "x" << bpp_box_d[i] << ", " 
 			<< "pos:" << bpp_box_x[i] << "," << bpp_box_y[i] << "," << bpp_box_z[i] << ", " 
 			<< "orient:" << bpp_orien_x[i] << "," << bpp_orien_y[i] << "," << bpp_orien_z[i] << ", " 
+			<< "order:" << bpp_item_order[i] 
 			<< endl;
 	}
 
