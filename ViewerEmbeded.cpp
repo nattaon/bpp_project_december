@@ -1,5 +1,5 @@
 #include "ViewerEmbeded.h"
-
+#define POINT_SIZE 2
 ViewerEmbeded::ViewerEmbeded(QVTKWidget *widget)
 {
 	ui_widget_viewer = widget;
@@ -32,6 +32,7 @@ void ViewerEmbeded::UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 	{
 		embeded_view->addPointCloud(pointcloud, "embeded_view");
 	}
+	embeded_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, "embeded_view");
 	ui_widget_viewer->update();
 }
 

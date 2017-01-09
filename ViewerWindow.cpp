@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-
+#define POINT_SIZE 2
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -922,6 +922,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 		window_view->addPointCloud(item_pointcloud, cloudname);
 	}
 
+	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
 	window_view->spinOnce(100, true);
 
 	
@@ -1125,7 +1126,7 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 
 		killTimer(timer_animate);
 	}
-	window_view->spinOnce();
+	window_view->spinOnce(100,true);
 
 
 }
@@ -1146,10 +1147,14 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	target_animate_cube_pos.y = item->target_position.y + container->transform->min3d_point.y;
 	target_animate_cube_pos.z = item->target_position.z + container->transform->min3d_point.z;
 
-	cube_x_dim = item->x_length * 0.001;
-	cube_y_dim = item->y_length * 0.001;
-	cube_z_dim = item->z_length * 0.001;
+	cube_x_dim = item->x_length; 
+	cube_y_dim = item->y_length; 
+	cube_z_dim = item->z_length; 
 
+	PointTypeXYZRGB center_animate_cube;
+	PointTypeXYZRGB target_dim;
+	PointTypeXYZRGB center_target_cube;
+	center_target_cube.x = target_animate_cube_pos.x;
 
 
 	first_translate_done = false;
@@ -1165,14 +1170,14 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	
 	cube_x_dif = (target_animate_cube_pos.x - current_animate_cube_pos.x) / translate_count;
 	cube_z_dif = (target_animate_cube_pos.z - current_animate_cube_pos.z) / translate_count;
-
+	
+	cout << endl;
 	cout << "target point = " << target_animate_cube_pos << endl;
 	cout << "cube_x,z_dif = " << cube_x_dif << ", " << cube_z_dif << endl;
+	cout << "rotation_case " << item->rotation_case << endl;
+	cout << endl;
 	
-	current_animate_cube = CreteNewCubePolymesh(cube_x_dim, cube_y_dim, cube_z_dim,255,255,255);
-	current_animate_cube = TransformItemCubeShader(current_animate_cube,
-		current_animate_cube_pos.x, current_animate_cube_pos.y, current_animate_cube_pos.z,
-		{ 0, 0, 0 }, 0, "moving_cube_animate");
+
 
 
 	//init parameter for move a cube
@@ -1272,10 +1277,16 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	window_view->addLine(current_animate_cube_pos, target_animate_cube_pos, 0.25, 0.25, 0.25, "line_animate");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "line_animate");
 
-	window_view->spinOnce();
+
+	current_animate_cube = CreteNewCubePolymesh(cube_x_dim, cube_y_dim, cube_z_dim, 255, 255, 255);
+	current_animate_cube = TransformItemCubeShader(current_animate_cube,
+		current_animate_cube_pos.x, current_animate_cube_pos.y, current_animate_cube_pos.z,
+		{ 0, 0, 0 }, 0, "moving_cube_animate");
+
+	window_view->spinOnce(100,true);
 
 	//looping move item
-	timer_animate = startTimer(100);
+	timer_animate = startTimer(10);
 
 
 	

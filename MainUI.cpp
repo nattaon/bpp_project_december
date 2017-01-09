@@ -24,7 +24,9 @@ MainUI::MainUI(QWidget *parent) :
 
 	viewerembeded = new ViewerEmbeded(ui->widget);
 
-	
+	//ui->in_point_size_visual->text().toInt()
+
+
 	//top menu
 	///menu:viewer embedded
 	connect(ui->action_connectkinect, SIGNAL(triggered()), this, SLOT(ButtonConnectPressed()));
@@ -33,14 +35,18 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->action_savepointcloud, SIGNAL(triggered()), this, SLOT(ButtonSavePointCloudFromViewerPressed()));
 
 	//menu:parameter
-	connect(ui->actionLoad_Transformation, SIGNAL(triggered()), this, SLOT(ButtonLoadTransformParamPressed()));
-	connect(ui->actionSave_Transformation, SIGNAL(triggered()), this, SLOT(ButtonSaveTransformParamPressed()));
-	connect(ui->actionLoad_Passthrough, SIGNAL(triggered()), this, SLOT(ButtonLoadPassthroughParamPressed()));
-	connect(ui->actionSave_Passthrough, SIGNAL(triggered()), this, SLOT(ButtonSavePassthroughParamPressed()));
-	connect(ui->actionLoad_Camera, SIGNAL(triggered()), this, SLOT(ButtonLoadCameraParamPressed()));
-	connect(ui->actionSave_Camera, SIGNAL(triggered()), this, SLOT(ButtonSaveCameraParamPressed()));
-	connect(ui->actionLoad_Plane, SIGNAL(triggered()), this, SLOT(ButtonLoadPlaneParamPressed()));
-	connect(ui->actionSave_Plane, SIGNAL(triggered()), this, SLOT(ButtonSavePlaneParamPressed()));
+	connect(ui->action_load_transform, SIGNAL(triggered()), this, SLOT(ButtonLoadTransformParamPressed()));
+	connect(ui->action_save_transform, SIGNAL(triggered()), this, SLOT(ButtonSaveTransformParamPressed()));
+	connect(ui->action_load_passthrough, SIGNAL(triggered()), this, SLOT(ButtonLoadPassthroughParamPressed()));
+	connect(ui->action_save_passthrough, SIGNAL(triggered()), this, SLOT(ButtonSavePassthroughParamPressed()));
+	connect(ui->action_load_camera, SIGNAL(triggered()), this, SLOT(ButtonLoadCameraParamPressed()));
+	connect(ui->action_save_camera, SIGNAL(triggered()), this, SLOT(ButtonSaveCameraParamPressed()));
+	connect(ui->action_load_plane, SIGNAL(triggered()), this, SLOT(ButtonLoadPlaneParamPressed()));
+	connect(ui->action_save_plane, SIGNAL(triggered()), this, SLOT(ButtonSavePlaneParamPressed()));
+	connect(ui->action_load_ui_items, SIGNAL(triggered()), this, SLOT(ButtonLoadAllItemsTextToUIPressed()));
+	connect(ui->action_save_ui_items, SIGNAL(triggered()), this, SLOT(ButtonSaveAllItemsUIToTextPressed()));
+	connect(ui->action_load_bpp_info, SIGNAL(triggered()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
+	connect(ui->action_save_bpp_info, SIGNAL(triggered()), this, SLOT(ButtonSaveBinPackingInfoPressed()));
 
 	//items above tab
 	connect(ui->radio_axis_on, SIGNAL(clicked()), this, SLOT(RadioButtonAxisONSelected()));
@@ -57,6 +63,8 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_apply_camrot, SIGNAL(clicked()), this, SLOT(ButtonApplyCamRotationPressed()));
 	connect(ui->bt_apply_campos, SIGNAL(clicked()), this, SLOT(ButtonApplyCamTranslationPressed()));
 	connect(ui->bt_get_cam_param, SIGNAL(clicked()), this, SLOT(ButtonGetRegisterCameraCallbackPressed()));
+	connect(ui->bt_load_camera_txt, SIGNAL(clicked()), this, SLOT(ButtonLoadCameraParamPressed()));
+	connect(ui->bt_save_camera_txt, SIGNAL(clicked()), this, SLOT(ButtonSaveCameraParamPressed()));
 
 	//tab:cloud transformation
 	connect(ui->bt_reset_cloudtransform, SIGNAL(clicked()), this, SLOT(ButtonResetCloudTransformationPressed()));
@@ -2177,9 +2185,10 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	ui->radioButton_packing_1->setChecked(false);
 	ui->radioButton_packing_2->setChecked(false);
 	ui->radioButton_packing_3->setChecked(true);
+/*	
 	current_display_packing_order = 0;
 
-/*	ObjectTransformationData *test_container = new ObjectTransformationData();
+ObjectTransformationData *test_container = new ObjectTransformationData();
 	test_container->transform->min3d_point.x = -0.353263;
 	test_container->transform->min3d_point.y = 0.0587912;
 	test_container->transform->min3d_point.z = -0.0622235;
@@ -2189,9 +2198,9 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	test_item->transform->min3d_point.y = 0.00211017;
 	test_item->transform->min3d_point.z = 0.102774;
 
-	test_item->x_length = 196;
-	test_item->y_length = 34;
-	test_item->z_length = 115;
+	test_item->x_length = 0.196;
+	test_item->y_length = 0.034;
+	test_item->z_length = 0.115;
 	
 	test_item->target_position.x = 0.238;
 	test_item->target_position.y = 0;
@@ -2205,11 +2214,14 @@ void MainUI::ButtonShowPackingAnimationPressed()
 	
 
 	viewerwindow->ShowBinpackingAnimation(test_container, test_item);
-*/
-	int item_index = current_display_packing_order - 1;
+	*/
+	int item_index = current_display_packing_order;
+	QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(item_index);
+	int dataprocess_index = item->text(4).toInt();
+	cout << "order_index[" << item_index << "] dataprocess_index=" << dataprocess_index << endl;
 	if (item_index >= 0)
 	{ 
-		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[item_index]);
+		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[dataprocess_index]);
 	}
 
 
@@ -2219,8 +2231,22 @@ void MainUI::ButtonShowZeroPackingPressed()
 {
 	//cout << "call ButtonShowZeroPackingPressed()" << endl;
 	//viewerwindow->AddPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
+
+
+	QTreeWidgetItem* last_selected_item = ui->treeWidgetSorting->topLevelItem(last_select_sorting_index);
+	//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
+	last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+
+	last_select_sorting_index = -1;
 	current_display_packing_order = -1;
 	ui->bt_order_one->setText(QString::number(current_display_packing_order));
+
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
+
 }
 void MainUI::ShowPackingCurrentOrder()
 {
@@ -2228,10 +2254,15 @@ void MainUI::ShowPackingCurrentOrder()
 
 	int total_order = ui->treeWidgetSorting->topLevelItemCount();
 	int item_index = current_display_packing_order;
+
+	if (ui->checkBox_clear_previous->isChecked())
+	{
+		viewerwindow->ClearPointCloudWindowCloudViewer();
+		viewerwindow->ClearShapeWindowCloudViewer();
+	}
+
 	if (item_index >= 0 && item_index < total_order)
 	{
-		
-
 		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(item_index);
 		ui->treeWidgetSorting->setCurrentItem(item);
 		PressedTreeSorting(item);
@@ -2241,14 +2272,10 @@ void MainUI::ShowPackingCurrentOrder()
 
 		if (ui->radioButton_packing_1->isChecked())
 		{
-			//viewerwindow->ClearPointCloudWindowCloudViewer();
-			//viewerwindow->ClearShapeWindowCloudViewer();
 			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_2->isChecked())
 		{
-			//viewerwindow->ClearPointCloudWindowCloudViewer();
-			//viewerwindow->ClearShapeWindowCloudViewer();
 			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_3->isChecked())
@@ -2256,11 +2283,7 @@ void MainUI::ShowPackingCurrentOrder()
 			viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[dataprocess_index]);
 		}
 	}
-	else
-	{
-		//viewerwindow->ClearPointCloudWindowCloudViewer();
-		//viewerwindow->ClearShapeWindowCloudViewer();
-	}
+
 }
 void MainUI::ButtonShowPrevPackingPressed()
 {
@@ -2279,7 +2302,7 @@ void MainUI::ButtonShowPrevPackingPressed()
 void MainUI::ButtonShowNextPackingPressed()
 {
 	//cout << "call ButtonShowNextPackingPressed()" << endl;
-	if (current_display_packing_order <= ui->treeWidgetSorting->topLevelItemCount())
+	if (current_display_packing_order < ui->treeWidgetSorting->topLevelItemCount()-1)
 	{
 		current_display_packing_order++;
 		ui->bt_order_one->setText(QString::number(current_display_packing_order));

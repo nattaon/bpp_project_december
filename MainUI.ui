@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -805,32 +805,6 @@
       </property>
       <property name="text">
        <string>Reset default</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="bt_load_camera_txt">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>140</y>
-        <width>111</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="text">
-       <string>Load camera txt</string>
-      </property>
-      <property name="autoDefault">
-       <bool>false</bool>
       </property>
      </widget>
      <widget class="QPushButton" name="bt_save_camera_txt">
@@ -4601,9 +4575,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_update_packing_order">
       <property name="geometry">
        <rect>
-        <x>390</x>
-        <y>170</y>
-        <width>101</width>
+        <x>400</x>
+        <y>150</y>
+        <width>81</width>
         <height>31</height>
        </rect>
       </property>
@@ -4625,7 +4599,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>390</x>
-        <y>230</y>
+        <y>220</y>
         <width>21</width>
         <height>20</height>
        </rect>
@@ -4634,14 +4608,14 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QRadioButton" name="radioButton_packing_2">
       <property name="geometry">
        <rect>
         <x>390</x>
-        <y>260</y>
+        <y>240</y>
         <width>21</width>
         <height>20</height>
        </rect>
@@ -4654,7 +4628,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>390</x>
-        <y>290</y>
+        <y>260</y>
         <width>21</width>
         <height>20</height>
        </rect>
@@ -4662,12 +4636,15 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string/>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="label_40">
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>230</y>
+        <y>220</y>
         <width>81</width>
         <height>21</height>
        </rect>
@@ -4695,7 +4672,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>260</y>
+        <y>240</y>
         <width>81</width>
         <height>21</height>
        </rect>
@@ -4723,7 +4700,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>290</y>
+        <y>260</y>
         <width>81</width>
         <height>21</height>
        </rect>
@@ -4820,7 +4797,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>400</x>
-        <y>90</y>
+        <y>80</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -4843,7 +4820,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>400</x>
-        <y>120</y>
+        <y>110</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -4860,6 +4837,71 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Move down</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_clear_previous">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>290</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Clear Previous</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="in_point_size_visual">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>190</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_44">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>190</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>8</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Point Size =</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </widget>
@@ -5530,6 +5572,32 @@ p, li { white-space: pre-wrap; }
      <string>fill invert all</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="bt_load_camera_txt">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>40</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Load camera txt</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -5554,18 +5622,54 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Parameter</string>
     </property>
-    <addaction name="actionLoad_Transformation"/>
-    <addaction name="actionSave_Transformation"/>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_Passthrough"/>
-    <addaction name="actionSave_Passthrough"/>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_Camera"/>
-    <addaction name="actionSave_Camera"/>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_Plane"/>
-    <addaction name="actionSave_Plane"/>
-    <addaction name="separator"/>
+    <widget class="QMenu" name="menuTransformation">
+     <property name="title">
+      <string>Transformation</string>
+     </property>
+     <addaction name="action_load_transform"/>
+     <addaction name="action_save_transform"/>
+    </widget>
+    <widget class="QMenu" name="menuPassthrough">
+     <property name="title">
+      <string>Passthrough</string>
+     </property>
+     <addaction name="action_load_passthrough"/>
+     <addaction name="action_save_passthrough"/>
+    </widget>
+    <widget class="QMenu" name="menuCamera">
+     <property name="title">
+      <string>Camera</string>
+     </property>
+     <addaction name="action_load_camera"/>
+     <addaction name="action_save_camera"/>
+    </widget>
+    <widget class="QMenu" name="menuPlane">
+     <property name="title">
+      <string>Plane</string>
+     </property>
+     <addaction name="action_load_plane"/>
+     <addaction name="action_save_plane"/>
+    </widget>
+    <widget class="QMenu" name="menuUI_Items">
+     <property name="title">
+      <string>UI Items</string>
+     </property>
+     <addaction name="action_load_ui_items"/>
+     <addaction name="action_save_ui_items"/>
+    </widget>
+    <widget class="QMenu" name="menuPacking_info">
+     <property name="title">
+      <string>Packing info</string>
+     </property>
+     <addaction name="action_load_bpp_info"/>
+     <addaction name="action_save_bpp_info"/>
+    </widget>
+    <addaction name="menuTransformation"/>
+    <addaction name="menuPassthrough"/>
+    <addaction name="menuCamera"/>
+    <addaction name="menuPlane"/>
+    <addaction name="menuUI_Items"/>
+    <addaction name="menuPacking_info"/>
    </widget>
    <addaction name="menuViewer"/>
    <addaction name="menuParameter"/>
@@ -5590,19 +5694,9 @@ p, li { white-space: pre-wrap; }
     <string>Save pointcloud</string>
    </property>
   </action>
-  <action name="actionLoad_Transformation">
-   <property name="text">
-    <string>Load Transformation</string>
-   </property>
-  </action>
   <action name="actionSave_Transformation">
    <property name="text">
     <string>Save Transformation</string>
-   </property>
-  </action>
-  <action name="actionLoad_Passthrough">
-   <property name="text">
-    <string>Load Passthrough</string>
    </property>
   </action>
   <action name="actionSave_Passthrough">
@@ -5610,19 +5704,9 @@ p, li { white-space: pre-wrap; }
     <string>Save Passthrough</string>
    </property>
   </action>
-  <action name="actionLoad_Camera">
-   <property name="text">
-    <string>Load Camera</string>
-   </property>
-  </action>
   <action name="actionSave_Camera">
    <property name="text">
     <string>Save Camera</string>
-   </property>
-  </action>
-  <action name="actionLoad_Plane">
-   <property name="text">
-    <string>Load Plane</string>
    </property>
   </action>
   <action name="actionSave_Plane">
@@ -5655,6 +5739,66 @@ p, li { white-space: pre-wrap; }
     <string>Save tracker</string>
    </property>
   </action>
+  <action name="action_load_transform">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_transform">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="action_load_passthrough">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_passthrough">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="action_load_camera">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_camera">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="action_load_plane">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_plane">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="action_load_ui_items">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_ui_items">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="action_load_bpp_info">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="action_save_bpp_info">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -5668,8 +5812,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
