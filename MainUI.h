@@ -61,6 +61,10 @@ private:
 
 	void ShowPackingCurrentOrder();
 
+	void Call_LoadCameraParam(string filename);
+	void Call_LoadAllItemsTextToUI(string filename);
+	void Call_LoadBinPackingInfo(string filename);
+
 	
 private slots:
 	//top menu
@@ -83,6 +87,8 @@ private slots:
 	void ButtonUndoLastedPointCloudPressed();
 	void ButtonClearViewerPointCloudPressed();	
 	void ButtonClearViewerShapePressed();
+
+	void ButtonTestProgrammePressed();
 
 	//tab:camera
 	void ButtonApplyParamtoCameraPressed();
@@ -172,6 +178,8 @@ private slots:
 	void ButtonShowZeroPackingPressed();
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
+
+	
 
 
 };

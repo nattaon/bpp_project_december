@@ -140,7 +140,8 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_save_packing_info, SIGNAL(clicked()), this, SLOT(ButtonSaveBinPackingInfoPressed()));
 	connect(ui->bt_load_packing_info, SIGNAL(clicked()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
 	
-
+	connect(ui->bt_test, SIGNAL(clicked()), this, SLOT(ButtonTestProgrammePressed()));
+	
 
 
 
@@ -160,6 +161,8 @@ MainUI::MainUI(QWidget *parent) :
 	ui->treeWidget->header()->resizeSection(COLUMN_FILENAME, 500);
 
 	//QApplication::instance()->installEventFilter(this);
+
+
 	
 }
 
@@ -167,6 +170,13 @@ MainUI::~MainUI()
 {
     //delete ui;
 	//delete program;
+}
+
+void MainUI::ButtonTestProgrammePressed()
+{
+	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/kk.txt");
+	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing10reorder.txt");
 }
 
 void MainUI::SetDataProcess(DataProcess* d) {dataprocess = d;}
@@ -441,6 +451,15 @@ void MainUI::ButtonLoadCameraParamPressed()
 		return;
 	}
 
+	Call_LoadCameraParam(filename.toStdString());
+
+
+}
+
+void MainUI::Call_LoadCameraParam(string filename)
+{
+
+
 	double focal_x, focal_y, focal_z;
 	double pos_x, pos_y, pos_z;
 	double up_x, up_y, up_z;
@@ -451,7 +470,7 @@ void MainUI::ButtonLoadCameraParamPressed()
 	vector<pcl::visualization::Camera> cam;
 	viewerwindow->window_view->getCameras(cam);
 
-	dataprocess->cameraparam->ReadCameraParameter(filename.toStdString(),
+	dataprocess->cameraparam->ReadCameraParameter(filename,
 		focal_x, focal_y, focal_z,
 		pos_x, pos_y, pos_z,
 		up_x, up_y, up_z,
@@ -466,10 +485,8 @@ void MainUI::ButtonLoadCameraParamPressed()
 		cam_angle_rad, cam_angle_deg);
 
 	//QMessageBox::information(0, QString("/load camera parameter"), QString("Load camera parameter complete"), QMessageBox::Ok);
-
-
-	
 }
+
 void MainUI::ButtonSaveCameraParamPressed()
 {
 	cout << "call ButtonSaveCameraParamPressed()" << endl;
@@ -1651,18 +1668,25 @@ void MainUI::ButtonLoadAllItemsTextToUIPressed()
 	//add it in dataprocess
 	//set dataprocess->isSetAlignCorner = true; -> align cornor again min_point will change to 0,...
 
-	ButtonClearAllItemPressed();
+	
 
 	QString filename = QFileDialog::getOpenFileName(this,
 		tr("Load container & items list file"), POINTCLOUD_DIR, tr("text file (*.txt)"));
 	if (filename.trimmed().isEmpty()) return;
 
+	Call_LoadAllItemsTextToUI(filename.toStdString());
+
+
+}
+void MainUI::Call_LoadAllItemsTextToUI(string filename)
+{
 	int total_items;
 
-	
+	ButtonClearAllItemPressed();
+
 	PointCloudBPPTextListIO *txt_items = new PointCloudBPPTextListIO();
 
-	total_items=txt_items->ReadPointCloudListForBPP(filename.toStdString());
+	total_items = txt_items->ReadPointCloudListForBPP(filename);
 
 
 	dataprocess->container = new ObjectTransformationData();
@@ -1670,7 +1694,7 @@ void MainUI::ButtonLoadAllItemsTextToUIPressed()
 	dataprocess->container->SetTransformMinMaxPos(txt_items->bin_min_pos, txt_items->bin_max_pos);
 	dataprocess->container->SetTransformVector(txt_items->bin_major_vector, txt_items->bin_middle_vector, txt_items->bin_minor_vector);
 
-	WriteContainerDataToUI(txt_items->bin_x_dim,txt_items->bin_y_dim,txt_items->bin_z_dim,
+	WriteContainerDataToUI(txt_items->bin_x_dim, txt_items->bin_y_dim, txt_items->bin_z_dim,
 		txt_items->bin_min_pos, txt_items->bin_max_pos);
 
 	for (int i = 0; i < total_items; i++)
@@ -1680,14 +1704,14 @@ void MainUI::ButtonLoadAllItemsTextToUIPressed()
 
 		//add item to dataprocess
 		//dataprocess->AddLoadPointCloudToItems(cloud);
-		
+
 		ObjectTransformationData *item = new ObjectTransformationData();
 		pcl::copyPointCloud(*cloud, *item->object_pointcloud);
 		item->SetLengthMM(txt_items->items_x_dim[i], txt_items->items_y_dim[i], txt_items->items_z_dim[i]);
 		item->SetTransformMinMaxPos(txt_items->items_min_pos[i], txt_items->items_max_pos[i]);
 		item->SetTransformVector(txt_items->items_major_vector[i], txt_items->items_middle_vector[i], txt_items->items_minor_vector[i]);
 		dataprocess->items.push_back(item);
-		cout << "dataprocess ->items.size()=" << dataprocess ->items.size() << endl;
+		cout << "dataprocess ->items.size()=" << dataprocess->items.size() << endl;
 
 		WriteItemDataToUI(i + 1,
 			txt_items->items_x_dim[i], txt_items->items_y_dim[i], txt_items->items_z_dim[i],
@@ -1699,9 +1723,9 @@ void MainUI::ButtonLoadAllItemsTextToUIPressed()
 	dataprocess->isSetAlignCorner = true;
 
 	delete txt_items;
-
-
 }
+
+
 void MainUI::ButtonSaveAllItemsUIToTextPressed()
 {
 	cout << "call ButtonSaveAllItemsUIToTextPressed()" << endl;
@@ -2378,6 +2402,11 @@ void MainUI::ButtonLoadBinPackingInfoPressed()
 		tr("Load packing info"), POINTCLOUD_DIR, tr("packing info (*.txt)"));
 	if (filename.trimmed().isEmpty()) return;
 
+	Call_LoadBinPackingInfo(filename.toStdString());
+}
+
+void MainUI::Call_LoadBinPackingInfo(string filename)
+{
 	//clear order widget
 	int treeWidgetSorting_size = ui->treeWidgetSorting->topLevelItemCount();
 	for (int i = 0; i < treeWidgetSorting_size; i++)
@@ -2387,7 +2416,7 @@ void MainUI::ButtonLoadBinPackingInfoPressed()
 	}
 
 	BPPResultIO *txt_bppinfo = new BPPResultIO();
-	int total_order = txt_bppinfo->ReadBinPackingResult(filename.toStdString());
+	int total_order = txt_bppinfo->ReadBinPackingResult(filename);
 
 	//write data to data process and uiSorting
 	int *item_number_of_order_index = new int[total_order];
@@ -2425,15 +2454,6 @@ void MainUI::ButtonLoadBinPackingInfoPressed()
 		ui->treeWidgetSorting->addTopLevelItem(item);
 
 	}
-
-
-
-
-
-
-
-
-
 
 }
 

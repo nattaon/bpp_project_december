@@ -859,6 +859,32 @@
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="bt_load_camera_txt">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Load camera txt</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_segment">
      <attribute name="title">
@@ -4405,29 +4431,6 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="bt_test">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>330</y>
-        <width>111</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="text">
-       <string>test</string>
-      </property>
-     </widget>
      <widget class="QTextEdit" name="textEdit">
       <property name="geometry">
        <rect>
@@ -5572,13 +5575,13 @@ p, li { white-space: pre-wrap; }
      <string>fill invert all</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="bt_load_camera_txt">
+   <widget class="QPushButton" name="bt_test">
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>40</y>
+      <y>20</y>
       <width>111</width>
-      <height>23</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -5592,10 +5595,7 @@ p, li { white-space: pre-wrap; }
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>Load camera txt</string>
-    </property>
-    <property name="autoDefault">
-     <bool>false</bool>
+     <string>test</string>
     </property>
    </widget>
   </widget>
@@ -5812,8 +5812,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
