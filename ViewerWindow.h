@@ -19,7 +19,8 @@ private:
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
 	PointTypeXYZRGB current_animate_cube_pos, target_animate_cube_pos;
 	float cube_x_dim, cube_y_dim, cube_z_dim;
-
+	PointTypeXYZRGB input_cube_dim;
+	PointTypeXYZRGB cube_translate_diff; 
 
 	//transform.rotate(Eigen::AngleAxisf(theta, rotation_vector));
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
@@ -128,7 +129,11 @@ public:
 		float x_dim, float y_dim, float z_dim, 
 		int r, int g, int b);
 
-	pcl::PolygonMesh TransformItemCubeShader(
+	pcl::PolygonMesh CreteNewCubePolymeshAtCentroid(
+		float x_dim, float y_dim, float z_dim,
+		int r, int g, int b);
+
+	pcl::PolygonMesh TransformItemCubeShaderAtCenttroid(
 		pcl::PolygonMesh cube_mesh,
 		float translate_x, float translate_y, float translate_z,
 		Eigen::Matrix<float, 1, 3> rotation_matrix, float rotate_degree,
