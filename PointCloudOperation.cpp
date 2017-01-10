@@ -330,6 +330,12 @@ void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, floa
 		return;
 	}
 
+	PointTypeXYZRGB minpoint, maxpoint;
+	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
+	//cout << "maxpoint " << maxpoint << endl;
+	//cout << "leaf_size " << leaf_size << endl;
+	//cout << endl;
+
 	PointCloudXYZRGB::Ptr invert_cloud(new PointCloudXYZRGB);
 	//PointCloudXYZRGB::Ptr concate_cloud(new PointCloudXYZRGB);
 
@@ -337,18 +343,29 @@ void PointCloudOperation::DuplicateInvertCloud(PointCloudXYZRGB::Ptr cloud, floa
 
 	if (x_length >= z_length) // x is longer side, do rotate on x axis
 	{
-		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 1, 0, 0 });
-		TranslatePointCloud(invert_cloud, 0, y_length, z_length);
+		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 0, 0, 1 });
+		TranslatePointCloud(invert_cloud, x_length, y_length, 0);
+
 	}
 	else if (z_length > x_length)//z is longer side, do rotate on z axis
 	{
-		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 0, 0, 1 });
-		TranslatePointCloud(invert_cloud, x_length, y_length, 0);
+		RotatePointCloudAroundZeroPoint(invert_cloud, 180, { 1, 0, 0 });
+		TranslatePointCloud(invert_cloud, 0, y_length, z_length);
+		
+	}
+
+	for (int i = 0; i < invert_cloud->points.size(); i++)
+	{
+		if (invert_cloud->points[i].x >= 0 && invert_cloud->points[i].x <= maxpoint.x &&
+			invert_cloud->points[i].y >= 0 && invert_cloud->points[i].y <= maxpoint.y &&
+			invert_cloud->points[i].z >= 0 && invert_cloud->points[i].z <= maxpoint.z)
+		{
+			cloud->push_back(invert_cloud->points[i]);
+		}
 	}
 
 
-
-	*cloud += *invert_cloud;
+	//*cloud += *invert_cloud;
 	//pcl::concatenateFields(cloud, invert_cloud, concate_cloud);//a+b=c
 	cout << "cloud->points.size() = " << cloud->points.size() << endl;
 

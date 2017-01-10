@@ -256,6 +256,8 @@ void ViewerWindow::AddArrowPolygonMesh(
 void ViewerWindow::AddPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 	double r, double g, double b, string planename)
 {
+	//create point around center, and draw at center
+
 	double minus_halflength_x = -1 * plane_halflegth_x;
 	double minus_halflength_z = -1 * plane_halflegth_z;
 	PointTypeXYZRGB p1, p2, p3, p4;
@@ -281,6 +283,45 @@ void ViewerWindow::AddPlanarAtOrigin(double plane_halflegth_x, double plane_half
 	window_view->removeShape(planename);
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r,g,b, planename);
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, planename);
+	//window_view->spinOnce();
+
+}
+
+void ViewerWindow::Add2DRectangle(PointTypeXYZRGB min_point, double x_dim, double z_dim,
+	double r, double g, double b, string rectangle_name)
+{
+	//create point from corner, and draw at corner
+
+	//double minus_halflength_x = -1 * plane_halflegth_x;
+	//double minus_halflength_z = -1 * plane_halflegth_z;
+	PointTypeXYZRGB p1, p2, p3, p4;
+
+	p1.x = 0; p1.y = 0; p1.z = 0;
+	p2.x = 0; p2.y = 0; p2.z = z_dim;
+	p3.x = x_dim; p3.y = 0; p3.z = z_dim;
+	p4.x = x_dim; p4.y = 0; p4.z = 0;
+
+	PointCloudXYZRGB::Ptr polygon_pointcloud;//= new PointCloudXYZRGB();
+	polygon_pointcloud.reset(new PointCloudXYZRGB);
+
+	polygon_pointcloud->points.push_back(p1);
+	polygon_pointcloud->points.push_back(p2);
+	polygon_pointcloud->points.push_back(p3);
+	polygon_pointcloud->points.push_back(p4);
+
+	polygon_pointcloud->width = (int)polygon_pointcloud->points.size();
+	polygon_pointcloud->height = 1;
+
+	//cout << "polygon_pointcloud" << polygon_pointcloud->points.size() << endl;
+
+	Eigen::Affine3f transform_move = Eigen::Affine3f::Identity();
+	transform_move.translation() << min_point.x, min_point.y, min_point.z;
+	pcl::transformPointCloud(*polygon_pointcloud, *polygon_pointcloud, transform_move);
+
+
+	window_view->removeShape(rectangle_name);
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, rectangle_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, rectangle_name);
 	//window_view->spinOnce();
 
 }
@@ -937,11 +978,11 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	float radius;
 	if (item->x_length > item->z_length)
 	{
-		radius = item->x_length*0.5;
+		radius = item->z_length*0.5;
 	}
 	else
 	{
-		radius = item->z_length*0.5;
+		radius = item->x_length*0.5;
 	}
 	AddCircleWindowCloudViewer(item->transform->mass_center_point,
 		radius, 1.0, 1.0, 1.0, "circle " + i);

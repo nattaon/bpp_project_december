@@ -120,11 +120,16 @@ MainUI::MainUI(QWidget *parent) :
 	//packing
 
 	connect(ui->bt_binpacking, SIGNAL(clicked()), this, SLOT(ButtonCalculateBinPackingPressed()));
-	connect(ui->bt_track_item_pos, SIGNAL(clicked()), this, SLOT(ButtonTrackItemPositionPressed()));
 
 	connect(ui->bt_show_packing_target, SIGNAL(clicked()), this, SLOT(ButtonShowPackingTargetPressed()));
 	connect(ui->bt_show_packing_indicate, SIGNAL(clicked()), this, SLOT(ButtonShowPackingIndicatePressed()));
 	connect(ui->bt_show_packing_animation, SIGNAL(clicked()), this, SLOT(ButtonShowPackingAnimationPressed()));
+
+	connect(ui->bt_show_input_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowInputRectanglePositionPressed()));
+	connect(ui->bt_test_project_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowTestRectanglePositionPressed()));
+	connect(ui->bt_set_minpoint_y_zero, SIGNAL(clicked()), this, SLOT(ButtonSetContainerItemsYzeroPressed()));
+	connect(ui->bt_update_dataprocess_from_ui, SIGNAL(clicked()), this, SLOT(ButtonUpdateContainerItemsToDataprocessPressed()));
+
 
 	//sorting
 	connect(ui->treeWidgetSorting, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeSorting(QTreeWidgetItem *)));
@@ -142,6 +147,10 @@ MainUI::MainUI(QWidget *parent) :
 	
 	connect(ui->bt_test, SIGNAL(clicked()), this, SLOT(ButtonTestProgrammePressed()));
 	
+	//
+	//
+	//
+	//
 
 
 
@@ -174,9 +183,15 @@ MainUI::~MainUI()
 
 void MainUI::ButtonTestProgrammePressed()
 {
+	/*
 	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/kk.txt");
 	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing10reorder.txt");
+*/
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_correction.txt");
+	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
+
 }
 
 void MainUI::SetDataProcess(DataProcess* d) {dataprocess = d;}
@@ -2135,26 +2150,100 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	delete dataprocess->bpp;
 }
 
-void MainUI::ButtonTrackItemPositionPressed()
+void MainUI::ButtonShowInputRectanglePositionPressed()
 {
-	cout << "call ButtonTrackItemPositionPressed()" << endl;
+	cout << "call ButtonShowInputRectanglePositionPressed()" << endl;
+	//draw box / or rectangle for confirm items and box position
+
+	
+	current_display_packing_order = 0;
+
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
 
 
-	//viewerwindow->AddArrowObj();
-	/*	viewerwindow->AddItemCubeShader(
-	0.3, 0.3, 0.3,
-	0, 0, 0,
-	255,0,0,
-	"testcube");
+	//rectangle of container
+	PointTypeXYZRGB draw_container_pos = dataprocess->container->transform->min3d_point;
+	draw_container_pos.x -= 0.1;
+	draw_container_pos.y = 0;
 
-	viewerwindow->AddPolygonMesh(
-	0.3, 0.3, 0.3,
-	0, 0, 0,
-	0.5, 0.5, 0.5);*/
+	viewerwindow->Add2DRectangle(
+		draw_container_pos,
+		dataprocess->container->x_length, dataprocess->container->z_length,
+		1.0, 1.0, 1.0, "container_rectangle");
+
+	//rectangle for items
+	int total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < total_boxes; i++)
+	{
+		PointTypeXYZRGB draw_rec_pos = dataprocess->items[i]->transform->min3d_point;
+		draw_rec_pos.y = 0;
+		string item_rec_name = "item_rectangle" + i;
+		viewerwindow->Add2DRectangle(
+			draw_rec_pos,
+			dataprocess->items[i]->x_length, dataprocess->items[i]->z_length,
+			1.0, 1.0, 1.0, item_rec_name);
+	}
+
+	viewerwindow->window_view->spinOnce();
+
+
 
 }
 
+void MainUI::ButtonShowTestRectanglePositionPressed()
+{
+	viewerwindow->ClearPointCloudWindowCloudViewer();
+	viewerwindow->ClearShapeWindowCloudViewer();
 
+	float x_length = 0.142;
+	float z_length = 0.123;
+
+	float x_space_length = 0.2;
+	float z_space_length = 0.2;
+	int num_x = 3;
+	int num_z = 3;
+	int dx = -3;
+	int dz = -2;
+
+	int index = 1;
+
+
+
+
+	for (int i = dx; i < num_x; i++)
+	{
+		for (int j = dz; j < num_z; j++)
+		{
+
+			PointTypeXYZRGB draw_rec_pos;
+			draw_rec_pos.x = x_space_length*i;
+			draw_rec_pos.y = 0;
+			draw_rec_pos.z = z_space_length*j;
+	
+		
+			string item_rec_name = "item_rectangle" + index;
+			index++;
+			cout << item_rec_name << " " << draw_rec_pos << endl;
+
+			viewerwindow->Add2DRectangle(
+				draw_rec_pos,
+				x_length, z_length,
+				1.0, 1.0, 1.0, item_rec_name);
+		}
+
+	}
+
+	viewerwindow->window_view->spinOnce();
+}
+void MainUI::ButtonSetContainerItemsYzeroPressed()
+{
+
+}
+void MainUI::ButtonUpdateContainerItemsToDataprocessPressed()
+{
+
+}
 
 
 

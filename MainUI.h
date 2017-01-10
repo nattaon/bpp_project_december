@@ -158,11 +158,15 @@ private slots:
 
 	//BinPacking
 	void ButtonCalculateBinPackingPressed();
-	void ButtonTrackItemPositionPressed();
 
 	void ButtonShowPackingTargetPressed();
 	void ButtonShowPackingIndicatePressed();
 	void ButtonShowPackingAnimationPressed();
+
+	void ButtonShowInputRectanglePositionPressed();
+	void ButtonShowTestRectanglePositionPressed();
+	void ButtonSetContainerItemsYzeroPressed();
+	void ButtonUpdateContainerItemsToDataprocessPressed();
 
 
 	//Sorting

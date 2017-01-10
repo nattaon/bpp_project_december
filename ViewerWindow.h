@@ -74,6 +74,9 @@ public:
 	void AddPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 		double r, double g, double b, string planename);
 
+	void Add2DRectangle(PointTypeXYZRGB min_point, double x_dim, double z_dim,
+		double r, double g, double b, string rectangle_name);
+
 	void AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
 		PointTypeXYZRGB min_point_OBB, PointTypeXYZRGB max_point_OBB,
 		Eigen::Matrix3f rotational_matrix_OBB, string cloudname);
