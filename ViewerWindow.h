@@ -84,6 +84,8 @@ public:
 	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
+
+	void AddContainerBorderLine(ObjectTransformationData *container, float r, float g, float);
 	
 	void AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 		double r, double g, double b, string drawtext, string cloudname);

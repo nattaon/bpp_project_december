@@ -994,6 +994,10 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	item_pointcloud.reset(new PointCloudXYZRGB);
 	pcl::copyPointCloud(*item->object_pointcloud, *item_pointcloud);
 
+
+	//addline for border of box
+	AddContainerBorderLine(container,1.0,0,0);
+
 	//if (item->rotation_case == 0) // do nothing
 	if (item->rotation_case == 1)
 	{
@@ -1056,6 +1060,38 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	
 }
 
+void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container,float r, float g, float b)
+{
+	PointTypeXYZRGB p1, p2, p3, p4;
+	p1 = container->transform->min3d_point;
+
+	p2 = container->transform->min3d_point;
+	p2.x += container->x_length;
+
+	p3 = container->transform->min3d_point;
+	p3.x += container->x_length;
+	p3.z += container->z_length;
+
+	p4 = container->transform->min3d_point;
+	p4.z += container->z_length;
+
+	window_view->removeShape("boxborder1");
+	window_view->addLine(p1, p2, r, g, b, "boxborder1");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder1");
+
+	window_view->removeShape("boxborder2");
+	window_view->addLine(p2, p3, r, g, b, "boxborder2");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder2");
+
+	window_view->removeShape("boxborder3");
+	window_view->addLine(p3, p4, r, g, b, "boxborder3");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder3");
+
+	window_view->removeShape("boxborder4");
+	window_view->addLine(p4, p1, r, g, b, "boxborder4");
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder4");
+}
+
 
 
 void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i)
@@ -1092,7 +1128,8 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	float r, g, b;
 
 	randomcolorfloat(r, g, b);
-	
+
+
 
 
 	if (item->rotation_case == 0 || item->rotation_case == 4)
@@ -1100,11 +1137,20 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		//cout << i<<" : rot case = " << item->rotation_case << endl;
 			
 		//draw input cube at item position
-			
-		AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+		PointTypeXYZRGB draw_rec_pos;
+		draw_rec_pos.x = in_cube_x_min_pos;
+		draw_rec_pos.y = 0;
+		draw_rec_pos.z = in_cube_z_min_pos;	
+
+		Add2DRectangle(
+			draw_rec_pos,
+			in_cube_x_dim, in_cube_z_dim,
+			1.0, 1.0, 1.0, input_cube_name);
+
+	/*	AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{0, 0, 0}, 0, 255, 255, 255, input_cube_name);
-
+*/
 		//input direction symbol
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
@@ -1117,28 +1163,67 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		//draw x axis rotated cube at item position
 	
 			
-		AddItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+/*		AddItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
 			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
 
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
+			r, g, b, input_symbol_name);*/
+
+		PointTypeXYZRGB draw_rec_pos;
+		draw_rec_pos.x = in_cube_x_min_pos;
+		draw_rec_pos.y = 0;
+		draw_rec_pos.z = in_cube_z_min_pos;
+
+		Add2DRectangle(
+			draw_rec_pos,
+			in_cube_x_dim, in_cube_y_dim,
+			1.0, 1.0, 1.0, input_cube_name);
+		/*
+		AddItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+*/
+		input_center_symbol = AddItemArrowDirectionSymbol(
+			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			r, g, b, input_symbol_name);
+
 	}
 	else if (item->rotation_case == 2 || item->rotation_case == 3)
 	{
 		//cout << i << " : rot case = " << item->rotation_case << endl;
 		//draw z axis rotated cube at item position
 
+		/*
 		AddItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
 			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
 
-
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
+			r, g, b, input_symbol_name);*/
+
+		PointTypeXYZRGB draw_rec_pos;
+		draw_rec_pos.x = in_cube_x_min_pos;
+		draw_rec_pos.y = 0;
+		draw_rec_pos.z = in_cube_z_min_pos;
+
+		Add2DRectangle(
+			draw_rec_pos,
+			in_cube_y_dim, in_cube_z_dim,
+			1.0, 1.0, 1.0, input_cube_name);
+		/*
+		AddItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+*/
+		input_center_symbol = AddItemArrowDirectionSymbol(
+			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
+			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			r, g, b, input_symbol_name);
 	}
 
@@ -1146,12 +1231,21 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	//cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
 	//cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
 
-		
+	PointTypeXYZRGB draw_rec_pos;
+	draw_rec_pos.x = tar_cube_x_min_pos;
+	draw_rec_pos.y = 0;
+	draw_rec_pos.z = tar_cube_z_min_pos;
+
+	Add2DRectangle(
+		draw_rec_pos,
+		tar_cube_x_dim, tar_cube_z_dim,
+		1.0, 1.0, 1.0, input_cube_name);
+
 	//target cube
-	AddItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
+/*	AddItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
 		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
 		{ 0, 0, 0 }, 0, 255, 255, 255, target_cube_name);
-
+*/
 
 
 

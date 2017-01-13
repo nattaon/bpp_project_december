@@ -4060,9 +4060,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>310</y>
-        <width>131</width>
-        <height>41</height>
+        <y>320</y>
+        <width>151</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -4076,7 +4076,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>show input rectangles</string>
+       <string>Projection input position</string>
       </property>
      </widget>
      <widget class="QPushButton" name="bt_show_packing_target">
@@ -4474,9 +4474,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_test_project_rectangle">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>170</x>
         <y>320</y>
-        <width>131</width>
+        <width>151</width>
         <height>31</height>
        </rect>
       </property>
@@ -5910,7 +5910,7 @@ p, li { white-space: pre-wrap; }
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

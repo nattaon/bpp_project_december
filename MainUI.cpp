@@ -125,7 +125,7 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_show_packing_indicate, SIGNAL(clicked()), this, SLOT(ButtonShowPackingIndicatePressed()));
 	connect(ui->bt_show_packing_animation, SIGNAL(clicked()), this, SLOT(ButtonShowPackingAnimationPressed()));
 
-	connect(ui->bt_show_input_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowInputRectanglePositionPressed()));
+	connect(ui->bt_show_input_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowProjectionInputPositionPressed()));
 	connect(ui->bt_test_project_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowTestRectanglePositionPressed()));
 	connect(ui->bt_set_minpoint_y_zero, SIGNAL(clicked()), this, SLOT(ButtonSetContainerItemsYzeroPressed()));
 	connect(ui->bt_update_dataprocess_from_ui, SIGNAL(clicked()), this, SLOT(ButtonUpdateContainerItemsToDataprocessPressed()));
@@ -189,7 +189,7 @@ void MainUI::ButtonTestProgrammePressed()
 	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing10reorder.txt");
 */
 	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_correction.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
 
 }
@@ -1492,25 +1492,27 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 	}
 
 
-	
-	//hilight item clicked
-	//item->setBackgroundColor(0, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
+	if (current_select_item)
+	{
+		//hilight item clicked
+		//item->setBackgroundColor(0, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
 
-	last_select_item_index = ui->treeWidget->currentIndex().row();
-
-
-
-	//cout << "select " << last_select_item_index << endl;
-	//show seleted cloud
-	//program->ShowSelectedListedCloudIndex(last_select_item_index);
+		last_select_item_index = ui->treeWidget->currentIndex().row();
 
 
-	PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
-	viewerembeded->UpdateCloudViewer(pointcloud);
+
+		//cout << "select " << last_select_item_index << endl;
+		//show seleted cloud
+		//program->ShowSelectedListedCloudIndex(last_select_item_index);
+
+
+		PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+		viewerembeded->UpdateCloudViewer(pointcloud); 
+	}
 };
 void MainUI::ButtonLoadPointCloudToListPressed()
 {
@@ -1826,7 +1828,7 @@ void MainUI::ButtonSaveAllItemsUIToTextPressed()
 			items_middle_vector.push_back(dataprocess->items[i]->transform->middle_vector);
 			items_minor_vector.push_back(dataprocess->items[i]->transform->minor_vector);
 
-
+			cout << "item_min_pos=" << item_min_pos << endl;
 		}
 	}
 
@@ -1835,6 +1837,7 @@ void MainUI::ButtonSaveAllItemsUIToTextPressed()
 
 	if (filename.trimmed().isEmpty()) return;
 
+	
 
 	dataprocess->pointcloudbpptext->WritePointCloudListForBPP(
 		filename.toStdString(), ui_total_boxes,
@@ -2150,9 +2153,9 @@ void MainUI::ButtonCalculateBinPackingPressed()
 	delete dataprocess->bpp;
 }
 
-void MainUI::ButtonShowInputRectanglePositionPressed()
+void MainUI::ButtonShowProjectionInputPositionPressed()
 {
-	cout << "call ButtonShowInputRectanglePositionPressed()" << endl;
+	cout << "call ButtonShowProjectionInputPositionPressed()" << endl;
 	//draw box / or rectangle for confirm items and box position
 
 	
@@ -2164,8 +2167,7 @@ void MainUI::ButtonShowInputRectanglePositionPressed()
 
 	//rectangle of container
 	PointTypeXYZRGB draw_container_pos = dataprocess->container->transform->min3d_point;
-	draw_container_pos.x -= 0.1;
-	draw_container_pos.y = 0;
+
 
 	viewerwindow->Add2DRectangle(
 		draw_container_pos,
@@ -2177,12 +2179,17 @@ void MainUI::ButtonShowInputRectanglePositionPressed()
 	for (int i = 0; i < total_boxes; i++)
 	{
 		PointTypeXYZRGB draw_rec_pos = dataprocess->items[i]->transform->min3d_point;
-		draw_rec_pos.y = 0;
+		
 		string item_rec_name = "item_rectangle" + i;
+		string item_text_name = "item_text" + i;
 		viewerwindow->Add2DRectangle(
 			draw_rec_pos,
 			dataprocess->items[i]->x_length, dataprocess->items[i]->z_length,
 			1.0, 1.0, 1.0, item_rec_name);
+
+		viewerwindow->AddTextWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
+			0.05, 1.0, 0, 0, to_string(i+1), item_text_name);
+
 	}
 
 	viewerwindow->window_view->spinOnce();
@@ -2238,10 +2245,67 @@ void MainUI::ButtonShowTestRectanglePositionPressed()
 }
 void MainUI::ButtonSetContainerItemsYzeroPressed()
 {
+	int ui_total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < ui_total_boxes; i++)
+	{
+		ObjectTransformationData *itm = dataprocess->items[i];
+		itm->transform->min3d_point.y = 0;
+		itm->transform->mass_center_point.y = 0;
 
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		item->setText(6, QString::number(itm->transform->min3d_point.y));
+	}
+
+	dataprocess->container->transform->min3d_point.y = 0;
+	dataprocess->container->transform->mass_center_point.y = 0;
+	ui->in_min_pos_container_2->setText(
+		QString::number(dataprocess->container->transform->min3d_point.y));
 }
 void MainUI::ButtonUpdateContainerItemsToDataprocessPressed()
 {
+	int ui_total_boxes = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < ui_total_boxes; i++)
+	{
+
+
+		QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+		int item_x_dim = item->text(1).toInt();
+		int item_y_dim = item->text(2).toInt();
+		int item_z_dim = item->text(3).toInt();
+
+		PointTypeXYZRGB item_min_pos, item_max_pos;
+		item_min_pos.x = item->text(5).toDouble();
+		item_min_pos.y = item->text(6).toDouble();
+		item_min_pos.z = item->text(7).toDouble();
+
+		item_max_pos.x = item->text(8).toDouble();
+		item_max_pos.y = item->text(9).toDouble();
+		item_max_pos.z = item->text(10).toDouble();
+
+		ObjectTransformationData *itm = dataprocess->items[i];
+		itm->SetLengthMM(item_x_dim, item_y_dim, item_z_dim);
+		itm->SetTransformMinMaxPos(item_min_pos, item_max_pos);
+
+
+	}
+
+
+	int bin_x_dim = ui->in_bin_x_dim->text().toInt();
+	int bin_y_dim = ui->in_bin_y_dim->text().toInt();
+	int bin_z_dim = ui->in_bin_z_dim->text().toInt();
+
+	PointTypeXYZRGB bin_min_pos;
+	bin_min_pos.x = ui->in_min_pos_container_1->text().toDouble();
+	bin_min_pos.y = ui->in_min_pos_container_2->text().toDouble();
+	bin_min_pos.z = ui->in_min_pos_container_3->text().toDouble();
+
+	PointTypeXYZRGB bin_max_pos;
+	bin_max_pos.x = ui->in_max_pos_container_1->text().toDouble();
+	bin_max_pos.y = ui->in_max_pos_container_2->text().toDouble();
+	bin_max_pos.z = ui->in_max_pos_container_3->text().toDouble();
+
+	dataprocess->container->SetLengthMM(bin_x_dim, bin_y_dim, bin_z_dim);
+	dataprocess->container->SetTransformMinMaxPos(bin_min_pos, bin_max_pos);
 
 }
 
@@ -2345,18 +2409,20 @@ void MainUI::ButtonShowZeroPackingPressed()
 	//cout << "call ButtonShowZeroPackingPressed()" << endl;
 	//viewerwindow->AddPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
 
-
-	QTreeWidgetItem* last_selected_item = ui->treeWidgetSorting->topLevelItem(last_select_sorting_index);
-	//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
-	last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+	if (last_select_sorting_index>=0)
+	{ 
+		QTreeWidgetItem* last_selected_item = ui->treeWidgetSorting->topLevelItem(last_select_sorting_index);
+		//last_selected_item->setBackgroundColor(0, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(1, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(2, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(3, QColor(255, 255, 255));
+		last_selected_item->setBackgroundColor(4, QColor(255, 255, 255));
+	}
 
 	last_select_sorting_index = -1;
 	current_display_packing_order = -1;
 	ui->bt_order_one->setText(QString::number(current_display_packing_order));
-
+	
 	viewerwindow->ClearPointCloudWindowCloudViewer();
 	viewerwindow->ClearShapeWindowCloudViewer();
 
@@ -2440,15 +2506,17 @@ void MainUI::PressedTreeSorting(QTreeWidgetItem *current_select_item)
 	}
 
 
+	if (current_select_item)
+	{ 
+		//hilight item clicked
+		//item->setBackgroundColor(0, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
+		current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
 
-	//hilight item clicked
-	//item->setBackgroundColor(0, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(1, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(2, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(3, QColor(200, 200, 200));
-	current_select_item->setBackgroundColor(4, QColor(200, 200, 200));
-
-	last_select_sorting_index = ui->treeWidgetSorting->currentIndex().row();
+		last_select_sorting_index = ui->treeWidgetSorting->currentIndex().row();
+	}
 
 }
 

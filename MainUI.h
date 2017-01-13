@@ -163,8 +163,9 @@ private slots:
 	void ButtonShowPackingIndicatePressed();
 	void ButtonShowPackingAnimationPressed();
 
-	void ButtonShowInputRectanglePositionPressed();
+	void ButtonShowProjectionInputPositionPressed();
 	void ButtonShowTestRectanglePositionPressed();
+
 	void ButtonSetContainerItemsYzeroPressed();
 	void ButtonUpdateContainerItemsToDataprocessPressed();
 
