@@ -67,9 +67,7 @@ public:
 	void randomcolorint(int &r, int &g, int &b);
 
 	void AddArrowObj();
-	void AddArrowPolygonMesh(
-		float x, float y, float z,
-		float r, float g, float b);
+	void AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud);
 
 	void AddPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
 		double r, double g, double b, string planename);
@@ -84,6 +82,8 @@ public:
 	void AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center,
 		Eigen::Vector3f major_vector, Eigen::Vector3f middle_vector, Eigen::Vector3f minor_vector,
 		string cloudname);
+
+	void AddRectangleHilightItem(ObjectTransformationData *item, float r, float g, float b, string itemname);
 
 	void AddContainerBorderLine(ObjectTransformationData *container, float r, float g, float);
 	

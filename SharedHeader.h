@@ -74,6 +74,9 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <vtkRenderWindow.h>
+#include <vtkRendererCollection.h>
+#include <vtkCamera.h>
 
 typedef pcl::PointXYZRGB PointType;
 typedef pcl::Normal NormalType;

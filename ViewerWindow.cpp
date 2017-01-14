@@ -12,6 +12,13 @@ ViewerWindow::ViewerWindow()
 	window_view->setBackgroundColor(0,0,0);
 	window_view->initCameraParameters();
 	window_view->setRepresentationToSurfaceForAllActors();
+	window_view->getRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
+
+
+
+
+	//visualizer->getRenderWindow()->->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
+
 
 }
 
@@ -110,49 +117,21 @@ void ViewerWindow::AddArrowObj()
 
 }
 
-void ViewerWindow::AddArrowPolygonMesh(
-	float x, float y, float z,
-	float r, float g, float b)
+void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
 {
-	float w = 0.3;
-	float xmin = x;
-	float ymin = y;
-	float zmin = z;
-	float xmax = (x + w);
-	float ymax = (y + w);
-	float zmax = (z + w);
 
-	pcl::PointXYZ p1, p2, p3, p4, p5, p6, p7, p8;
 
-	p1.x = xmin; p1.y = ymin; p1.z = zmin;
-	p2.x = xmax; p2.y = ymin; p2.z = zmin;
-	p3.x = xmin; p3.y = ymin; p3.z = zmax;
-	p4.x = xmax; p4.y = ymin; p4.z = zmax;
+	
+	//window_view->addPointCloud(cloud, "window_view");
 
-	p5.x = xmin; p5.y = ymax; p5.z = zmin;
-	p6.x = xmax; p6.y = ymax; p6.z = zmin;
-	p7.x = xmin; p7.y = ymax; p7.z = zmax;
-	p8.x = xmax; p8.y = ymax; p8.z = zmax;
 
 	// Load input file into a PointCloud<T> with an appropriate type
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PCLPointCloud2 cloud_blob;
-
-	//pcl::copyPointCloud( *pointcloud, *cloud_blob);
-	//pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/bun0.pcd", *cloud);
-	cloud->points.push_back(p1);
-	cloud->points.push_back(p2);
-	cloud->points.push_back(p3);
-	cloud->points.push_back(p4);
-	cloud->points.push_back(p5);
-	cloud->points.push_back(p6);
-	cloud->points.push_back(p7);
-	cloud->points.push_back(p8);
-	cloud->width = (int)cloud->points.size();
-	cloud->height = 1;
-	
-	window_view->addPointCloud(cloud, "window_view");
-	//pcl::fromPCLPointCloud2(cloud_blob, *cloud);
+	//pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt1.pcd", cloud_blob);
+	pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/bun0.pcd", cloud_blob);
+	pcl::fromPCLPointCloud2(cloud_blob, *cloud);
 	//* the data should be available in cloud
 
 	// Normal estimation*
@@ -180,7 +159,7 @@ void ViewerWindow::AddArrowPolygonMesh(
 	pcl::PolygonMesh triangles;
 
 	// Set the maximum distance between connected points (maximum edge length)
-	gp3.setSearchRadius(w*2);
+	gp3.setSearchRadius(0.025);
 
 	// Set typical values for the parameters
 	gp3.setMu(2.5);
@@ -199,58 +178,11 @@ void ViewerWindow::AddArrowPolygonMesh(
 	std::vector<int> parts = gp3.getPartIDs();
 	std::vector<int> states = gp3.getPointStates();
 
-	// bottom face
-	triangles.polygons[0].vertices[0] = 0;
-	triangles.polygons[0].vertices[1] = 1;
-	triangles.polygons[0].vertices[2] = 2;
-
-	triangles.polygons[1].vertices[0] = 3;
-	triangles.polygons[1].vertices[1] = 1;
-	triangles.polygons[1].vertices[2] = 2;
-	// left face
-	triangles.polygons[2].vertices[0] = 1;
-	triangles.polygons[2].vertices[1] = 3;
-	triangles.polygons[2].vertices[2] = 5;
-
-	triangles.polygons[3].vertices[0] = 7;
-	triangles.polygons[3].vertices[1] = 3;
-	triangles.polygons[3].vertices[2] = 5;
-	// rigth face
-	triangles.polygons[4].vertices[0] = 0;
-	triangles.polygons[4].vertices[1] = 4;
-	triangles.polygons[4].vertices[2] = 2;
-
-	triangles.polygons[5].vertices[0] = 6;
-	triangles.polygons[5].vertices[1] = 4;
-	triangles.polygons[5].vertices[2] = 2;
-	// front face
-	triangles.polygons[6].vertices[0] = 0;
-	triangles.polygons[6].vertices[1] = 1;
-	triangles.polygons[6].vertices[2] = 4;
-
-	triangles.polygons[7].vertices[0] = 5;
-	triangles.polygons[7].vertices[1] = 1;
-	triangles.polygons[7].vertices[2] = 4;
-	//back face
-	triangles.polygons[8].vertices[0] = 2;
-	triangles.polygons[8].vertices[1] = 3;
-	triangles.polygons[8].vertices[2] = 6;
-
-	triangles.polygons[9].vertices[0] = 7;
-	triangles.polygons[9].vertices[1] = 3;
-	triangles.polygons[9].vertices[2] = 6;
-	// top face
-	triangles.polygons[10].vertices[0] = 4;
-	triangles.polygons[10].vertices[1] = 5;
-	triangles.polygons[10].vertices[2] = 6;
-
-	triangles.polygons[11].vertices[0] = 7;
-	triangles.polygons[11].vertices[1] = 5;
-	triangles.polygons[11].vertices[2] = 6;
 	window_view->addPolygonMesh(triangles, "triangles");
-	//window_view->spinOnce();
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
+		pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, "triangles");
+	window_view->spinOnce();
 }
-
 
 
 void ViewerWindow::AddPlanarAtOrigin(double plane_halflegth_x, double plane_halflegth_z,
@@ -975,7 +907,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 		return;
 	}
 
-	float radius;
+/*	float radius;
 	if (item->x_length > item->z_length)
 	{
 		radius = item->z_length*0.5;
@@ -986,9 +918,16 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	}
 	AddCircleWindowCloudViewer(item->transform->mass_center_point,
 		radius, 1.0, 1.0, 1.0, "circle " + i);
+		*/
 
+
+
+	AddRectangleHilightItem(item, 1.0, 1.0, 1.0, "hilight" + i);
 
 	string cloudname = "itemcloud" + std::to_string(i);
+
+
+
 
 	PointCloudXYZRGB::Ptr item_pointcloud;
 	item_pointcloud.reset(new PointCloudXYZRGB);
@@ -1058,6 +997,39 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	window_view->spinOnce(100, true);
 
 	
+}
+void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float r, float g, float b, string itemname)
+{
+	string itemline1name = "itemline1" + itemname;
+	string itemline2name = "itemline2" + itemname;
+	string itemrectangelname = "itemrectangle" + itemname;
+
+	PointTypeXYZRGB p1, p2, p3, p4;
+	p1 = item->transform->min3d_point;
+
+	p2 = item->transform->min3d_point;
+	p2.x += item->x_length;
+
+	p3 = item->transform->min3d_point;
+	p3.x += item->x_length;
+	p3.z += item->z_length;
+
+	p4 = item->transform->min3d_point;
+	p4.z += item->z_length;
+
+
+	Add2DRectangle(
+		p1,	item->x_length, item->z_length,
+		r, g, b, itemrectangelname);
+
+	window_view->removeShape(itemline1name);
+	window_view->addLine(p1, p3, 1.0 - r, 1.0 - g, 1.0 - b, itemline1name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, itemline1name);
+
+	window_view->removeShape(itemline2name);
+	window_view->addLine(p2, p4, 1.0 - r, 1.0 - g, 1.0 - b, itemline2name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, itemline2name);
+
 }
 
 void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container,float r, float g, float b)
@@ -1130,7 +1102,8 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	randomcolorfloat(r, g, b);
 
 
-
+	//addline for border of box
+	AddContainerBorderLine(container, 1.0, 0, 0);
 
 	if (item->rotation_case == 0 || item->rotation_case == 4)
 	{
@@ -1394,7 +1367,8 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 
 	
 
-
+	//addline for border of box
+	AddContainerBorderLine(container, 1.0, 0, 0);
 
 
 	//init parameter for move a cube

@@ -89,9 +89,14 @@ private slots:
 	void ButtonClearViewerShapePressed();
 
 	void ButtonTestProgrammePressed();
+	void ButtonTestInput1Pressed();
+	void ButtonTestInput2Pressed();
+	void ButtonTestInput3Pressed();
+	void ButtonTestInput4Pressed();
 
 	//tab:camera
-	void ButtonApplyParamtoCameraPressed();
+	void ButtonApplyParamtoCameraWindowPressed();
+	void ButtonApplyParamtoCameraEmbededPressed();
 	void ButtonResetCamParamPressed();
 
 	void ButtonLoadCameraParamPressed();
@@ -165,6 +170,7 @@ private slots:
 
 	void ButtonShowProjectionInputPositionPressed();
 	void ButtonShowTestRectanglePositionPressed();
+	void ButtonShowTestCubePressed();
 
 	void ButtonSetContainerItemsYzeroPressed();
 	void ButtonUpdateContainerItemsToDataprocessPressed();

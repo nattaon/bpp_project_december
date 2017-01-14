@@ -33,12 +33,12 @@
      <attribute name="title">
       <string>Camera</string>
      </attribute>
-     <widget class="QPushButton" name="bt_apply_param_to_cam">
+     <widget class="QPushButton" name="bt_apply_param_to_cam_window">
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>110</y>
-        <width>151</width>
+        <y>140</y>
+        <width>241</width>
         <height>23</height>
        </rect>
       </property>
@@ -53,7 +53,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Apply  to Camera</string>
+       <string>Apply  to Camera ViewerWindow</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
@@ -344,7 +344,7 @@
        <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
-       <string>49.1311</string>
+       <string>0</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -778,7 +778,7 @@
        <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
-       <string>49.1311</string>
+       <string>0</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -788,8 +788,8 @@
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>140</y>
-        <width>151</width>
+        <y>110</y>
+        <width>91</width>
         <height>23</height>
        </rect>
       </property>
@@ -836,9 +836,9 @@
      <widget class="QPushButton" name="bt_get_cam_param">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>170</y>
-        <width>151</width>
+        <x>350</x>
+        <y>110</y>
+        <width>141</width>
         <height>23</height>
        </rect>
       </property>
@@ -880,6 +880,32 @@
       </property>
       <property name="text">
        <string>Load camera txt</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_apply_param_to_cam_embeded">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>170</y>
+        <width>241</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Apply  to Camera ViewerEmbeded</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
@@ -4059,7 +4085,7 @@
      <widget class="QPushButton" name="bt_show_input_rectangle">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>150</x>
         <y>320</y>
         <width>151</width>
         <height>31</height>
@@ -4474,9 +4500,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_test_project_rectangle">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>20</x>
         <y>320</y>
-        <width>151</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -4491,7 +4517,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>test project rectangles</string>
+       <string>test rectangles</string>
       </property>
      </widget>
      <widget class="QPushButton" name="bt_update_dataprocess_from_ui">
@@ -4520,9 +4546,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_set_minpoint_y_zero">
       <property name="geometry">
        <rect>
-        <x>330</x>
+        <x>310</x>
         <y>320</y>
-        <width>131</width>
+        <width>151</width>
         <height>31</height>
        </rect>
       </property>
@@ -4540,32 +4566,27 @@ p, li { white-space: pre-wrap; }
        <string>set min point y=0</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_45">
+     <widget class="QPushButton" name="bt_test_project_cube">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>290</y>
-        <width>131</width>
-        <height>21</height>
+        <x>20</x>
+        <y>280</y>
+        <width>111</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>Calibri</family>
-        <pointsize>8</pointsize>
-        <weight>50</weight>
-        <italic>false</italic>
-        <bold>false</bold>
+        <weight>75</weight>
+        <bold>true</bold>
        </font>
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>check input position</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <string>test cubes</string>
       </property>
      </widget>
     </widget>
@@ -5672,13 +5693,105 @@ p, li { white-space: pre-wrap; }
      <string>fill invert all</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="bt_test">
+   <widget class="QPushButton" name="bt_test_input1">
     <property name="geometry">
      <rect>
       <x>390</x>
       <y>20</y>
-      <width>111</width>
-      <height>41</height>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>load1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_test_input3">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>40</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>load3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_test_input4">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>40</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>load4</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_test_input2">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>20</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>load2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_test">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>0</y>
+      <width>61</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -5909,8 +6022,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

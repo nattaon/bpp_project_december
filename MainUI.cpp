@@ -58,7 +58,8 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_undo_last_operation, SIGNAL(clicked()), this, SLOT(ButtonUndoLastedPointCloudPressed()));
 	
 	//tab:viewer parameter
-	connect(ui->bt_apply_param_to_cam, SIGNAL(clicked()), this, SLOT(ButtonApplyParamtoCameraPressed()));
+	connect(ui->bt_apply_param_to_cam_window, SIGNAL(clicked()), this, SLOT(ButtonApplyParamtoCameraWindowPressed()));
+	connect(ui->bt_apply_param_to_cam_embeded, SIGNAL(clicked()), this, SLOT(ButtonApplyParamtoCameraEmbededPressed()));
 	connect(ui->bt_reset_viewerparam, SIGNAL(clicked()), this, SLOT(ButtonResetCamParamPressed()));
 	connect(ui->bt_apply_camrot, SIGNAL(clicked()), this, SLOT(ButtonApplyCamRotationPressed()));
 	connect(ui->bt_apply_campos, SIGNAL(clicked()), this, SLOT(ButtonApplyCamTranslationPressed()));
@@ -127,6 +128,8 @@ MainUI::MainUI(QWidget *parent) :
 
 	connect(ui->bt_show_input_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowProjectionInputPositionPressed()));
 	connect(ui->bt_test_project_rectangle, SIGNAL(clicked()), this, SLOT(ButtonShowTestRectanglePositionPressed()));
+	connect(ui->bt_test_project_cube, SIGNAL(clicked()), this, SLOT(ButtonShowTestCubePressed()));
+
 	connect(ui->bt_set_minpoint_y_zero, SIGNAL(clicked()), this, SLOT(ButtonSetContainerItemsYzeroPressed()));
 	connect(ui->bt_update_dataprocess_from_ui, SIGNAL(clicked()), this, SLOT(ButtonUpdateContainerItemsToDataprocessPressed()));
 
@@ -145,7 +148,13 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_save_packing_info, SIGNAL(clicked()), this, SLOT(ButtonSaveBinPackingInfoPressed()));
 	connect(ui->bt_load_packing_info, SIGNAL(clicked()), this, SLOT(ButtonLoadBinPackingInfoPressed()));
 	
+
+	//test
 	connect(ui->bt_test, SIGNAL(clicked()), this, SLOT(ButtonTestProgrammePressed()));
+	connect(ui->bt_test_input1, SIGNAL(clicked()), this, SLOT(ButtonTestInput1Pressed()));
+	connect(ui->bt_test_input2, SIGNAL(clicked()), this, SLOT(ButtonTestInput2Pressed()));
+	connect(ui->bt_test_input3, SIGNAL(clicked()), this, SLOT(ButtonTestInput3Pressed()));
+	connect(ui->bt_test_input4, SIGNAL(clicked()), this, SLOT(ButtonTestInput4Pressed()));
 	
 	//
 	//
@@ -183,14 +192,34 @@ MainUI::~MainUI()
 
 void MainUI::ButtonTestProgrammePressed()
 {
-	/*
-	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/kk.txt");
-	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing10reorder.txt");
-*/
+	PointCloudXYZRGB::Ptr pointcloud(new PointCloudXYZRGB);
+	//pointcloud.reset(new PointCloudXYZRGB);
+
+	viewerwindow->AddPointCloudPolygonMesh(pointcloud);
+
+}
+void MainUI::ButtonTestInput1Pressed()
+{
+/*
 	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
+*/
+	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt_home_size_pos_correction.txt");
+	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
+
+}
+void MainUI::ButtonTestInput2Pressed()
+{
+
+}
+void MainUI::ButtonTestInput3Pressed()
+{
+
+}
+void MainUI::ButtonTestInput4Pressed()
+{
 
 }
 
@@ -658,9 +687,13 @@ void MainUI::ButtonUndoLastedPointCloudPressed()
 }
 
 //tab:viewer parameter
-void MainUI::ButtonApplyParamtoCameraPressed()
+void MainUI::ButtonApplyParamtoCameraEmbededPressed()
 {
-	cout << "call ButtonApplyParamtoCameraPressed()" << endl;
+
+}
+void MainUI::ButtonApplyParamtoCameraWindowPressed()
+{
+	cout << "call ButtonApplyParamtoCameraWindowPressed()" << endl;
 
 	double focal_x, focal_y, focal_z;
 	double pos_x, pos_y, pos_z;
@@ -2197,6 +2230,11 @@ void MainUI::ButtonShowProjectionInputPositionPressed()
 
 
 }
+void MainUI::ButtonShowTestCubePressed()
+{
+
+}
+
 
 void MainUI::ButtonShowTestRectanglePositionPressed()
 {
