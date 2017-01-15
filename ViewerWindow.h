@@ -13,7 +13,7 @@ private:
 
 	void timerEvent(QTimerEvent *event);
 	//QTime time_animate;
-	int timer_animate;
+
 
 	//transform.translation() << translate_x, translate_y, translate_z;
 	//pcl::transformPointCloud(*cloud, *cloud, transform);
@@ -45,6 +45,8 @@ private:
 	pcl::PolygonMesh arrow_rotate_x, arrow_rotate_z;
 
 public:
+
+	int timer_animate;
 	//Addxxxfuntion() => did not spin a window, just Add!
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
 

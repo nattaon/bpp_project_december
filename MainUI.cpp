@@ -2470,7 +2470,11 @@ void MainUI::ButtonShowZeroPackingPressed()
 {
 	//cout << "call ButtonShowZeroPackingPressed()" << endl;
 	//viewerwindow->AddPlanarAtOrigin(116.7/200,61.1/200,1.0,1.0,0.0,"realsizetable");
-
+	if (viewerwindow->timer_animate != -1)
+	{
+		cout << "viewerwindow->timer_animate != -1" << endl;
+		return;
+	}
 	if (last_select_sorting_index>=0)
 	{ 
 		//clear hilight
@@ -2532,6 +2536,11 @@ void MainUI::ShowPackingCurrentOrder()
 void MainUI::ButtonShowPrevPackingPressed()
 {
 	//cout << "call ButtonShowPrevPackingPressed()" << endl;
+	if (viewerwindow->timer_animate != -1)
+	{
+		cout << "viewerwindow->timer_animate != -1" << endl;
+		return;
+	}
 	if (current_display_packing_number > 0)
 	{
 		current_display_packing_number--;
@@ -2555,6 +2564,11 @@ void MainUI::ButtonShowPrevPackingPressed()
 void MainUI::ButtonShowNextPackingPressed()
 {
 	//cout << "call ButtonShowNextPackingPressed()" << endl;
+	if (viewerwindow->timer_animate != -1)
+	{
+		cout << "viewerwindow->timer_animate != -1" << endl;
+		return;
+	}
 	if (current_display_packing_number < ui->treeWidgetSorting->topLevelItemCount())
 	{
 		current_display_packing_number++;
@@ -2578,6 +2592,11 @@ void MainUI::ButtonShowNextPackingPressed()
 
 void MainUI::PressedTreeSorting(QTreeWidgetItem *current_select_item)
 {
+	if (viewerwindow->timer_animate != -1)
+	{
+		cout << "viewerwindow->timer_animate != -1" << endl;
+		return;
+	}
 	if (last_select_sorting_index != -1)// if has already hilight previous one
 	{
 		//remove hilight last selected item

@@ -1543,6 +1543,8 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	cout <<endl<< "ShowBinpackingAnimation" << endl;
 	if (timer_animate!=-1)
 	{ 
+		return;
+
 		killTimer(timer_animate);
 		timer_animate = -1;
 		cout << "killtimer, now timerid=" << timer_animate << endl;
@@ -1739,7 +1741,7 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 
 	//looping move item
 	animate_begining_in = 5;
-	animate_ending_in = 5;
+	animate_ending_in = 0;
 	timer_animate = startTimer(100);
 	cout << "timer_animate=" << timer_animate << endl;
 	//timer->start(1000);
