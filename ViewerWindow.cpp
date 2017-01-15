@@ -20,7 +20,8 @@ ViewerWindow::ViewerWindow()
 	//load rotation indicator object
 	pcl::PolygonMesh mesh_r, mesh_b;
 	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
-	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_b);
+	//pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_b);
+	mesh_b = mesh_r;
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_r(new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -41,8 +42,14 @@ ViewerWindow::ViewerWindow()
 		cloud_b->points[i].b = 255;
 	}
 
-	Eigen::Affine3f transform_rot;
+	Eigen::Matrix4f transform_scale = Eigen::Matrix4f::Identity();
+	transform_scale(0, 0) = 0.5;
+	transform_scale(1, 1) = 0.5;
+	transform_scale(2, 2) = 0.5;
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_scale);
+	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_scale);
 
+	Eigen::Affine3f transform_rot;
 	Eigen::Matrix<float, 1, 3>  rotate_vector_x{ 1, 0, 0 };
 	Eigen::Matrix<float, 1, 3>  rotate_vector_y{ 0, 1, 0 };
 	Eigen::Matrix<float, 1, 3>  rotate_vector_z{ 0, 0, 1 };
@@ -56,7 +63,25 @@ ViewerWindow::ViewerWindow()
 	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
 
 	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(-60.0*M_PI / 180.0, rotate_vector_z));
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(15.0*M_PI / 180.0, rotate_vector_x));
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
+	///////
+
+	transform_rot = Eigen::Affine3f::Identity();
 	transform_rot.rotate(Eigen::AngleAxisf(90.0*M_PI / 180.0, rotate_vector_z));
+	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(60.0*M_PI / 180.0, rotate_vector_x));
+	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
+
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(-15.0*M_PI / 180.0, rotate_vector_z));
 	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
 
 	pcl::toPCLPointCloud2(*cloud_r, mesh_r.cloud);
@@ -1327,8 +1352,14 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			r, g, b, rotate_symbol_name);
 
-		window_view->removePolygonMesh(rotate_indicate_name);
-		window_view->addPolygonMesh(arrow_rotate_x, rotate_indicate_name);
+
+
+		PointTypeXYZRGB point_position;
+		point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
+		point_position.y = in_cube_y_min_pos + in_cube_z_dim;
+		point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
+		AddRotationSymbloAt(point_position, arrow_rotate_x, rotate_indicate_name);
+		AddXYZAxisAt(item->transform->min3d_point, line_name);
 
 	}
 	else if (item->rotation_case == 2 || item->rotation_case == 3)
@@ -1365,12 +1396,17 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			r, g, b, rotate_symbol_name);
 
-		window_view->removePolygonMesh(rotate_indicate_name);
-		window_view->addPolygonMesh(arrow_rotate_z, rotate_indicate_name);
+
+		PointTypeXYZRGB point_position;
+		point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
+		point_position.y = in_cube_y_min_pos + in_cube_x_dim;
+		point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
+		AddRotationSymbloAt(point_position, arrow_rotate_z, rotate_indicate_name);
+		AddXYZAxisAt(item->transform->min3d_point, line_name);
 	}
 
 
-	AddXYZAxisAt(item->transform->min3d_point, line_name);
+	
 
 
 	//cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
@@ -1754,5 +1790,22 @@ void ViewerWindow::AddXYZAxisAt(PointTypeXYZRGB point_position,string axisname)
 
 
 	//ui_widget_viewer->update();
+
+}
+
+void ViewerWindow::AddRotationSymbloAt(PointTypeXYZRGB point_position, pcl::PolygonMesh arrowobj, string objname)
+{
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+	pcl::fromPCLPointCloud2(arrowobj.cloud, *cloud); //convert Polygonmesh.cloud to PointCloud<T>
+	Eigen::Affine3f transform_move = Eigen::Affine3f::Identity();
+	transform_move.translation() << point_position.x, point_position.y, point_position.z;
+	pcl::transformPointCloud(*cloud, *cloud, transform_move);
+
+	pcl::toPCLPointCloud2(*cloud, arrowobj.cloud); // convert PointCloud<T> to PolygonMesh.pcloud
+
+
+	window_view->removePolygonMesh(objname);
+	window_view->addPolygonMesh(arrowobj, objname);
 
 }

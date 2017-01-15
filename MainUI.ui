@@ -4978,6 +4978,9 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Clear Previous</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLineEdit" name="in_point_size_visual">
       <property name="geometry">
@@ -6028,8 +6031,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

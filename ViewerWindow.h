@@ -164,7 +164,7 @@ public:
 	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
 
 	void AddXYZAxisAt(PointTypeXYZRGB point_position, string axisname);
-
+	void AddRotationSymbloAt(PointTypeXYZRGB point_position, pcl::PolygonMesh arrowobj, string objname);
 };
 
 #endif // VIEWERWINDOW_H
