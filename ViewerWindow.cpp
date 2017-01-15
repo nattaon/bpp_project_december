@@ -14,7 +14,7 @@ ViewerWindow::ViewerWindow()
 	window_view->setRepresentationToSurfaceForAllActors();
 	window_view->getRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
 
-
+	timer_animate = -1;
 
 
 	//visualizer->getRenderWindow()->->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
@@ -74,7 +74,7 @@ void ViewerWindow::AddArrowObj()
 	window_view->spinOnce();*/
 
 	pcl::PolygonMesh mesh;
-	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrowstl.stl", mesh);
+	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrowstl.stl", mesh);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -1117,7 +1117,8 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		return;
 	}
 	string input_cube_name = "input_cube_name" + to_string(i);
-	string input_symbol_name = "input_symbol_name" + to_string(i);
+	string rotate_cube_name = "rotate_cube_name" + to_string(i);
+	string rotate_symbol_name = "rotate_symbol_name" + to_string(i);
 	string target_cube_name = "target_cube_name" + to_string(i);
 	string target_symbol_name = "target_symbol_name" + to_string(i);
 	string line_name = "line_name" + to_string(i);
@@ -1139,7 +1140,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	PointTypeXYZRGB input_center_symbol;
 	PointTypeXYZRGB target_center_symbol;
 
-	float r=0.0, g=0.0, b=1.0;
+	float r=0.0, g=0.0, b=0.0;
 
 	//randomcolorfloat(r, g, b);
 
@@ -1147,30 +1148,35 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	//addline for border of box
 	AddContainerBorderLine(container, 1.0, 0, 0);
 
+	AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+		in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
+		{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+
+
 	if (item->rotation_case == 0 || item->rotation_case == 4)
 	{
 		//cout << i<<" : rot case = " << item->rotation_case << endl;
 			
 		//draw input cube at item position
-		PointTypeXYZRGB draw_rec_pos;
+/*		PointTypeXYZRGB draw_rec_pos;
 		draw_rec_pos.x = in_cube_x_min_pos;
 		draw_rec_pos.y = 0;
 		draw_rec_pos.z = in_cube_z_min_pos;	
 
-	/*	Add2DRectangle(
+		Add2DRectangle(
 			draw_rec_pos,
 			in_cube_x_dim, in_cube_z_dim,
 			1.0, 1.0, 1.0, input_cube_name);
 */
 		AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			{0, 0, 0}, 0, 255, 255, 255, input_cube_name);
+			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
 		//input direction symbol
-		input_center_symbol = AddItemArrowDirectionSymbol(
+	/*	input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, input_symbol_name);
+			r, g, b, rotate_symbol_name);*/
 	}
 	else if (item->rotation_case == 1 || item->rotation_case == 5)
 	{
@@ -1199,12 +1205,12 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	*/	
 		AddItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
-		input_center_symbol = AddItemArrowDirectionSymbol(
+	/*	input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, input_symbol_name);
+			r, g, b, rotate_symbol_name);*/
 
 	}
 	else if (item->rotation_case == 2 || item->rotation_case == 3)
@@ -1234,19 +1240,22 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	*/	
 		AddItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
+			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
-		input_center_symbol = AddItemArrowDirectionSymbol(
+	/*	input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, input_symbol_name);
+			r, g, b, rotate_symbol_name);*/
 	}
+
+
+	AddXYZAxisAt(item->transform->min3d_point, line_name);
 
 
 	//cout << "input__pos " << in_cube_x_min_pos << ", " << in_cube_y_min_pos << ", " << in_cube_z_min_pos << endl;
 	//cout << "target_pos " << tar_cube_x_min_pos << ", " << tar_cube_y_min_pos << ", " << tar_cube_z_min_pos << endl << endl;
 
-	PointTypeXYZRGB draw_rec_pos;
+/*	PointTypeXYZRGB draw_rec_pos;
 	draw_rec_pos.x = tar_cube_x_min_pos;
 	draw_rec_pos.y = 0;
 	draw_rec_pos.z = tar_cube_z_min_pos;
@@ -1255,12 +1264,12 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		draw_rec_pos,
 		tar_cube_x_dim, tar_cube_z_dim,
 		1.0, 1.0, 1.0, input_cube_name);
-
-	//target cube
-/*	AddItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
-		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
-		{ 0, 0, 0 }, 0, 255, 255, 255, target_cube_name);
 */
+	//target cube
+	AddItemCubeShader(tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim, 
+		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
+		{ 0, 0, 0 }, 0, 255, 255, 0, target_cube_name);
+
 
 
 
@@ -1271,9 +1280,9 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		r, g, b, target_symbol_name);
 
 	//link line between input and target
-	window_view->removeShape(line_name);
-	window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
-	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
+	//window_view->removeShape(line_name);
+	//window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
+	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
 
 		
 	window_view->spinOnce(100,true);
@@ -1359,7 +1368,9 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 
 
 		killTimer(timer_animate);
-		ShowBinpackingAnimation(animate_container, animate_item);
+		timer_animate = -1;
+		cout << "killtimer, now timerid=" << timer_animate << endl;
+		//ShowBinpackingAnimation(animate_container, animate_item);
 	}
 	window_view->spinOnce(1,true);
 
@@ -1371,6 +1382,13 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	{
 		cout << "item not be pack" << endl;
 		return;
+	}
+	cout <<endl<< "ShowBinpackingAnimation" << endl;
+	if (timer_animate!=-1)
+	{ 
+		killTimer(timer_animate);
+		timer_animate = -1;
+		cout << "killtimer, now timerid=" << timer_animate << endl;
 	}
 	animate_container = container;
 	animate_item = item;
@@ -1565,8 +1583,55 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	//looping move item
 	animate_begining_in = 5;
 	animate_ending_in = 5;
-	timer_animate = startTimer(1);
+	timer_animate = startTimer(100);
+	cout << "timer_animate=" << timer_animate << endl;
 	//timer->start(1000);
 
 	
+}
+void ViewerWindow::AddXYZAxisAt(PointTypeXYZRGB point_position,string axisname)
+{
+
+	point_position.x -= 0.01;
+	point_position.z -= 0.01;
+
+	pcl::PointXYZ center(0, 0, 0);
+	center.x += point_position.x;
+	center.y += point_position.y;
+	center.z += point_position.z;
+
+
+
+	pcl::PointXYZ x_axis(0.1, 0, 0);
+	pcl::PointXYZ y_axis(0, 0.1, 0);
+	pcl::PointXYZ z_axis(0, 0, 0.1);
+
+	x_axis.x += point_position.x;
+	x_axis.y += point_position.y;
+	x_axis.z += point_position.z;
+
+	y_axis.x += point_position.x;
+	y_axis.y += point_position.y;
+	y_axis.z += point_position.z;
+
+	z_axis.x += point_position.x;
+	z_axis.y += point_position.y;
+	z_axis.z += point_position.z;
+
+	string x_axis_name = axisname + "_x_axis";
+	string y_axis_name = axisname + "_y_axis";
+	string z_axis_name = axisname + "_z_axis";
+
+	window_view->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, x_axis_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, x_axis_name);
+
+	
+	//window_view->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, y_axis_name);
+
+	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, z_axis_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, z_axis_name);
+
+
+	//ui_widget_viewer->update();
+
 }

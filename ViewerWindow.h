@@ -159,7 +159,7 @@ public:
 	void ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i);
 	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
 
-
+	void AddXYZAxisAt(PointTypeXYZRGB point_position, string axisname);
 
 };
 

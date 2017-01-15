@@ -2226,8 +2226,8 @@ void MainUI::ButtonShowProjectionInputPositionPressed()
 			dataprocess->items[i]->x_length, dataprocess->items[i]->z_length,
 			1.0, 1.0, 1.0, item_rec_name);
 
-		viewerwindow->AddTextWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
-			0.05, 1.0, 0, 0, to_string(i+1), item_text_name);
+		//viewerwindow->AddTextWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
+		//	0.05, 1.0, 0, 0, to_string(i+1), item_text_name);
 
 		PointCloudXYZRGB::Ptr item_pointcloud;
 		item_pointcloud.reset(new PointCloudXYZRGB);
@@ -2566,6 +2566,12 @@ void MainUI::ButtonShowNextPackingPressed()
 		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(item_index);
 		ui->treeWidgetSorting->setCurrentItem(item);
 		PressedTreeSorting(item);
+	}
+	else if (current_display_packing_number == ui->treeWidgetSorting->topLevelItemCount())// if has already hilight previous one
+	{
+		current_display_packing_number++;
+		viewerwindow->ClearPointCloudWindowCloudViewer();
+		viewerwindow->ClearShapeWindowCloudViewer();
 	}
 
 }
