@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-#define POINT_SIZE 2
+#define POINT_SIZE 3
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -18,7 +18,7 @@ ViewerWindow::ViewerWindow()
 
 
 	//visualizer->getRenderWindow()->->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
-
+	
 
 }
 
@@ -923,7 +923,16 @@ void ViewerWindow::randomcolorint(int &r, int &g, int &b)
 
 
 }
+void ViewerWindow::AddPointCloudItem(PointCloudXYZRGB::Ptr pointcloud, string cloudname)
+{
+	if (!window_view->updatePointCloud(pointcloud, cloudname))
+	{
+		window_view->addPointCloud(pointcloud, cloudname);
+	}
 
+	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
+
+}
 
 void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
@@ -954,11 +963,11 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 		radius, 1.0, 1.0, 1.0, "circle " + i);
 		*/
 
+	string hilightname = "hilight" + to_string(i);
 
+	AddRectangleHilightItem(item, 1.0, 1.0, 1.0, hilightname);
 
-	AddRectangleHilightItem(item, 1.0, 1.0, 1.0, "hilight" + i);
-
-	string cloudname = "itemcloud" + std::to_string(i);
+	string cloudname = "itemcloud" + to_string(i);
 
 
 
@@ -1021,13 +1030,8 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 	dataprocess->TranslatePointCloud(item_pointcloud,
 		container->transform->min3d_point.x, container->transform->min3d_point.y, container->transform->min3d_point.z);
 
+	AddPointCloudItem(item_pointcloud, cloudname);
 
-	if (!window_view->updatePointCloud(item_pointcloud, cloudname))
-	{
-		window_view->addPointCloud(item_pointcloud, cloudname);
-	}
-
-	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
 	window_view->spinOnce(100, true);
 
 	
@@ -1037,6 +1041,10 @@ void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float
 	string itemline1name = "itemline1" + itemname;
 	string itemline2name = "itemline2" + itemname;
 	string itemrectangelname = "itemrectangle" + itemname;
+	
+	cout << itemname << endl;
+	cout << itemline1name << endl;
+
 
 	PointTypeXYZRGB p1, p2, p3, p4;
 	p1 = item->transform->min3d_point;
@@ -1057,12 +1065,12 @@ void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float
 		r, g, b, itemrectangelname);
 
 	window_view->removeShape(itemline1name);
-	window_view->addLine(p1, p3, 1.0 - r, 1.0 - g, 1.0 - b, itemline1name);
-	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, itemline1name);
-
+	window_view->addLine(p1, p3, 0.0, 0.0, 1.0, itemline1name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 20.0, itemline1name);
+	//adjust line weight has no effect...
 	window_view->removeShape(itemline2name);
-	window_view->addLine(p2, p4, 1.0 - r, 1.0 - g, 1.0 - b, itemline2name);
-	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, itemline2name);
+	window_view->addLine(p2, p4, 0.0, 0.0, 1.0, itemline2name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 20.0, itemline2name);
 
 }
 
@@ -1108,11 +1116,11 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		cout << "item " << i << " not be pack" << endl;
 		return;
 	}
-	string input_cube_name = "input_cube_name" + std::to_string(i);
-	string input_symbol_name = "input_symbol_name" + std::to_string(i);
-	string target_cube_name = "target_cube_name" + std::to_string(i);
-	string target_symbol_name = "target_symbol_name" + std::to_string(i);
-	string line_name = "line_name" + std::to_string(i);
+	string input_cube_name = "input_cube_name" + to_string(i);
+	string input_symbol_name = "input_symbol_name" + to_string(i);
+	string target_cube_name = "target_cube_name" + to_string(i);
+	string target_symbol_name = "target_symbol_name" + to_string(i);
+	string line_name = "line_name" + to_string(i);
 
 	float in_cube_x_dim = item->x_length;
 	float in_cube_y_dim = item->y_length;
@@ -1131,9 +1139,9 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	PointTypeXYZRGB input_center_symbol;
 	PointTypeXYZRGB target_center_symbol;
 
-	float r, g, b;
+	float r=0.0, g=0.0, b=1.0;
 
-	randomcolorfloat(r, g, b);
+	//randomcolorfloat(r, g, b);
 
 
 	//addline for border of box
@@ -1149,15 +1157,15 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 		draw_rec_pos.y = 0;
 		draw_rec_pos.z = in_cube_z_min_pos;	
 
-		Add2DRectangle(
+	/*	Add2DRectangle(
 			draw_rec_pos,
 			in_cube_x_dim, in_cube_z_dim,
 			1.0, 1.0, 1.0, input_cube_name);
-
-	/*	AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
+*/
+		AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{0, 0, 0}, 0, 255, 255, 255, input_cube_name);
-*/
+
 		//input direction symbol
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
@@ -1179,7 +1187,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos - in_cube_y_dim,
 			r, g, b, input_symbol_name);*/
 
-		PointTypeXYZRGB draw_rec_pos;
+	/*	PointTypeXYZRGB draw_rec_pos;
 		draw_rec_pos.x = in_cube_x_min_pos;
 		draw_rec_pos.y = 0;
 		draw_rec_pos.z = in_cube_z_min_pos;
@@ -1188,11 +1196,11 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			draw_rec_pos,
 			in_cube_x_dim, in_cube_y_dim,
 			1.0, 1.0, 1.0, input_cube_name);
-		/*
+	*/	
 		AddItemCubeShader(in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
-*/
+
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
@@ -1214,7 +1222,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos - in_cube_y_dim, in_cube_y_min_pos, in_cube_z_min_pos,
 			r, g, b, input_symbol_name);*/
 
-		PointTypeXYZRGB draw_rec_pos;
+	/*	PointTypeXYZRGB draw_rec_pos;
 		draw_rec_pos.x = in_cube_x_min_pos;
 		draw_rec_pos.y = 0;
 		draw_rec_pos.z = in_cube_z_min_pos;
@@ -1223,11 +1231,11 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			draw_rec_pos,
 			in_cube_y_dim, in_cube_z_dim,
 			1.0, 1.0, 1.0, input_cube_name);
-		/*
+	*/	
 		AddItemCubeShader(in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{ 0, 0, 0 }, 0, 255, 255, 255, input_cube_name);
-*/
+
 		input_center_symbol = AddItemArrowDirectionSymbol(
 			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
@@ -1353,7 +1361,7 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 		killTimer(timer_animate);
 		ShowBinpackingAnimation(animate_container, animate_item);
 	}
-	window_view->spinOnce(100,true);
+	window_view->spinOnce(1,true);
 
 
 }
@@ -1404,12 +1412,12 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	float moving_length_sum_square =(moving_distance.x*moving_distance.x) + (moving_distance.y*moving_distance.y) + (moving_distance.z*moving_distance.z);
 	float moving_legth = sqrt(moving_length_sum_square);
 
-	cout << "moving_legth=" << moving_legth << endl;
+	//cout << "moving_legth=" << moving_legth << endl;
 
 	float move_step_length = 0.05;//5cm;
 	float moving_time = moving_legth / move_step_length;
 	translate_count = round(moving_time);
-	cout << "translate_count=" << translate_count << endl;
+	//cout << "translate_count=" << translate_count << endl;
 
 	//return;
 
@@ -1558,7 +1566,7 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	animate_begining_in = 5;
 	animate_ending_in = 5;
 	timer_animate = startTimer(1);
-
+	//timer->start(1000);
 
 	
 }

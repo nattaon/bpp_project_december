@@ -9,7 +9,7 @@ class ViewerWindow : public QObject
 
 private:
 	DataProcess *dataprocess;
-
+	QTimer *timer;
 
 	void timerEvent(QTimerEvent *event);
 	//QTime time_animate;
@@ -60,6 +60,9 @@ public:
 
 	void UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void UpdateWindowRGB(cv::Mat image);
+
+	void AddPointCloudItem(PointCloudXYZRGB::Ptr pointcloud, string cloudname);
+
 
 	void ClearPointCloudWindowCloudViewer();
 	void ClearShapeWindowCloudViewer();	

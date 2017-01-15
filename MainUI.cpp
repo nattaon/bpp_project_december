@@ -200,15 +200,15 @@ void MainUI::ButtonTestProgrammePressed()
 }
 void MainUI::ButtonTestInput1Pressed()
 {
-/*
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
+
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab3.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
-*/
+/*
 	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt_home_size_pos_correction.txt");
 	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
-
+*/
 }
 void MainUI::ButtonTestInput2Pressed()
 {
@@ -2218,8 +2218,9 @@ void MainUI::ButtonShowProjectionInputPositionPressed()
 	{
 		PointTypeXYZRGB draw_rec_pos = dataprocess->items[i]->transform->min3d_point;
 		
-		string item_rec_name = "item_rectangle" + i;
-		string item_text_name = "item_text" + i;
+		string item_rec_name = "item_rectangle" + to_string(i);
+		string item_text_name = "item_text" + to_string(i);
+		string clouditem_name = "clouditem" + to_string(i);
 		viewerwindow->Add2DRectangle(
 			draw_rec_pos,
 			dataprocess->items[i]->x_length, dataprocess->items[i]->z_length,
@@ -2227,6 +2228,19 @@ void MainUI::ButtonShowProjectionInputPositionPressed()
 
 		viewerwindow->AddTextWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
 			0.05, 1.0, 0, 0, to_string(i+1), item_text_name);
+
+		PointCloudXYZRGB::Ptr item_pointcloud;
+		item_pointcloud.reset(new PointCloudXYZRGB);
+		pcl::copyPointCloud(*dataprocess->items[i]->object_pointcloud, *item_pointcloud);
+
+		dataprocess->TranslatePointCloud(item_pointcloud,
+			draw_rec_pos.x, draw_rec_pos.y, draw_rec_pos.z);
+
+
+		//cout << clouditem_name << endl;
+		//cout << item_pointcloud->size() << endl;
+		//cout << draw_rec_pos << endl;
+		viewerwindow->AddPointCloudItem(item_pointcloud, clouditem_name);
 
 	}
 

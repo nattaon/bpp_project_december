@@ -59,8 +59,8 @@ PointCloudXYZRGB::Ptr PointCloudIO::LoadPcdFileToPointCloudVariable(string filen
 	index_pcd = filename.find("pcd");
 	index_ply = filename.find("ply");
 
-	cout << "index_pcd=" << index_pcd << endl;
-	cout << "index_ply=" << index_ply << endl;
+	//cout << "index_pcd=" << index_pcd << endl;
+	//cout << "index_ply=" << index_ply << endl;
 	
 	boost::filesystem::path p(filename.c_str());
 	std::string extension = p.extension().string();
