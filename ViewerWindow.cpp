@@ -74,7 +74,7 @@ void ViewerWindow::AddArrowObj()
 	window_view->spinOnce();*/
 
 	pcl::PolygonMesh mesh;
-	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.obj", mesh);
+	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrowstl.stl", mesh);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -140,7 +140,7 @@ void ViewerWindow::AddArrowObj()
 	pcl::toPCLPointCloud2(*cloudrgb, mesh.cloud);
 	
 	//pcl::io::saveOBJFile("arrow_blue.obj", mesh);	
-
+	pcl::io::savePolygonFile("arrow_blue.stl", mesh);
 
 	window_view->addPolygonMesh(mesh, "mesh");
 
