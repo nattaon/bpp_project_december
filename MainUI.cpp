@@ -200,14 +200,13 @@ void MainUI::ButtonTestProgrammePressed()
 }
 void MainUI::ButtonTestInput1Pressed()
 {
-
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab3.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
-/*
-	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param_lab_rectangle.txt");
+	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param_home_depth.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt_home_size_pos_correction.txt");
 	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
+	/*
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab3_depth.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
 */
 }
 void MainUI::ButtonTestInput2Pressed()

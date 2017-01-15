@@ -17,8 +17,60 @@ ViewerWindow::ViewerWindow()
 	timer_animate = -1;
 
 
-	//visualizer->getRenderWindow()->->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
+	//load rotation indicator object
+	pcl::PolygonMesh mesh_r, mesh_b;
+	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_b);
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_r(new pcl::PointCloud<pcl::PointXYZRGB>);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	pcl::fromPCLPointCloud2(mesh_r.cloud, *cloud_r);
+	pcl::fromPCLPointCloud2(mesh_b.cloud, *cloud_b);
+
+	for (int i = 0; i < cloud_r->size(); i++)
+	{
+		cloud_r->points[i].r = 255;
+		cloud_r->points[i].g = 0;
+		cloud_r->points[i].b = 0;
+	}
+	for (int i = 0; i < cloud_b->size(); i++)
+	{
+		cloud_b->points[i].r = 0;
+		cloud_b->points[i].g = 0;
+		cloud_b->points[i].b = 255;
+	}
+
+	Eigen::Affine3f transform_rot;
+
+	Eigen::Matrix<float, 1, 3>  rotate_vector_x{ 1, 0, 0 };
+	Eigen::Matrix<float, 1, 3>  rotate_vector_y{ 0, 1, 0 };
+	Eigen::Matrix<float, 1, 3>  rotate_vector_z{ 0, 0, 1 };
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(90.0*M_PI / 180.0, rotate_vector_z));
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(-90.0*M_PI / 180.0, rotate_vector_y));
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(90.0*M_PI / 180.0, rotate_vector_z));
+	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
+
+	pcl::toPCLPointCloud2(*cloud_r, mesh_r.cloud);
 	
+	arrow_rotate_x = mesh_r;
+	//window_view->addPolygonMesh(arrow_rotate_x, "mesh_r");
+
+
+	pcl::toPCLPointCloud2(*cloud_b, mesh_b.cloud);
+
+	arrow_rotate_z = mesh_b;
+	//window_view->addPolygonMesh(arrow_rotate_z, "mesh_b");
+
+	//window_view->spinOnce();
 
 }
 
@@ -73,82 +125,9 @@ void ViewerWindow::AddArrowObj()
 	window_view->addTextureMesh(mesh7, "texture", 0);
 	window_view->spinOnce();*/
 
-	pcl::PolygonMesh mesh;
-	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrowstl.stl", mesh);
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
-	pcl::PointXYZ minpoint, maxpoint;
-	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
-	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
 
-	cout << "min=" << minpoint << endl;
-	cout << "max=" << maxpoint << endl;
-	cout << "diff x=" << maxpoint.x - minpoint.x << endl;
-	cout << "diff y=" << maxpoint.y - minpoint.y << endl;
-	cout << "diff z=" << maxpoint.z - minpoint.z << endl;
-	cout << endl;	
 	
-	//scale size down
-	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
-
-	float scale = 0.001;
-	transform(0, 0) = scale;
-	transform(1, 1) = scale;
-	transform(2, 2) = scale;
-
-
-
-	pcl::transformPointCloud(*cloud, *cloud, transform);
-
-	Eigen::Affine3f transform_rot = Eigen::Affine3f::Identity();
-	Eigen::Matrix<float, 1, 3>  rotate_vector_z{ 0, 0, 1 };
-	Eigen::Matrix<float, 1, 3>  rotate_vector_y{ 0, 1, 0 };
-	Eigen::Matrix<float, 1, 3>  rotate_vector_x{ 0, 1, 0 };
-	//rotate_vector = {0,0,1};
-	/*transform_rot.rotate(Eigen::AngleAxisf(90 * M_PI / 180, rotate_vector_z));
-	pcl::transformPointCloud(*cloud, *cloud, transform_rot);
-
-	transform_rot.rotate(Eigen::AngleAxisf(40 * M_PI / 180, rotate_vector_y));
-	pcl::transformPointCloud(*cloud, *cloud, transform_rot);
-	*/
-	pcl::copyPointCloud(*cloud, *cloudrgb);
-	
-	for (int i = 0; i < cloudrgb->size(); i++)
-		{
-
-			cloudrgb->points[i].r = 0;
-			cloudrgb->points[i].g = 0;
-			cloudrgb->points[i].b = 255;
-		}
-	
-	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
-	cout << "transformPointCloud" << endl;
-	cout << "min=" << minpoint << endl;
-	cout << "max=" << maxpoint << endl;
-	cout << "diff x=" << maxpoint.x - minpoint.x << endl;
-	cout << "diff y=" << maxpoint.y - minpoint.y << endl;
-	cout << "diff z=" << maxpoint.z - minpoint.z << endl;
-	cout << endl;
-
-	cloudrgb->width = static_cast<uint32_t>(cloudrgb->points.size());
-	cloudrgb->height = 1;
-
-	//pcl::io::savePCDFileBinary("arrow_blue.pcd", *cloudrgb); //save-load faster
-	
-
-	pcl::toPCLPointCloud2(*cloudrgb, mesh.cloud);
-	
-	//pcl::io::saveOBJFile("arrow_blue.obj", mesh);	
-	pcl::io::savePolygonFile("arrow_blue.stl", mesh);
-
-	window_view->addPolygonMesh(mesh, "mesh");
-
-
-
-	window_view->spinOnce();
-
-	arrow_rotate_x = mesh;
 }
 
 void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
@@ -1106,7 +1085,142 @@ void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container,fl
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder4");
 }
 
+void ViewerWindow::AddSymbolIndicateDirection(
+	float w, float h, float d,
+	float x, float y, float z,
+	float r, float g, float b,
+	string symbolname)
+{
+	PointCloudXYZRGB::Ptr polygon_triangle(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr polygon_triangle_inverse(new PointCloudXYZRGB);
+	PointCloudXYZRGB::Ptr polygon_square(new PointCloudXYZRGB);
 
+	float radius;
+	if (w > d)
+	{
+		radius = d / 4.0;
+	}
+	else //if (d >= w)
+	{
+		radius = w / 4.0;
+	}
+
+	//cout << "radius=" << radius << endl;
+	int circle_segment;
+
+	circle_segment = 4;
+	for (int i = 0; i < circle_segment; i++)
+	{
+		float theta = 2.0 * M_PI*float(i) / float(circle_segment);
+		float x_pos = radius * cosf(theta);//calculate the x component
+		float z_pos = radius * sinf(theta);//calculate the y component
+
+		//cout << "boundery x=" << x << endl;
+		//cout << "boundery y=" << y << endl;
+
+		PointTypeXYZRGB boundery_point;
+		boundery_point.x = x_pos;
+		boundery_point.y = 0;
+		boundery_point.z = z_pos;
+
+		//cout << "boundery_point = " << boundery_point << endl;
+
+		polygon_square->points.push_back(boundery_point);
+	}
+	polygon_square->width = (int)polygon_square->points.size();
+	polygon_square->height = 1;
+
+
+	circle_segment = 3;
+	for (int i = 0; i < circle_segment; i++)
+	{
+		float theta = 2.0 * M_PI*float(i) / float(circle_segment);
+		float x_pos = radius * cosf(theta);//calculate the x component
+		float z_pos = radius * sinf(theta);//calculate the y component
+
+		//cout << "boundery x=" << x << endl;
+		//cout << "boundery y=" << y << endl;
+
+		PointTypeXYZRGB boundery_point;
+		boundery_point.x = x_pos;
+		boundery_point.y = 0;
+		boundery_point.z = z_pos;
+
+		//cout << "boundery_point = " << boundery_point << endl;
+
+		polygon_triangle->points.push_back(boundery_point);
+	}
+	polygon_triangle->width = (int)polygon_triangle->points.size();
+	polygon_triangle->height = 1;
+
+	pcl::copyPointCloud(*polygon_triangle, *polygon_triangle_inverse);
+
+	Eigen::Affine3f transform_rot_1 = Eigen::Affine3f::Identity();
+	Eigen::Affine3f transform_rot_2 = Eigen::Affine3f::Identity();
+	Eigen::Matrix<float, 1, 3>  rotate_vector_y{ 0, 1, 0 };
+	transform_rot_1.rotate(Eigen::AngleAxisf(180.0*M_PI / 180.0, rotate_vector_y));
+
+
+	pcl::transformPointCloud(*polygon_triangle_inverse, *polygon_triangle_inverse, transform_rot_1);
+
+
+
+
+
+
+	Eigen::Affine3f transform_move_plus = Eigen::Affine3f::Identity();
+	Eigen::Affine3f transform_move_minus = Eigen::Affine3f::Identity();
+	if (w > d)
+	{
+		transform_move_plus.translation() << (w / 4.0), 0, 0;
+		pcl::transformPointCloud(*polygon_triangle, *polygon_triangle, transform_move_plus);
+
+		transform_move_minus.translation() << (-1 * w / 4.0), 0, 0;
+		pcl::transformPointCloud(*polygon_triangle_inverse, *polygon_triangle_inverse, transform_move_minus);
+
+	}
+	else //if (d >= w)
+	{
+		transform_rot_2.rotate(Eigen::AngleAxisf(-90.0*M_PI / 180.0, rotate_vector_y));		
+		
+		pcl::transformPointCloud(*polygon_triangle, *polygon_triangle, transform_rot_2);
+
+		transform_move_plus.translation() << 0, 0, (d / 4.0);
+		pcl::transformPointCloud(*polygon_triangle, *polygon_triangle, transform_move_plus);
+
+
+		pcl::transformPointCloud(*polygon_triangle_inverse, *polygon_triangle_inverse, transform_rot_2);
+
+		transform_move_minus.translation() << 0, 0, (-1 * d / 4.0);
+		pcl::transformPointCloud(*polygon_triangle_inverse, *polygon_triangle_inverse, transform_move_minus);
+	}
+
+	Eigen::Affine3f transform_move_center = Eigen::Affine3f::Identity();
+	transform_move_center.translation() << (x + w / 2.0), (y + h + 0.001), (z + d / 2.0);
+	pcl::transformPointCloud(*polygon_square, *polygon_square, transform_move_center);
+	pcl::transformPointCloud(*polygon_triangle, *polygon_triangle, transform_move_center);
+	pcl::transformPointCloud(*polygon_triangle_inverse, *polygon_triangle_inverse, transform_move_center);
+
+
+	string polygon_square_name = symbolname + "_s_indication";
+	string polygon_plus_name = symbolname + "_p_indication";
+	string polygon_minus_name = symbolname + "_m_indication";
+
+	window_view->removeShape(polygon_square_name);
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_square, r, g, b, polygon_square_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_square_name);
+
+	window_view->removeShape(polygon_plus_name);
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_triangle, r, g, b, polygon_plus_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_plus_name);
+
+	window_view->removeShape(polygon_minus_name);
+	window_view->addPolygon<PointTypeXYZRGB>(polygon_triangle_inverse, r, g, b, polygon_minus_name);
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_minus_name);
+
+
+
+}
 
 void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
@@ -1119,6 +1233,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 	string input_cube_name = "input_cube_name" + to_string(i);
 	string rotate_cube_name = "rotate_cube_name" + to_string(i);
 	string rotate_symbol_name = "rotate_symbol_name" + to_string(i);
+	string rotate_indicate_name = "rotate_indicate_name" + to_string(i);
 	string target_cube_name = "target_cube_name" + to_string(i);
 	string target_symbol_name = "target_symbol_name" + to_string(i);
 	string line_name = "line_name" + to_string(i);
@@ -1173,10 +1288,10 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
 		//input direction symbol
-	/*	input_center_symbol = AddItemArrowDirectionSymbol(
+		AddSymbolIndicateDirection(
 			in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, rotate_symbol_name);*/
+			r, g, b, rotate_symbol_name);
 	}
 	else if (item->rotation_case == 1 || item->rotation_case == 5)
 	{
@@ -1207,10 +1322,13 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
-	/*	input_center_symbol = AddItemArrowDirectionSymbol(
+		AddSymbolIndicateDirection(
 			in_cube_x_dim, in_cube_z_dim, in_cube_y_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, rotate_symbol_name);*/
+			r, g, b, rotate_symbol_name);
+
+		window_view->removePolygonMesh(rotate_indicate_name);
+		window_view->addPolygonMesh(arrow_rotate_x, rotate_indicate_name);
 
 	}
 	else if (item->rotation_case == 2 || item->rotation_case == 3)
@@ -1242,10 +1360,13 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
 			{ 0, 0, 0 }, 0, 255, 255, 0, rotate_cube_name);
 
-	/*	input_center_symbol = AddItemArrowDirectionSymbol(
+		AddSymbolIndicateDirection(
 			in_cube_y_dim, in_cube_x_dim, in_cube_z_dim,
 			in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
-			r, g, b, rotate_symbol_name);*/
+			r, g, b, rotate_symbol_name);
+
+		window_view->removePolygonMesh(rotate_indicate_name);
+		window_view->addPolygonMesh(arrow_rotate_z, rotate_indicate_name);
 	}
 
 
@@ -1274,7 +1395,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 
 	//target direction symbol
-	target_center_symbol = AddItemArrowDirectionSymbol(
+	AddSymbolIndicateDirection(
 		tar_cube_x_dim, tar_cube_y_dim, tar_cube_z_dim,
 		tar_cube_x_min_pos, tar_cube_y_min_pos, tar_cube_z_min_pos,
 		r, g, b, target_symbol_name);

@@ -152,7 +152,11 @@ public:
 		string shapename);
 
 
-
+	void AddSymbolIndicateDirection(
+		float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b,
+		string symbolname);
 
 
 	void ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i);
