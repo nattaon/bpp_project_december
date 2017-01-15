@@ -75,46 +75,80 @@ void ViewerWindow::AddArrowObj()
 
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.obj", mesh);
-	
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
+	pcl::PointXYZ minpoint, maxpoint;
+	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
+
+	cout << "min=" << minpoint << endl;
+	cout << "max=" << maxpoint << endl;
+	cout << "diff x=" << maxpoint.x - minpoint.x << endl;
+	cout << "diff y=" << maxpoint.y - minpoint.y << endl;
+	cout << "diff z=" << maxpoint.z - minpoint.z << endl;
+	cout << endl;	
 	
 	//scale size down
 	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
-	
-	float scale = 0.1;
+
+	float scale = 0.001;
 	transform(0, 0) = scale;
 	transform(1, 1) = scale;
 	transform(2, 2) = scale;
-	
-	// Define a rotation matrix (see en.wikipedia.org/wiki/Rotation_matrix)
-//	float theta = M_PI / 4; // The angle of rotation in radians
-//	transform_1(0, 0) = cos(theta);
-//	transform_1(0, 1) = -sin(theta);
-//	transform_1(1, 0) = sin(theta);
-//	transform_1(1, 1) = cos(theta);
-	//    (row, column)
 
-	// Define a translation of 2.5 meters on the x axis.
-//	transform_1(0, 3) = 2.5;
 
-	// Print the transformation
-//	printf("Method #1: using a Matrix4f\n");
-//	std::cout << transform_1 << std::endl;
-//     | cos(θ) - sin(θ)  0.0 |
-// R = | sin(θ)  cos(θ)  0.0 |
-//	   | 0.0     0.0     1.0 |
-//
-// t = < 2.5, 0.0, 0.0 >
 
-	//no instance match pcl::PCLPointCloud2
-	//pcl::transformPointCloud(mesh.cloud, mesh.cloud, transform_1);
+	pcl::transformPointCloud(*cloud, *cloud, transform);
+
+	Eigen::Affine3f transform_rot = Eigen::Affine3f::Identity();
+	Eigen::Matrix<float, 1, 3>  rotate_vector_z{ 0, 0, 1 };
+	Eigen::Matrix<float, 1, 3>  rotate_vector_y{ 0, 1, 0 };
+	Eigen::Matrix<float, 1, 3>  rotate_vector_x{ 0, 1, 0 };
+	//rotate_vector = {0,0,1};
+	/*transform_rot.rotate(Eigen::AngleAxisf(90 * M_PI / 180, rotate_vector_z));
+	pcl::transformPointCloud(*cloud, *cloud, transform_rot);
+
+	transform_rot.rotate(Eigen::AngleAxisf(40 * M_PI / 180, rotate_vector_y));
+	pcl::transformPointCloud(*cloud, *cloud, transform_rot);
+	*/
+	pcl::copyPointCloud(*cloud, *cloudrgb);
 	
+	for (int i = 0; i < cloudrgb->size(); i++)
+		{
+
+			cloudrgb->points[i].r = 0;
+			cloudrgb->points[i].g = 0;
+			cloudrgb->points[i].b = 255;
+		}
 	
+	pcl::getMinMax3D(*cloud, minpoint, maxpoint);
+	cout << "transformPointCloud" << endl;
+	cout << "min=" << minpoint << endl;
+	cout << "max=" << maxpoint << endl;
+	cout << "diff x=" << maxpoint.x - minpoint.x << endl;
+	cout << "diff y=" << maxpoint.y - minpoint.y << endl;
+	cout << "diff z=" << maxpoint.z - minpoint.z << endl;
+	cout << endl;
+
+	cloudrgb->width = static_cast<uint32_t>(cloudrgb->points.size());
+	cloudrgb->height = 1;
+
+	//pcl::io::savePCDFileBinary("arrow_blue.pcd", *cloudrgb); //save-load faster
 	
+
+	pcl::toPCLPointCloud2(*cloudrgb, mesh.cloud);
 	
+	//pcl::io::saveOBJFile("arrow_blue.obj", mesh);	
+
+
 	window_view->addPolygonMesh(mesh, "mesh");
-	//window_view->spinOnce();
 
 
+
+	window_view->spinOnce();
+
+	arrow_rotate_x = mesh;
 }
 
 void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
@@ -130,7 +164,7 @@ void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudrgb(new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PCLPointCloud2 cloud_blob;
 	//pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt1.pcd", cloud_blob);
-	pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/bun0.pcd", cloud_blob);
+	pcl::io::loadPCDFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow_blue.pcd", cloud_blob);
 	pcl::fromPCLPointCloud2(cloud_blob, *cloud);
 	//* the data should be available in cloud
 
@@ -159,7 +193,7 @@ void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
 	pcl::PolygonMesh triangles;
 
 	// Set the maximum distance between connected points (maximum edge length)
-	gp3.setSearchRadius(0.025);
+	gp3.setSearchRadius(0.1);
 
 	// Set typical values for the parameters
 	gp3.setMu(2.5);
@@ -179,8 +213,8 @@ void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
 	std::vector<int> states = gp3.getPointStates();
 
 	window_view->addPolygonMesh(triangles, "triangles");
-	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
-		pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, "triangles");
+	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
+	//	pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, "triangles");  // error no triangle id
 	window_view->spinOnce();
 }
 
@@ -1243,8 +1277,11 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 {
 	//cout << "ViewerWindow::timerEvent" << endl;
 
-
-	if (first_translate && !first_translate_done)
+	if (animate_begining_in > 0) // do nothing = show item at current pos for 5 sec
+	{
+		animate_begining_in--;
+	}
+	else if (first_translate && !first_translate_done)
 	{
 		//cout << "enter first_translate=" << first_translate << " first_translate_done=" << first_translate_done << endl;
 		//cout << "translate_count=" << translate_count << endl;
@@ -1300,6 +1337,10 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 		
 
 	}
+	else if (animate_ending_in>0)// do nothing = show item at target pos for 5 sec
+	{
+		animate_ending_in--;
+	}
 	else
 	{
 		cout << "not in any group " << endl;
@@ -1310,6 +1351,7 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 
 
 		killTimer(timer_animate);
+		ShowBinpackingAnimation(animate_container, animate_item);
 	}
 	window_view->spinOnce(100,true);
 
@@ -1322,7 +1364,8 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 		cout << "item not be pack" << endl;
 		return;
 	}
-
+	animate_container = container;
+	animate_item = item;
 
 	current_animate_cube_pos.x = item->transform->min3d_point.x;
 	current_animate_cube_pos.y = item->transform->min3d_point.y;
@@ -1353,8 +1396,22 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	target_animate_cube_center.y += target_cube_dim.y*0.5;
 	target_animate_cube_center.z += target_cube_dim.z*0.5;
 
+	PointTypeXYZRGB moving_distance;
+	moving_distance.x = target_animate_cube_center.x - current_animate_cube_center.x;
+	moving_distance.y = target_animate_cube_center.y - current_animate_cube_center.y;
+	moving_distance.z = target_animate_cube_center.z - current_animate_cube_center.z;
 
-	
+	float moving_length_sum_square =(moving_distance.x*moving_distance.x) + (moving_distance.y*moving_distance.y) + (moving_distance.z*moving_distance.z);
+	float moving_legth = sqrt(moving_length_sum_square);
+
+	cout << "moving_legth=" << moving_legth << endl;
+
+	float move_step_length = 0.05;//5cm;
+	float moving_time = moving_legth / move_step_length;
+	translate_count = round(moving_time);
+	cout << "translate_count=" << translate_count << endl;
+
+	//return;
 
 	first_translate_done = false;
 	second_rotate_done = false;
@@ -1362,7 +1419,7 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 
 	current_theta_cube_rot = 0;
 	
-	translate_count = 20;
+	//translate_count = 20;
 	rotate_count = 6;
 
 	
@@ -1448,9 +1505,9 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 
 	
 
-	cube_translate_diff.x = (target_animate_cube_center.x - current_animate_cube_center.x) / translate_count;
-	cube_translate_diff.y = (target_animate_cube_center.y - current_animate_cube_center.y) / translate_count;
-	cube_translate_diff.z = (target_animate_cube_center.z - current_animate_cube_center.z) / translate_count;
+	cube_translate_diff.x = (target_animate_cube_center.x - current_animate_cube_center.x) / float(translate_count);
+	cube_translate_diff.y = (target_animate_cube_center.y - current_animate_cube_center.y) / float(translate_count);
+	cube_translate_diff.z = (target_animate_cube_center.z - current_animate_cube_center.z) / float(translate_count);
 
 	cout << endl;
 	cout << "input point = " << current_animate_cube_center << endl;
@@ -1464,19 +1521,19 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	AddItemCubeShader(
 		cube_x_dim, cube_y_dim, cube_z_dim,
 		current_animate_cube_pos.x, current_animate_cube_pos.y, current_animate_cube_pos.z,
-		{ 0, 0, 0 }, 0, 64, 64, 64,
+		{ 0, 0, 0 }, 0, 255, 255, 255,
 		"input_cube_animate");
 
 	AddItemCubeShader(
 		item->target_orientation.x * 0.001, item->target_orientation.y * 0.001, item->target_orientation.z * 0.001,
 		target_animate_cube_pos.x, target_animate_cube_pos.y, target_animate_cube_pos.z,
-		{ 0, 0, 0 }, 0, 64, 64, 64,
+		{ 0, 0, 0 }, 0, 255, 255, 255,
 		"target_cube_animate");
 
 
 
 	window_view->removeShape("line_animate_center");
-	window_view->addLine(current_animate_cube_center, target_animate_cube_center, 1.0, 0.25, 0.25, "line_animate_center");
+	window_view->addLine(current_animate_cube_center, target_animate_cube_center, 1, 1, 1, "line_animate_center");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "line_animate_center");
 
 
@@ -1486,7 +1543,7 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 
 
 	//new cube
-	current_animate_cube = CreteNewCubePolymeshAtCentroid(cube_x_dim, cube_y_dim, cube_z_dim, 255, 255, 255);
+	current_animate_cube = CreteNewCubePolymeshAtCentroid(cube_x_dim, cube_y_dim, cube_z_dim, 0, 0, 255);
 	//move it to input position
 	current_animate_cube = TransformItemCubeShaderAtCenttroid(current_animate_cube,
 		current_animate_cube_center.x, current_animate_cube_center.y, current_animate_cube_center.z,
@@ -1498,6 +1555,8 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	window_view->spinOnce(1,true);
 
 	//looping move item
+	animate_begining_in = 5;
+	animate_ending_in = 5;
 	timer_animate = startTimer(1);
 
 

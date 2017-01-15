@@ -56,6 +56,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/io/vtk_lib_io.h>
 //#include <pcl/keypoints/uniform_sampling.h>
@@ -73,6 +74,8 @@
 //#include <boost/thread/thread.hpp>
 
 #include <pcl/visualization/pcl_visualizer.h>
+
+//#include <sensor_msgs/PointCloud2.h>
 
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>

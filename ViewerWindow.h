@@ -39,6 +39,10 @@ private:
 	bool first_translate_done, second_rotate_done, third_rotate_done, adjust_translate_done;
 
 	pcl::PolygonMesh current_animate_cube;
+	ObjectTransformationData *animate_container, *animate_item;
+	int animate_begining_in, animate_ending_in;
+
+	pcl::PolygonMesh arrow_rotate_x, arrow_rotate_z;
 
 public:
 	//Addxxxfuntion() => did not spin a window, just Add!

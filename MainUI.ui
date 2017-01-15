@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -4621,6 +4621,12 @@ p, li { white-space: pre-wrap; }
       <attribute name="headerDefaultSectionSize">
        <number>60</number>
       </attribute>
+      <attribute name="headerMinimumSectionSize">
+       <number>60</number>
+      </attribute>
+      <attribute name="headerStretchLastSection">
+       <bool>false</bool>
+      </attribute>
       <column>
        <property name="text">
         <string>Order</string>
@@ -4911,7 +4917,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>1</string>
+       <string>0</string>
       </property>
      </widget>
      <widget class="QPushButton" name="bt_order_moveup">
@@ -6022,8 +6028,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

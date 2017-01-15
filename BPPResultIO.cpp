@@ -22,7 +22,7 @@ void BPPResultIO::WriteBinPackingResult(
 
 	for (int i = 0; i < total; i++)
 	{
-		outfile << "packing_order " << packing_order[i] << endl;
+		outfile << "packing_index " << packing_order[i] << endl;
 		outfile << "ui_item_index " << item_index[i] << endl;
 		outfile << "rotation_case " << rotation_case[i] << endl;
 

@@ -49,14 +49,60 @@ void PointCloudIO::LoadPointCloud(string filename)
 
 PointCloudXYZRGB::Ptr PointCloudIO::LoadPcdFileToPointCloudVariable(string filename)
 {
+	pcl::PCLPointCloud2 cloud_blob;
 	PointCloudXYZRGB::Ptr cloud;
 	cloud.reset(new PointCloudXYZRGB);
-	if (pcl::io::loadPCDFile(filename, *cloud) < 0)
-	{
-		cout << "Error loading model cloud." << endl;
-		return NULL;
-	}
+
+	size_t index_pcd = -1;	
+	size_t index_ply = -1;
+
+	index_pcd = filename.find("pcd");
+	index_ply = filename.find("ply");
+
+	cout << "index_pcd=" << index_pcd << endl;
+	cout << "index_ply=" << index_ply << endl;
 	
+	boost::filesystem::path p(filename.c_str());
+	std::string extension = p.extension().string();
+	int result = -1;
+	if (extension == ".pcd")
+		result = pcl::io::loadPCDFile(filename, cloud_blob);
+	else if (extension == ".ply")
+		result = pcl::io::loadPLYFile(filename, cloud_blob);
+
+	//sensor_msgs::PointCloud2::fields
+	//cout << "filed=" << cloud_blob.fields() << endl;
+
+	//bool curvature_available = pcl::traits::has_field<PointT, pcl::fields::curvature>::value;
+	//bool rgb = FieldMatches<pcl::PCLPointCloud2>
+
+	pcl::fromPCLPointCloud2(cloud_blob, *cloud);
+
+	if (result == -1)
+		return NULL;
+	else
+		return cloud;
+
+
+	/*
+
+	if (index_pcd != std::string::npos)//pcd file
+	{
+		if (pcl::io::loadPCDFile(filename, *cloud) < 0)
+		{
+			cout << "Error loading model cloud." << endl;
+			return NULL;
+		}
+	}
+	else if (index_ply != std::string::npos)//ply file
+	{
+		if (pcl::io::loadPLYFile(filename, *cloud) < 0)
+		{
+			cout << "Error loading model cloud." << endl;
+			return NULL;
+		}
+	}*/
+
 	return cloud;
 }
 
