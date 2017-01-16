@@ -198,27 +198,37 @@ void MainUI::ButtonTestProgrammePressed()
 
 
 }
-void MainUI::ButtonTestInput1Pressed()
+void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 {
-	Call_LoadCameraParam("C:/Users/Nattaon/Desktop/bpp_project_december/_camera_topview_param_home_depth.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/tt_home_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
-	/*
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab3_depth.txt");
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder.txt");
-*/
+	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder1.txt");
+	
+	ui->radioButton_packing_1->setChecked(true);
+	ui->radioButton_packing_2->setChecked(false);
+	ui->radioButton_packing_3->setChecked(false);
+
+
 }
 void MainUI::ButtonTestInput2Pressed()
 {
-	PointCloudXYZRGB::Ptr pointcloud(new PointCloudXYZRGB);
-	//pointcloud.reset(new PointCloudXYZRGB);
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder2.txt");
 
-	viewerwindow->AddPointCloudPolygonMesh(pointcloud);
+	ui->radioButton_packing_1->setChecked(false);
+	ui->radioButton_packing_2->setChecked(true);
+	ui->radioButton_packing_3->setChecked(false);
 }
 void MainUI::ButtonTestInput3Pressed()
 {
+	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder3.txt");
 
+	ui->radioButton_packing_1->setChecked(false);
+	ui->radioButton_packing_2->setChecked(false);
+	ui->radioButton_packing_3->setChecked(true);
 }
 void MainUI::ButtonTestInput4Pressed()
 {
@@ -256,7 +266,7 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 	{
 		if (last_select_item_index-1>=0)
 		{
-			cout << "up   : select index " << last_select_item_index - 1 << endl;
+			//cout << "up   : select index " << last_select_item_index - 1 << endl;
 			QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index-1);
 			ui->treeWidget->setCurrentItem(item);
 			PressedTreeItem(item);
@@ -264,9 +274,9 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 	}
 	else if (event->key() == Qt::Key_Down)
 	{
-		if (last_select_item_index + 1 < ui->treeWidget->topLevelItemCount())
+		if (last_select_item_index!=-1 && (last_select_item_index + 1 < ui->treeWidget->topLevelItemCount()))
 		{
-			cout << "down : select index " << last_select_item_index +1 << endl;
+			//cout << "down : select index " << last_select_item_index +1 << endl;
 			QTreeWidgetItem* item = ui->treeWidget->topLevelItem(last_select_item_index+1);
 			ui->treeWidget->setCurrentItem(item);
 			PressedTreeItem(item);
@@ -279,6 +289,10 @@ void MainUI::keyPressEvent(QKeyEvent * event)
 	else if (event->key() == Qt::Key_Right)
 	{
 		ButtonShowNextPackingPressed();
+	}
+	else if (event->key() == Qt::Key_1)
+	{
+		ShowPackingCurrentOrder();
 	}
 
 	QWidget::keyPressEvent(event);

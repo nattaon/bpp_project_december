@@ -19,7 +19,7 @@ ViewerWindow::ViewerWindow()
 
 	//load rotation indicator object
 	pcl::PolygonMesh mesh_r, mesh_b;
-	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
 	//pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_b);
 	mesh_b = mesh_r;
 
@@ -982,7 +982,7 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 
 
 	//addline for border of box
-	AddContainerBorderLine(container,1.0,0,0);
+	//AddContainerBorderLine(container,1.0,0,0);
 
 	//if (item->rotation_case == 0) // do nothing
 	if (item->rotation_case == 1)
@@ -1286,7 +1286,7 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 
 	//addline for border of box
-	AddContainerBorderLine(container, 1.0, 0, 0);
+	//AddContainerBorderLine(container, 1.0, 0, 0);
 
 	AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 		in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
@@ -1610,7 +1610,7 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	
 
 	//addline for border of box
-	AddContainerBorderLine(container, 1.0, 0, 0);
+	//AddContainerBorderLine(container, 1.0, 0, 0);
 
 
 	//init parameter for move a cube

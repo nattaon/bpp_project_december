@@ -4731,6 +4731,9 @@ p, li { white-space: pre-wrap; }
         <height>20</height>
        </rect>
       </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -4747,6 +4750,9 @@ p, li { white-space: pre-wrap; }
         <height>20</height>
        </rect>
       </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -4759,6 +4765,9 @@ p, li { white-space: pre-wrap; }
         <width>21</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
        <string/>
@@ -4974,6 +4983,9 @@ p, li { white-space: pre-wrap; }
         <width>111</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
        <string>Clear Previous</string>
@@ -6031,8 +6043,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>
