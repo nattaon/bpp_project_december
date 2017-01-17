@@ -380,7 +380,7 @@ void MainUI::timerEvent(QTimerEvent *event)
 
 	viewerwindow->UpdateWindowRGB(dataprocess->GetKinectRGBImage());
 
-	dataprocess->ApplyPassthroughFilter(
+/*	dataprocess->ApplyPassthroughFilter(
 		dataprocess->GetKinectPointCloud(),
 		ui->edit_passthrough_xmin->text().toDouble(),
 		ui->edit_passthrough_xmax->text().toDouble(),
@@ -388,7 +388,7 @@ void MainUI::timerEvent(QTimerEvent *event)
 		ui->edit_passthrough_ymax->text().toDouble(),
 		ui->edit_passthrough_zmin->text().toDouble(),
 		ui->edit_passthrough_zmax->text().toDouble());
-
+*/
 
 	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetKinectPointCloud());
 	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetKinectPointCloud());
