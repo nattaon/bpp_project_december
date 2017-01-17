@@ -61,14 +61,14 @@ rotation_case 4
 163 25 90
 
 packing_index 10
-ui_item_index 5
-rotation_case 0
-0 0.095 0.063
-170 15 77
-
-packing_index 11
 ui_item_index 9
 rotation_case 4
 0.17 0.085 0.063
 150 30 89
+
+packing_index 11
+ui_item_index 5
+rotation_case 0
+0 0.095 0.063
+170 15 77
 

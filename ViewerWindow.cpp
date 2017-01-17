@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-#define POINT_SIZE 3
+#define POINT_SIZE 5
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -69,6 +69,10 @@ ViewerWindow::ViewerWindow()
 	transform_rot = Eigen::Affine3f::Identity();
 	transform_rot.rotate(Eigen::AngleAxisf(15.0*M_PI / 180.0, rotate_vector_x));
 	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(-30.0*M_PI / 180.0, rotate_vector_y));
+	pcl::transformPointCloud(*cloud_r, *cloud_r, transform_rot);
 	///////
 
 	transform_rot = Eigen::Affine3f::Identity();
@@ -79,9 +83,12 @@ ViewerWindow::ViewerWindow()
 	transform_rot.rotate(Eigen::AngleAxisf(60.0*M_PI / 180.0, rotate_vector_x));
 	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
 
-
 	transform_rot = Eigen::Affine3f::Identity();
 	transform_rot.rotate(Eigen::AngleAxisf(-15.0*M_PI / 180.0, rotate_vector_z));
+	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
+
+	transform_rot = Eigen::Affine3f::Identity();
+	transform_rot.rotate(Eigen::AngleAxisf(30.0*M_PI / 180.0, rotate_vector_y));
 	pcl::transformPointCloud(*cloud_b, *cloud_b, transform_rot);
 
 	pcl::toPCLPointCloud2(*cloud_r, mesh_r.cloud);
@@ -1355,9 +1362,12 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 
 		PointTypeXYZRGB point_position;
+		//point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
+		//point_position.y = in_cube_y_min_pos + in_cube_z_dim;
+		//point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
 		point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
 		point_position.y = in_cube_y_min_pos + in_cube_z_dim;
-		point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
+		point_position.z = in_cube_z_min_pos + (in_cube_y_dim*0.5);
 		AddRotationSymbloAt(point_position, arrow_rotate_x, rotate_indicate_name);
 		AddXYZAxisAt(item->transform->min3d_point, line_name);
 
@@ -1398,7 +1408,10 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 
 		PointTypeXYZRGB point_position;
-		point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
+		//point_position.x = in_cube_x_min_pos + (in_cube_x_dim*0.5);
+		//point_position.y = in_cube_y_min_pos + in_cube_x_dim;
+		//point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
+		point_position.x = in_cube_x_min_pos + (in_cube_y_dim*0.5);
 		point_position.y = in_cube_y_min_pos + in_cube_x_dim;
 		point_position.z = in_cube_z_min_pos + (in_cube_z_dim*0.5);
 		AddRotationSymbloAt(point_position, arrow_rotate_z, rotate_indicate_name);
