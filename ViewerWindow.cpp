@@ -19,8 +19,8 @@ ViewerWindow::ViewerWindow()
 
 	//load rotation indicator object
 	pcl::PolygonMesh mesh_r, mesh_b;
-	//pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
-	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	//pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
 	mesh_b = mesh_r;
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_r(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -1053,8 +1053,8 @@ void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float
 	string itemline2name = "itemline2" + itemname;
 	string itemrectangelname = "itemrectangle" + itemname;
 	
-	cout << itemname << endl;
-	cout << itemline1name << endl;
+	//cout << itemname << endl;
+	//cout << itemline1name << endl;
 
 
 	PointTypeXYZRGB p1, p2, p3, p4;

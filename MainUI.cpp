@@ -2,6 +2,7 @@
 
 #define POINTCLOUD_DIR "../pcd_files"
 #define COLUMN_FILENAME 13
+#define PACKINGSET 17
 
 
 MainUI::MainUI(QWidget *parent) :
@@ -200,10 +201,19 @@ void MainUI::ButtonTestProgrammePressed()
 }
 void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 {
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder1.txt");
-	
+	if (PACKINGSET==12)
+	{ 
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder1.txt");
+	}
+	else if (PACKINGSET == 17)
+	{
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/packing17_order1.txt");
+
+	}
 	ui->radioButton_packing_1->setChecked(true);
 	ui->radioButton_packing_2->setChecked(false);
 	ui->radioButton_packing_3->setChecked(false);
@@ -212,21 +222,38 @@ void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 }
 void MainUI::ButtonTestInput2Pressed()
 {
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder2.txt");
+	if (PACKINGSET == 12)
+	{
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder2.txt");
+	}
+	else if (PACKINGSET == 17)
+	{
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/packing17_order2.txt");
 
+	}
 	ui->radioButton_packing_1->setChecked(false);
 	ui->radioButton_packing_2->setChecked(true);
 	ui->radioButton_packing_3->setChecked(false);
 }
 void MainUI::ButtonTestInput3Pressed()
 {
-	Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
-	Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
-	Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder3.txt");
+	if (PACKINGSET == 12)
+	{
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder3.txt");
+	}
+	else if (PACKINGSET == 17)
+	{
+		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
+		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
+		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/packing17_order3.txt");
 
-	ui->radioButton_packing_1->setChecked(false);
+	}	ui->radioButton_packing_1->setChecked(false);
 	ui->radioButton_packing_2->setChecked(false);
 	ui->radioButton_packing_3->setChecked(true);
 }
@@ -2238,8 +2265,12 @@ void MainUI::ButtonShowProjectionInputPositionPressed()
 			draw_rec_pos,
 			dataprocess->items[i]->x_length, dataprocess->items[i]->z_length,
 			1.0, 1.0, 1.0, item_rec_name);
-
-		//viewerwindow->AddTextWindowCloudViewer(dataprocess->items[i]->transform->mass_center_point,
+		/////number/////////////////////
+		PointTypeXYZRGB textdrawpos;
+		textdrawpos.x = dataprocess->items[i]->transform->mass_center_point.x;
+		textdrawpos.y = dataprocess->items[i]->transform->mass_center_point.y + dataprocess->items[i]->y_length+0.2;
+		textdrawpos.z = dataprocess->items[i]->transform->mass_center_point.z;
+		//viewerwindow->AddTextWindowCloudViewer(textdrawpos,
 		//	0.05, 1.0, 0, 0, to_string(i+1), item_text_name);
 
 		PointCloudXYZRGB::Ptr item_pointcloud;
