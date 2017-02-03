@@ -45,7 +45,12 @@ void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointClou
 	seg.setDistanceThreshold(plane_threshold);
 
 	seg.setInputCloud(cloud);
-	seg.segment(*inliers, *coefficients);
+
+	QTime timer;
+	timer.start();
+		seg.segment(*inliers, *coefficients);
+	int nMilliseconds = timer.elapsed();
+	cout << ":: seg.segment :: timer elapsed " << nMilliseconds << " msec" << endl;
 
 	plane_inliers = inliers;
 	plane_coefficients = coefficients;

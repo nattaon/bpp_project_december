@@ -22,7 +22,11 @@ void PointCloudTransformationExtraction::CalculateTransformation(
 	}
 
 	feature_extractor.setInputCloud(cloud);
-	feature_extractor.compute();
+	QTime timer;
+	timer.start();
+		feature_extractor.compute();
+	int nMilliseconds = timer.elapsed();
+	cout << "feature_extractor.compute() timer elapsed " << nMilliseconds << " msec" << endl;
 	feature_extractor.getMassCenter(mass_center);
 	feature_extractor.getEigenVectors(major_vector, middle_vector, minor_vector);
 	feature_extractor.getOBB(min_point_OBB, max_point_OBB, position_OBB, rotational_matrix_OBB);

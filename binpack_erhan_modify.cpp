@@ -184,6 +184,11 @@ int total_box_to_pack,
   time(&start);
   execute_iterations();
   time(&finish);
+  elapsed_time = difftime(finish, start);
+  printf("bpp execute_iterations() TIME: %.0f", elapsed_time);
+
+
+
   report_results();
 
   free(scrapfirst);

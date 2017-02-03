@@ -315,6 +315,8 @@ void ViewerWindow::AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
 		max_point_OBB.y - min_point_OBB.y, 
 		max_point_OBB.z - min_point_OBB.z, cloudname);
 
+	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, cloudname); //cannotset on polygonmesh
+
 }
 
 void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_center, 

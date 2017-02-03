@@ -2,7 +2,7 @@
 
 #define POINTCLOUD_DIR "../pcd_files"
 #define COLUMN_FILENAME 13
-#define PACKINGSET 17
+#define PACKINGSET 12
 
 
 MainUI::MainUI(QWidget *parent) :
@@ -1506,6 +1506,8 @@ void MainUI::ButtonExtractClusterPressed()
 
 void::MainUI::ButtonShowClusterBBPressed()
 {
+
+
 	// draw boundingbox+vector
 	viewerwindow->AddBoundingBoxWindowCloudViewer(
 		dataprocess->container->transform->position_OBB,
@@ -1515,13 +1517,13 @@ void::MainUI::ButtonShowClusterBBPressed()
 		"container OBB"
 		);
 
-	viewerwindow->AddVectorDirectionWindowCloudViewer(
+/*	viewerwindow->AddVectorDirectionWindowCloudViewer(
 		dataprocess->container->transform->mass_center,
 		dataprocess->container->transform->major_vector,
 		dataprocess->container->transform->middle_vector,
 		dataprocess->container->transform->minor_vector,
 		"container vector ");
-
+*/
 
 
 	for (int i = 0; i < dataprocess->items.size(); i++)
@@ -1533,21 +1535,35 @@ void::MainUI::ButtonShowClusterBBPressed()
 			dataprocess->items[i]->transform->rotational_matrix_OBB,
 			"items OBB " + i);
 
-		viewerwindow->AddVectorDirectionWindowCloudViewer(
+	/*	viewerwindow->AddVectorDirectionWindowCloudViewer(
 			dataprocess->items[i]->transform->mass_center,
 			dataprocess->items[i]->transform->major_vector,
 			dataprocess->items[i]->transform->middle_vector,
 			dataprocess->items[i]->transform->minor_vector,
 			"items vector " + i);
-			
+		*/	
 	}
-
+	
 
 
 }
 void MainUI::ButtonShowClusterVectorPressed()
 {
+	PointCloudXYZRGB::Ptr cloud = dataprocess->GetCurrentDisplayPointCloud();
 
+	PointCloudTransformationExtraction *transformext = new PointCloudTransformationExtraction();
+
+	transformext->CalculateTransformation(cloud, 0.0);
+
+	viewerwindow->AddBoundingBoxWindowCloudViewer(
+		transformext->position_OBB,
+		transformext->min_point_OBB,
+		transformext->max_point_OBB,
+		transformext->rotational_matrix_OBB,
+		"item OBB"
+		);
+
+	delete transformext;
 }
 
 

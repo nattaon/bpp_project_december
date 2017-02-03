@@ -46,7 +46,7 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 	timer.start();
 	ec.extract(vector_cluster_indices);	
 	int nMilliseconds = timer.elapsed();
-	cout << "timer elapsed " << nMilliseconds << " msec" << endl;
+	cout << "ec.extract timer elapsed " << nMilliseconds << " msec" << endl;
 	cout << "cluster total =  " << vector_cluster_indices.size() << endl;
 	
 	array_cluster_cloud.clear();

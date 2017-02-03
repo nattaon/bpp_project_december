@@ -17,7 +17,11 @@ void OutlierRemoval::StatisticalOutlierRemoval(
 	sor.setStddevMulThresh(stddev);//the standard deviation multiplier
 
 	PointCloudXYZRGB::Ptr cloud_filtered(new PointCloudXYZRGB);
-	sor.filter(*cloud_filtered);
+	QTime timer;
+	timer.start();
+		sor.filter(*cloud_filtered);
+	int nMilliseconds = timer.elapsed();
+	cout << "sor.filter timer elapsed " << nMilliseconds << " msec" << endl;
 	if (cloud_filtered->size() != 0)
 	{
 		pcl::copyPointCloud(*cloud_filtered, *cloud);
