@@ -82,7 +82,7 @@ void PointCloudOperation::CalculateContainerTransformation()
 	cout << "CalculateContainerTransformation" << endl;
 
 	container->transform->CalculateTransformation(container->object_pointcloud,0.005);
-	container->transform->PrintTransformationData();
+	//container->transform->PrintTransformationData();
 
 	container->CalculateWDH();
 }
@@ -95,7 +95,7 @@ void PointCloudOperation::CalculateItemsTransformation()
 		cout << "item " << i << endl;
 
 		items[i]->transform->CalculateTransformation(items[i]->object_pointcloud,0.0);
-		items[i]->transform->PrintTransformationData();
+		//items[i]->transform->PrintTransformationData();
 
 		items[i]->CalculateWDH();
 		//cout << endl;

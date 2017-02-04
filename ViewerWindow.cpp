@@ -127,6 +127,7 @@ void ViewerWindow::SetCameraParameter(
 
 void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 {
+
 	if (!window_view->updatePointCloud(pointcloud, "window_view"))
 	{
 		window_view->addPointCloud(pointcloud, "window_view");

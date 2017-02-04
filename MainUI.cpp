@@ -2,7 +2,7 @@
 
 #define POINTCLOUD_DIR "../pcd_files"
 #define COLUMN_FILENAME 13
-#define PACKINGSET 12
+//#define PACKINGSET 17
 
 
 MainUI::MainUI(QWidget *parent) :
@@ -201,13 +201,15 @@ void MainUI::ButtonTestProgrammePressed()
 }
 void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 {
-	if (PACKINGSET==12)
+	double packingset = ui->in_packingset->text().toInt();
+
+	if (packingset == 12)
 	{ 
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder1.txt");
 	}
-	else if (PACKINGSET == 17)
+	else if (packingset == 17)
 	{
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
@@ -222,13 +224,15 @@ void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 }
 void MainUI::ButtonTestInput2Pressed()
 {
-	if (PACKINGSET == 12)
+	double packingset = ui->in_packingset->text().toInt();
+
+	if (packingset == 12)
 	{
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder2.txt");
 	}
-	else if (PACKINGSET == 17)
+	else if (packingset == 17)
 	{
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
@@ -241,13 +245,15 @@ void MainUI::ButtonTestInput2Pressed()
 }
 void MainUI::ButtonTestInput3Pressed()
 {
-	if (PACKINGSET == 12)
+	double packingset = ui->in_packingset->text().toInt();
+
+	if (packingset == 12)
 	{
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/tt_lab_size_pos_correction.txt");
 		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/12/packing12reorder3.txt");
 	}
-	else if (PACKINGSET == 17)
+	else if (packingset == 17)
 	{
 		Call_LoadCameraParam("C:/Users/nattaon2/Desktop/bpp_project_december/_camera_topview_param_lab_depth3.txt");
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
@@ -1430,14 +1436,14 @@ void MainUI::ButtonShowClusterPressed()
 	dataprocess->clusterextract->SetClusterExtractValue(cluster_tolerance, cluster_min_size, cluster_max_size);
 	dataprocess->clusterextract->ExtractCluster(pointcloud_for_extract_cluster);
 
-	viewerwindow->AddPlanarAtOrigin(0.5, 0.5, 1.0, 1.0, 1.0, "planeorigin");
+	if (dataprocess->GetColoredClusterPointCloud()->points.size()>0)
+	{ 
+		viewerwindow->AddPlanarAtOrigin(0.5, 0.5, 1.0, 1.0, 1.0, "planeorigin");
+		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
+		dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetColoredClusterPointCloud());
+		//dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
 
-
-	viewerwindow->UpdateWindowCloudViewer(dataprocess->GetColoredClusterPointCloud());
-	dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetColoredClusterPointCloud());
-	//dataprocess->SetCurrentDisplayPointCloud(dataprocess->GetRemovedPlaneOutsidePointCloud());
-
-
+	}
 
 }
 inline pcl::PointXYZRGB Eigen2PointXYZRGB(Eigen::Vector3f v) 

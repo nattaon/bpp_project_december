@@ -72,10 +72,19 @@ void PlaneSegmentation::ApplyPlaneSegmentation(double plane_threshold, PointClou
 
 	//true:remove plane, flase:remove not plane
 	extract.setNegative(true);
+	timer.start();
 	extract.filter(*removed_plane_cloud);
+	nMilliseconds = timer.elapsed();
+	cout << ":: extract.filter(*removed_plane_cloud) :: timer elapsed " << nMilliseconds << " msec" << endl;
+
+
 
 	extract.setNegative(false);
+	timer.start();
 	extract.filter(*only_plane_cloud);
+	nMilliseconds = timer.elapsed();
+	cout << ":: extract.filter(*only_plane_cloud); :: timer elapsed " << nMilliseconds << " msec" << endl;
+
 
 	int r = rand() % 128+ 128;
 	cout << "r= " << r << endl;

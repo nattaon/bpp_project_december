@@ -49,9 +49,13 @@ void ClusterExtraction::ExtractCluster(PointCloudXYZRGB::Ptr cloud)
 	cout << "ec.extract timer elapsed " << nMilliseconds << " msec" << endl;
 	cout << "cluster total =  " << vector_cluster_indices.size() << endl;
 	
+	if (vector_cluster_indices.size() == 0) return;
+	
+	
 	array_cluster_cloud.clear();
 	cout << "array_cluster_cloud size" << array_cluster_cloud.size() << endl;
 	int cluster_all_size = 0;
+
 
 	for (vector<pcl::PointIndices>::const_iterator it = vector_cluster_indices.begin(); it != vector_cluster_indices.end(); ++it)
 	{

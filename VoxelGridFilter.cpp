@@ -23,7 +23,13 @@ void VoxelGridFilter::FilterVoxelSize(PointCloudXYZRGB::Ptr cloud, double size)
 
 	//do filter(save output in new pointcloud)
 	PointCloudXYZRGB::Ptr cloud_filtered(new PointCloudXYZRGB);
-	grid.filter(*cloud_filtered);
+
+	QTime timer;
+	timer.start();
+		grid.filter(*cloud_filtered);
+	int nMilliseconds = timer.elapsed();
+	cout << "grid.filter timer elapsed " << nMilliseconds << " msec" << endl;
+
 
 	//return pointcloud
 	if (cloud_filtered->size() != 0)
