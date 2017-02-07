@@ -24,6 +24,8 @@ MainUI::MainUI(QWidget *parent) :
 
 
 	viewerembeded = new ViewerEmbeded(ui->widget);
+	ButtonPointsizeEmbededPressed();
+	
 
 	//ui->in_point_size_visual->text().toInt()
 
@@ -103,6 +105,9 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_show_cluster_vector, SIGNAL(clicked()), this, SLOT(ButtonShowClusterVectorPressed()));
 
 	//cluster list
+	connect(ui->checkBox_show_embeded_axis, SIGNAL(clicked()), this, SLOT(CheckboxShowEmbededAxisPressed()));
+	connect(ui->checkBox_show_embeded_bounding, SIGNAL(clicked()), this, SLOT(CheckboxShowEmbededBoundingPressed()));
+
 	connect(ui->treeWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(PressedTreeItem(QTreeWidgetItem *)));
 	connect(ui->bt_item_load, SIGNAL(clicked()), this, SLOT(ButtonLoadPointCloudToListPressed()));
 	connect(ui->bt_item_save, SIGNAL(clicked()), this, SLOT(ButtonSavePointCloudFromListPressed()));
@@ -157,7 +162,9 @@ MainUI::MainUI(QWidget *parent) :
 	connect(ui->bt_test_input3, SIGNAL(clicked()), this, SLOT(ButtonTestInput3Pressed()));
 	connect(ui->bt_test_input4, SIGNAL(clicked()), this, SLOT(ButtonTestInput4Pressed()));
 	
-	//
+	//pointsize
+	connect(ui->bt_ok_pointsize_window, SIGNAL(clicked()), this, SLOT(ButtonPointsizeWindowPressed()));
+	connect(ui->bt_ok_pointsize_embeded, SIGNAL(clicked()), this, SLOT(ButtonPointsizeEmbededPressed()));
 	//
 	//
 	//
@@ -201,7 +208,7 @@ void MainUI::ButtonTestProgrammePressed()
 }
 void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 {
-	double packingset = ui->in_packingset->text().toInt();
+	int packingset = ui->in_packingset->text().toInt();
 
 	if (packingset == 12)
 	{ 
@@ -224,7 +231,7 @@ void MainUI::ButtonTestInput1Pressed()//  //_camera_topview_param_lab3_depth
 }
 void MainUI::ButtonTestInput2Pressed()
 {
-	double packingset = ui->in_packingset->text().toInt();
+	int packingset = ui->in_packingset->text().toInt();
 
 	if (packingset == 12)
 	{
@@ -245,7 +252,7 @@ void MainUI::ButtonTestInput2Pressed()
 }
 void MainUI::ButtonTestInput3Pressed()
 {
-	double packingset = ui->in_packingset->text().toInt();
+	int packingset = ui->in_packingset->text().toInt();
 
 	if (packingset == 12)
 	{
@@ -505,6 +512,8 @@ void MainUI::ButtonLoadPointCloudToViewerPressed()
 
 		cout << filename.toStdString() << endl;
 		dataprocess->LoadPointCloud(filename.toStdString());
+
+		ButtonPointsizeWindowPressed();
 
 		viewerwindow->UpdateWindowCloudViewer(dataprocess->GetLoadedPointCloud());
 		//RadioButtonAxisONSelected();
@@ -881,6 +890,7 @@ void MainUI::ButtonApplyCloudRotationPressed()
 	}
 	else // rotate cloud at viewer embeded
 	{
+	
 		viewerembeded->UpdateCloudViewer(pointcloud);
 	}
 	
@@ -1575,6 +1585,40 @@ void MainUI::ButtonShowClusterVectorPressed()
 
 
 //cluster list
+void MainUI::CheckboxShowEmbededAxisPressed()
+{
+	if(ui->checkBox_show_embeded_axis->isChecked())
+	{
+		viewerembeded->DrawXYZAxis();
+	}
+	else
+	{
+		viewerembeded->RemoveXYZAxis();
+	}
+}
+
+void MainUI::CheckboxShowEmbededBoundingPressed()
+{
+	if (ui->checkBox_show_embeded_bounding->isChecked())
+	{
+		if (last_select_item_index>=0)
+		{ 
+			QTreeWidgetItem *item = ui->treeWidget->topLevelItem(last_select_item_index);
+			float boxes_x_dim = 0.001*item->text(1).toDouble();
+			float boxes_y_dim = 0.001*item->text(2).toDouble();
+			float boxes_z_dim = 0.001*item->text(3).toDouble();
+
+			viewerembeded->RemoveBounding();
+			viewerembeded->DrawBounding(boxes_x_dim, boxes_y_dim, boxes_z_dim, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0);
+		}
+	}
+	else
+	{
+		viewerembeded->RemoveBounding();
+	}
+}
+
 void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 {
 	//cout << "call PressedTreeItem()" << endl;
@@ -1611,6 +1655,19 @@ void MainUI::PressedTreeItem(QTreeWidgetItem *current_select_item)
 
 		PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
 		viewerembeded->UpdateCloudViewer(pointcloud); 
+
+		if (ui->checkBox_show_embeded_bounding->isChecked())
+		{
+			QTreeWidgetItem *item = ui->treeWidget->topLevelItem(last_select_item_index);
+			float boxes_x_dim = 0.001*item->text(1).toDouble();
+			float boxes_y_dim = 0.001*item->text(2).toDouble();
+			float boxes_z_dim = 0.001*item->text(3).toDouble();
+
+			viewerembeded->RemoveBounding();
+			viewerembeded->DrawBounding(boxes_x_dim, boxes_y_dim, boxes_z_dim, 0.0, 0.0, 0.0,
+				1.0, 0.0, 0.0);
+		}
+
 	}
 };
 void MainUI::ButtonLoadPointCloudToListPressed()
@@ -2882,5 +2939,24 @@ void MainUI::ButtonUpdatePackingOrderPressed()
 
 	}
 
+}
+
+void MainUI::ButtonPointsizeWindowPressed()
+{
+	int pointsize = ui->in_pointsize_window->text().toInt();
+	viewerwindow->SetPointsize(pointsize);
+
+
+}
+void MainUI::ButtonPointsizeEmbededPressed()
+{
+	int pointsize = ui->in_pointsize_embeded->text().toInt();
+	viewerembeded->SetPointsize(pointsize);
+	
+	if (last_select_item_index>=0)
+	{
+		PointCloudXYZRGB::Ptr pointcloud = dataprocess->items[last_select_item_index]->object_pointcloud;
+		viewerembeded->UpdateCloudViewer(pointcloud);
+	}
 }
 

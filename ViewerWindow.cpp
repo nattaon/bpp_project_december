@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-#define POINT_SIZE 3
+//#define POINT_SIZE 3
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -19,8 +19,8 @@ ViewerWindow::ViewerWindow()
 
 	//load rotation indicator object
 	pcl::PolygonMesh mesh_r, mesh_b;
-	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
-	//pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	//pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
 	mesh_b = mesh_r;
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_r(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -107,6 +107,12 @@ ViewerWindow::ViewerWindow()
 }
 
 void ViewerWindow::SetDataProcess(DataProcess* d) {dataprocess = d;}
+
+void ViewerWindow::SetPointsize(int pt)
+{
+	cout << "ViewerWindow::SetPointsize " << pt << endl;
+	POINT_SIZE = pt;
+}
 
 void ViewerWindow::SetCameraParameter(
 	double focal_x, double focal_y, double focal_z,

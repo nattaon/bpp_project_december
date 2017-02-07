@@ -53,6 +53,9 @@ public:
     ViewerWindow();
 	void SetDataProcess(DataProcess* d);
 
+	int POINT_SIZE;
+	void SetPointsize(int pt);
+
 	void SetCameraParameter(
 		double focal_x, double focal_y, double focal_z,
 		double pos_x, double pos_y, double pos_z,

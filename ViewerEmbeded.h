@@ -11,13 +11,16 @@ public:
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> embeded_view;
 	QVTKWidget *ui_widget_viewer;
 
+	int POINT_SIZE;
+	void SetPointsize(int pt);
 	void ClearPointCloudEmbededCloudViewer();
-	void UpdateCloudViewer(bool draw_axis, bool draw_bounding, PointCloudXYZRGB::Ptr pointcloud);
+	void UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
 	void DrawXYZAxis();
-	void AddItemCube(float w, float h, float d,
+	void RemoveXYZAxis();
+	void RemoveBounding();
+	void DrawBounding(float w, float h, float d,
 		float x, float y, float z,
-		float r, float g, float b,
-		string shapename);
+		float r, float g, float b);
 
 };
 

@@ -145,6 +145,9 @@ private slots:
 	void ButtonFillInvertPressed();
 
 	//cluster list
+	void CheckboxShowEmbededAxisPressed();
+	void CheckboxShowEmbededBoundingPressed();
+
 	void PressedTreeItem(QTreeWidgetItem *current_select_item);
 	void ButtonLoadPointCloudToListPressed();
 	void ButtonSavePointCloudFromListPressed();
@@ -190,6 +193,9 @@ private slots:
 	void ButtonShowPrevPackingPressed();
 	void ButtonShowNextPackingPressed();
 
+	//pointsize
+	void ButtonPointsizeWindowPressed();
+	void ButtonPointsizeEmbededPressed();
 	
 
 
