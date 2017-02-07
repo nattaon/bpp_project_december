@@ -12,8 +12,12 @@ public:
 	QVTKWidget *ui_widget_viewer;
 
 	void ClearPointCloudEmbededCloudViewer();
-	void UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud);
+	void UpdateCloudViewer(bool draw_axis, bool draw_bounding, PointCloudXYZRGB::Ptr pointcloud);
 	void DrawXYZAxis();
+	void AddItemCube(float w, float h, float d,
+		float x, float y, float z,
+		float r, float g, float b,
+		string shapename);
 
 };
 

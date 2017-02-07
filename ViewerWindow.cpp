@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-#define POINT_SIZE 5
+#define POINT_SIZE 3
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -943,12 +943,14 @@ void ViewerWindow::AddPointCloudItem(PointCloudXYZRGB::Ptr pointcloud, string cl
 	{
 		window_view->addPointCloud(pointcloud, cloudname);
 	}
+	
+
 
 	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
 
 }
 
-void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i)
+void ViewerWindow::ShowBinPackingTarget(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
 	//cout << "container_position=" << container_position << endl;
 	//draw circle hilight at current item postion
@@ -992,7 +994,10 @@ void ViewerWindow::ShowBinPackingTarget(ObjectTransformationData *container, Obj
 
 
 	//addline for border of box
-	//AddContainerBorderLine(container,1.0,0,0);
+	if (show_container)
+	{
+		AddContainerBorderLine(container);
+	}
 
 	//if (item->rotation_case == 0) // do nothing
 	if (item->rotation_case == 1)
@@ -1088,8 +1093,23 @@ void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float
 
 }
 
-void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container,float r, float g, float b)
+void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container)
 {
+	float r = 1.0;
+	float g = 0.0;
+	float b = 0.0;
+
+	
+	AddItemCube(container->x_length, container->y_length, container->z_length,
+		container->transform->min3d_point.x,
+		container->transform->min3d_point.y,
+		container->transform->min3d_point.z,
+		r, g, b,
+		"boxborder");
+	//viewer->addCube(min_point_AABB.x, max_point_AABB.x, min_point_AABB.y, max_point_AABB.y, min_point_AABB.z, max_point_AABB.z, 1.0, 1.0, 0.0, "AABB");
+
+	return;
+	/*
 	PointTypeXYZRGB p1, p2, p3, p4;
 	p1 = container->transform->min3d_point;
 
@@ -1118,6 +1138,7 @@ void ViewerWindow::AddContainerBorderLine(ObjectTransformationData *container,fl
 	window_view->removeShape("boxborder4");
 	window_view->addLine(p4, p1, r, g, b, "boxborder4");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "boxborder4");
+*/
 }
 
 void ViewerWindow::AddSymbolIndicateDirection(
@@ -1257,7 +1278,7 @@ void ViewerWindow::AddSymbolIndicateDirection(
 
 }
 
-void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i)
+void ViewerWindow::ShowBinpackingIndication(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item, int i)
 {
 
 	if (item->rotation_case == -1)
@@ -1296,7 +1317,10 @@ void ViewerWindow::ShowBinpackingIndication(ObjectTransformationData *container,
 
 
 	//addline for border of box
-	//AddContainerBorderLine(container, 1.0, 0, 0);
+	if (show_container)
+	{
+		AddContainerBorderLine(container);
+	}
 
 	AddItemCubeShader(in_cube_x_dim, in_cube_y_dim, in_cube_z_dim,
 		in_cube_x_min_pos, in_cube_y_min_pos, in_cube_z_min_pos,
@@ -1549,7 +1573,7 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 
 
 }
-void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item)
+void ViewerWindow::ShowBinpackingAnimation(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item)
 {
 	if (item->rotation_case == -1)
 	{
@@ -1626,8 +1650,10 @@ void ViewerWindow::ShowBinpackingAnimation(ObjectTransformationData *container, 
 	
 
 	//addline for border of box
-	//AddContainerBorderLine(container, 1.0, 0, 0);
-
+	if (show_container)
+	{ 
+		AddContainerBorderLine(container);
+	}
 
 	//init parameter for move a cube
 	if (item->rotation_case == 0) 

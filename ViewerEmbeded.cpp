@@ -26,7 +26,7 @@ void ViewerEmbeded::ClearPointCloudEmbededCloudViewer()
 	ui_widget_viewer->update();
 }
 
-void ViewerEmbeded::UpdateCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
+void ViewerEmbeded::UpdateCloudViewer(bool draw_axis, bool draw_bounding, PointCloudXYZRGB::Ptr pointcloud)
 {
 	if (!embeded_view->updatePointCloud(pointcloud, "embeded_view"))
 	{
@@ -49,6 +49,29 @@ void ViewerEmbeded::DrawXYZAxis()
 
 	ui_widget_viewer->update();
 
+}
+void ViewerEmbeded::AddItemCube(float w, float h, float d,
+	float x, float y, float z,
+	float r, float g, float b,
+	string shapename)
+{
+
+
+	float xmin = x;
+	float ymin = y;
+	float zmin = z;
+	float xmax = (x + w);
+	float ymax = (y + h);
+	float zmax = (z + d);
+
+	//cout << endl;
+	//cout << r << "," << g << "," << b << endl; 
+	//cout << "x " << xmin << "," << xmax << endl;
+	//cout << "y " << ymin << "," << ymax << endl;
+	//cout << "z " << zmin << "," << zmax << endl;
+
+	window_view->removeShape(shapename);
+	window_view->addCube(xmin, xmax, ymin, ymax, zmin, zmax, r, g, b, shapename);
 }
 
 

@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -4599,7 +4599,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>371</width>
+        <width>361</width>
         <height>341</height>
        </rect>
       </property>
@@ -4656,9 +4656,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_load_packing_info">
       <property name="geometry">
        <rect>
-        <x>390</x>
+        <x>380</x>
         <y>40</y>
-        <width>101</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -4679,9 +4679,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_save_packing_info">
       <property name="geometry">
        <rect>
-        <x>390</x>
+        <x>380</x>
         <y>10</y>
-        <width>101</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -4702,9 +4702,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_update_packing_order">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>390</x>
         <y>150</y>
-        <width>81</width>
+        <width>91</width>
         <height>31</height>
        </rect>
       </property>
@@ -4863,7 +4863,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_order_previous">
       <property name="geometry">
        <rect>
-        <x>385</x>
+        <x>380</x>
         <y>320</y>
         <width>41</width>
         <height>31</height>
@@ -4909,9 +4909,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_order_one">
       <property name="geometry">
        <rect>
-        <x>425</x>
+        <x>415</x>
         <y>320</y>
-        <width>31</width>
+        <width>41</width>
         <height>31</height>
        </rect>
       </property>
@@ -4932,9 +4932,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_order_moveup">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>390</x>
         <y>80</y>
-        <width>81</width>
+        <width>91</width>
         <height>31</height>
        </rect>
       </property>
@@ -4955,9 +4955,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="bt_order_movedown">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>390</x>
         <y>110</y>
-        <width>81</width>
+        <width>91</width>
         <height>31</height>
        </rect>
       </property>
@@ -4978,8 +4978,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QCheckBox" name="checkBox_clear_previous">
       <property name="geometry">
        <rect>
-        <x>390</x>
-        <y>290</y>
+        <x>380</x>
+        <y>280</y>
         <width>111</width>
         <height>20</height>
        </rect>
@@ -4988,7 +4988,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
-       <string>Clear Previous</string>
+       <string>Clear previous</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -5046,6 +5046,25 @@ p, li { white-space: pre-wrap; }
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
+     <widget class="QCheckBox" name="checkBox_show_container">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>296</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="text">
+       <string>Show container</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QVTKWidget" name="widget" native="true">
@@ -5065,9 +5084,9 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>530</y>
+      <y>540</y>
       <width>1011</width>
-      <height>341</height>
+      <height>331</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -5881,6 +5900,44 @@ p, li { white-space: pre-wrap; }
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkBox_show_embeded_bounding">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>520</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="text">
+     <string>Show bounding</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_show_embeded_axis">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>520</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="text">
+     <string>Show axis</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -6095,8 +6152,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

@@ -94,7 +94,7 @@ public:
 
 	void AddRectangleHilightItem(ObjectTransformationData *item, float r, float g, float b, string itemname);
 
-	void AddContainerBorderLine(ObjectTransformationData *container, float r, float g, float);
+	void AddContainerBorderLine(ObjectTransformationData *container);
 	
 	void AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 		double r, double g, double b, string drawtext, string cloudname);
@@ -161,9 +161,9 @@ public:
 		string symbolname);
 
 
-	void ShowBinPackingTarget(ObjectTransformationData *container, ObjectTransformationData* item, int i);
-	void ShowBinpackingIndication(ObjectTransformationData *container, ObjectTransformationData* item, int i);
-	void ShowBinpackingAnimation(ObjectTransformationData *container, ObjectTransformationData* item);
+	void ShowBinPackingTarget(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item, int i);
+	void ShowBinpackingIndication(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item, int i);
+	void ShowBinpackingAnimation(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item);
 
 	void AddXYZAxisAt(PointTypeXYZRGB point_position, string axisname);
 	void AddRotationSymbloAt(PointTypeXYZRGB point_position, pcl::PolygonMesh arrowobj, string objname);

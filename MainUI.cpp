@@ -259,7 +259,8 @@ void MainUI::ButtonTestInput3Pressed()
 		Call_LoadAllItemsTextToUI("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/boxes17tt_repos.txt");
 		Call_LoadBinPackingInfo("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/17_2/packing17_order3.txt");
 
-	}	ui->radioButton_packing_1->setChecked(false);
+	}	
+	ui->radioButton_packing_1->setChecked(false);
 	ui->radioButton_packing_2->setChecked(false);
 	ui->radioButton_packing_3->setChecked(true);
 }
@@ -2449,13 +2450,18 @@ void MainUI::ButtonShowPackingTargetPressed()
 	
 	//hilight circle at each item (input_position)
 	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+
+	bool is_showcontainer;
+	if (ui->checkBox_show_container->isChecked()) is_showcontainer = true;
+	else is_showcontainer = false;
+
 	for (int i = 0; i < total_order; i++)
 	{
 		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(i);
 		int dataprocess_number = item->text(4).toInt();
 		int dataprocess_index = dataprocess_number - 1;
 		cout << "number=" << dataprocess_number << ", order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
-		viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
+		viewerwindow->ShowBinPackingTarget(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
 }
 void MainUI::ButtonShowPackingIndicatePressed()
@@ -2470,13 +2476,18 @@ void MainUI::ButtonShowPackingIndicatePressed()
 	viewerwindow->ClearShapeWindowCloudViewer();
 
 	int total_order = ui->treeWidgetSorting->topLevelItemCount();
+
+	bool is_showcontainer;
+	if (ui->checkBox_show_container->isChecked()) is_showcontainer = true;
+	else is_showcontainer = false;
+
 	for (int i = 0; i < total_order; i++)
 	{
 		QTreeWidgetItem *item = ui->treeWidgetSorting->topLevelItem(i);
 		int dataprocess_number = item->text(4).toInt();
 		int dataprocess_index = dataprocess_number - 1;
 		cout << "number=" << dataprocess_number << ", order_index[" << i << "] dataprocess_index=" << dataprocess_index << endl;
-		viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
+		viewerwindow->ShowBinpackingIndication(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 	}
 	
 
@@ -2525,9 +2536,14 @@ ObjectTransformationData *test_container = new ObjectTransformationData();
 	int dataprocess_index = dataprocess_number - 1;
 
 	cout << "number=" << dataprocess_number << ", order_index[" << item_index << "] dataprocess_index=" << dataprocess_index << endl;
+	
+	bool is_showcontainer;
+	if (ui->checkBox_show_container->isChecked()) is_showcontainer = true;
+	else is_showcontainer = false;
+
 	if (item_index >= 0)
 	{ 
-		viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[dataprocess_index]);
+		viewerwindow->ShowBinpackingAnimation(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index]);
 	}
 
 
@@ -2585,17 +2601,24 @@ void MainUI::ShowPackingCurrentOrder()
 		int dataprocess_index = dataprocess_number - 1;
 		cout << "number = " << dataprocess_number << ", order_index[" << item_index << "] dataprocess_index = " << dataprocess_index << endl;
 
+		bool is_showcontainer;
+
+		if (ui->checkBox_show_container->isChecked()) is_showcontainer = true;
+		else is_showcontainer = false;
+
+
+
 		if (ui->radioButton_packing_1->isChecked())
 		{
-			viewerwindow->ShowBinPackingTarget(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
+			viewerwindow->ShowBinPackingTarget(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_2->isChecked())
 		{
-			viewerwindow->ShowBinpackingIndication(dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
+			viewerwindow->ShowBinpackingIndication(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index], dataprocess_index);
 		}
 		else if (ui->radioButton_packing_3->isChecked())
 		{
-			viewerwindow->ShowBinpackingAnimation(dataprocess->container, dataprocess->items[dataprocess_index]);
+			viewerwindow->ShowBinpackingAnimation(is_showcontainer, dataprocess->container, dataprocess->items[dataprocess_index]);
 		}
 	}
 
