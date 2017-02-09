@@ -54,12 +54,16 @@ CalculateBppErhan::~CalculateBppErhan()
 
 void CalculateBppErhan::CalculateBinpack()
 {
+	QTime timer;
+	timer.start();
 	binpacking(bpp_total_box_to_pack,
 		bpp_bin_w, bpp_bin_h, bpp_bin_d,
 		bpp_box_w, bpp_box_h, bpp_box_d,
 		bpp_box_x, bpp_box_y, bpp_box_z,
 		bpp_orien_x, bpp_orien_y, bpp_orien_z,
 		bpp_bin_no, bpp_item_no);
+	int nMilliseconds = timer.elapsed();
+	cout << ":: binpacking :: timer elapsed " << nMilliseconds << " msec" << endl;
 
 	/*binpacking(total_box_to_pack,
 		bin_w, bin_h, bin_d,

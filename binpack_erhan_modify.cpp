@@ -192,7 +192,7 @@ int total_box_to_pack,
   report_results();
 
   free(scrapfirst);
-
+  cout << "time = " << elapsed_time << endl;
   cout << "malloc count = " << malloccount << endl;
 
  // free(smallestz);
@@ -279,9 +279,9 @@ void execute_iterations(void)
     for (layersindex = 1; layersindex <= layerlistlen; layersindex++)
     {
       ++number_of_iterations;
-      time(&finish);
-      elapsed_time = difftime(finish, start);
-      printf("VARIANT: %5d; ITERATION (TOTAL): %5d; BEST SO FAR: %.3f %%; TIME: %.0f", variant, number_of_iterations, pallet_volume_used_percentage, elapsed_time);
+      //time(&finish);
+      //elapsed_time = difftime(finish, start);
+      //printf("VARIANT: %5d; ITERATION (TOTAL): %5d; BEST SO FAR: %.3f %%; TIME: %.0f", variant, number_of_iterations, pallet_volume_used_percentage, elapsed_time);
       packedvolume = 0.0;
       packedy = 0;
       packing = 1;
@@ -1264,7 +1264,7 @@ void report_results(void)
   */
   packed_box_percentage = best_solution_volume * 100 / total_box_volume;
   pallet_volume_used_percentage = best_solution_volume * 100 / total_pallet_volume;
-  elapsed_time = difftime( finish, start);
+  //elapsed_time = difftime( finish, start);
   /*
   fprintf(report_output_file,"---------------------------------------------------------------------------------------------\n");
   fprintf(report_output_file,"                                       *** REPORT ***\n");

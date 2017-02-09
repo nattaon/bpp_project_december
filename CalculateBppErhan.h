@@ -1,5 +1,6 @@
 #include<iostream>
 using namespace std;
+#include "SharedHeader.h"
 class CalculateBppErhan
 {
 public:
