@@ -1,5 +1,5 @@
 ﻿#include "ViewerWindow.h"
-//#define POINT_SIZE 3
+#define POINT_SIZE 3
 ViewerWindow::ViewerWindow()
 {
 	cout << "ViewerWindow()" << endl;
@@ -14,12 +14,20 @@ ViewerWindow::ViewerWindow()
 	window_view->setRepresentationToSurfaceForAllActors();
 	window_view->getRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
 
+	window_view_projector.reset(new pcl::visualization::PCLVisualizer("window_view_projector"));
+	window_view_projector->setPosition(50, 0);//window position
+	window_view_projector->setBackgroundColor(0, 0, 0);
+	window_view_projector->initCameraParameters();
+	window_view_projector->setRepresentationToSurfaceForAllActors();
+	window_view_projector->getRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera()->SetParallelProjection(1);
+
+
 	timer_animate = -1;
 
 
 	//load rotation indicator object
 	pcl::PolygonMesh mesh_r, mesh_b;
-	pcl::io::loadPolygonFile("C:/Users/nattaon2/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
+	pcl::io::loadPolygonFile("../pcd_files/arrow.stl", mesh_r);
 	//pcl::io::loadPolygonFile("C:/Users/Nattaon/Desktop/bpp_project_december/pcd_files/arrow.stl", mesh_r);
 	mesh_b = mesh_r;
 
@@ -111,7 +119,7 @@ void ViewerWindow::SetDataProcess(DataProcess* d) {dataprocess = d;}
 void ViewerWindow::SetPointsize(int pt)
 {
 	cout << "ViewerWindow::SetPointsize " << pt << endl;
-	POINT_SIZE = pt;
+	//POINT_SIZE = pt;
 }
 
 void ViewerWindow::SetCameraParameter(
@@ -129,6 +137,15 @@ void ViewerWindow::SetCameraParameter(
 	window_view->setCameraClipDistances(clipping_near, clipping_far);
 	window_view->setCameraFieldOfView(cam_angle_rad);//radian
 	window_view->spinOnce();
+
+	window_view_projector->setCameraPosition(
+		pos_x, pos_y, pos_z,
+		focal_x, focal_y, focal_z,
+		up_x, up_y, up_z);
+
+	window_view_projector->setCameraClipDistances(clipping_near, clipping_far);
+	window_view_projector->setCameraFieldOfView(cam_angle_rad);//radian
+	window_view_projector->spinOnce();
 }
 
 void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
@@ -139,6 +156,13 @@ void ViewerWindow::UpdateWindowCloudViewer(PointCloudXYZRGB::Ptr pointcloud)
 		window_view->addPointCloud(pointcloud, "window_view");
 	}
 	window_view->spinOnce();
+
+	if (!window_view_projector->updatePointCloud(pointcloud, "window_view_projector"))
+	{
+		window_view_projector->addPointCloud(pointcloud, "window_view_projector");
+	}
+	window_view_projector->spinOnce();
+
 }
 void ViewerWindow::UpdateWindowRGB(cv::Mat image)
 {
@@ -149,11 +173,18 @@ void ViewerWindow::ClearPointCloudWindowCloudViewer()
 {
 	window_view->removeAllPointClouds();
 	window_view->spinOnce();
+
+	window_view_projector->removeAllPointClouds();
+	window_view_projector->spinOnce();
+
 }
 void ViewerWindow::ClearShapeWindowCloudViewer()
 {
 	window_view->removeAllShapes();
 	window_view->spinOnce();
+
+	window_view_projector->removeAllShapes();
+	window_view_projector->spinOnce();
 }
 
 void ViewerWindow::AddArrowObj()
@@ -234,6 +265,9 @@ void ViewerWindow::AddPointCloudPolygonMesh(PointCloudXYZRGB::Ptr pointcloud)
 	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING,
 	//	pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, "triangles");  // error no triangle id
 	window_view->spinOnce();
+
+	window_view_projector->addPolygonMesh(triangles, "triangles");
+	window_view_projector->spinOnce();
 }
 
 
@@ -268,6 +302,11 @@ void ViewerWindow::AddPlanarAtOrigin(double plane_halflegth_x, double plane_half
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r,g,b, planename);
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, planename);
 	//window_view->spinOnce();
+
+	window_view_projector->removeShape(planename);
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, planename);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, planename);
+
 
 }
 
@@ -308,6 +347,11 @@ void ViewerWindow::Add2DRectangle(PointTypeXYZRGB min_point, double x_dim, doubl
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, rectangle_name);
 	//window_view->spinOnce();
 
+	window_view_projector->removeShape(rectangle_name);
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, rectangle_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, rectangle_name);
+
+
 }
 
 void ViewerWindow::AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB, 
@@ -321,8 +365,15 @@ void ViewerWindow::AddBoundingBoxWindowCloudViewer(PointTypeXYZRGB position_OBB,
 		max_point_OBB.x - min_point_OBB.x, 
 		max_point_OBB.y - min_point_OBB.y, 
 		max_point_OBB.z - min_point_OBB.z, cloudname);
-
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, cloudname); //cannotset on polygonmesh
+
+	window_view_projector->removeShape(cloudname);
+	window_view_projector->addCube(position, quat,
+		max_point_OBB.x - min_point_OBB.x,
+		max_point_OBB.y - min_point_OBB.y,
+		max_point_OBB.z - min_point_OBB.z, cloudname);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, cloudname); //cannotset on polygonmesh
+
 
 }
 
@@ -354,18 +405,32 @@ void ViewerWindow::AddVectorDirectionWindowCloudViewer(Eigen::Vector3f mass_cent
 	window_view->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, cloudname + " major eigen vector");
 	window_view->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, cloudname + " middle eigen vector");
 	window_view->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
+
+	window_view_projector->removeShape(cloudname + " major eigen vector");
+	window_view_projector->removeShape(cloudname + " middle eigen vector");
+	window_view_projector->removeShape(cloudname + " minor eigen vector");
+
+	window_view_projector->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, cloudname + " major eigen vector");
+	window_view_projector->addLine(center, y_axis, 0.0f, 1.0f, 0.0f, cloudname + " middle eigen vector");
+	window_view_projector->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, cloudname + " minor eigen vector");
 }
 void ViewerWindow::AddTextWindowCloudViewer(PointTypeXYZRGB point_position, double text_scale,
 	double r, double g, double b, string drawtext, string cloudname)
 {
 	window_view->removeText3D(cloudname);
 	window_view->addText3D(drawtext, point_position, text_scale, r, g, b, cloudname);
+
+	window_view_projector->removeText3D(cloudname);
+	window_view_projector->addText3D(drawtext, point_position, text_scale, r, g, b, cloudname);
 }
 
 void ViewerWindow::AddSphereWindowCloudViewer(PointTypeXYZRGB point_position, double radius, double r, double g, double b, string id_name)
 {
 	window_view->removeShape(id_name);
 	window_view->addSphere(point_position, radius, r, g, b, id_name);
+
+	window_view_projector->removeShape(id_name);
+	window_view_projector->addSphere(point_position, radius, r, g, b, id_name);
 }
 
 
@@ -436,6 +501,11 @@ void ViewerWindow::AddSymbolWindowCloudViewer(
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
 
+
+	window_view_projector->removeShape(cloudname + " polygon");
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, 1.0f, 0.0f, 0.0f, cloudname + " polygon");
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
+
 }
 
 void ViewerWindow::AddCircleWindowCloudViewer(
@@ -480,6 +550,9 @@ void ViewerWindow::AddCircleWindowCloudViewer(
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, cloudname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
 
+	window_view_projector->removeShape(cloudname + " polygon");
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, cloudname + " polygon");
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, cloudname + " polygon");
 
 }
 
@@ -494,11 +567,17 @@ void ViewerWindow::ToggleAxisONWindowCloudViewer()
 {
 	window_view->addCoordinateSystem();
 	window_view->spinOnce();
+
+	window_view_projector->addCoordinateSystem();
+	window_view_projector->spinOnce();
 }
 void ViewerWindow::ToggleAxisOFFWindowCloudViewer()
 {
 	window_view->removeCoordinateSystem();
 	window_view->spinOnce();
+
+	window_view_projector->removeCoordinateSystem();
+	window_view_projector->spinOnce();
 }
 
 
@@ -690,6 +769,11 @@ void ViewerWindow::AddItemCubeShader(
 	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, shapename); //cannotset on polygonmesh
 	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.8, shapename);
 	//window_view->spinOnce();
+
+	window_view_projector->removePolygonMesh(shapename);
+	window_view_projector->addPolygonMesh(cube_mesh, shapename);
+	window_view_projector->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.8, shapename);
+	
 }
 
 
@@ -749,6 +833,10 @@ pcl::PolygonMesh ViewerWindow::TransformItemCubeShaderAtCenttroid(
 	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.8, shapename);
 	//window_view->spinOnce();
 
+	window_view_projector->removePolygonMesh(shapename);
+	window_view_projector->addPolygonMesh(cube_mesh, shapename);
+	window_view_projector->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.8, shapename);
+	
 	return cube_mesh;
 }
 
@@ -774,6 +862,10 @@ void ViewerWindow::AddItemCube(float w, float h, float d,
 
 	window_view->removeShape(shapename);
 	window_view->addCube(xmin,xmax,ymin,ymax,zmin,zmax,r,g,b,shapename);
+
+	//window_view_projector->removeShape(shapename);
+	//window_view_projector->addCube(xmin, xmax, ymin, ymax, zmin, zmax, r, g, b, shapename);
+
 	//window_view->spinOnce();
 	/*
 	Eigen::Matrix3f rotational_matrix_OBB;
@@ -898,6 +990,9 @@ PointTypeXYZRGB ViewerWindow::AddItemArrowDirectionSymbol(
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, symbolname + " polygon");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, symbolname + " polygon");
 
+	window_view_projector->removeShape(symbolname + " polygon");
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_pointcloud, r, g, b, symbolname + " polygon");
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, symbolname + " polygon");
 
 	return position_triangle_center;
 }
@@ -949,10 +1044,14 @@ void ViewerWindow::AddPointCloudItem(PointCloudXYZRGB::Ptr pointcloud, string cl
 	{
 		window_view->addPointCloud(pointcloud, cloudname);
 	}
-	
-
-
 	window_view->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
+
+	if (!window_view_projector->updatePointCloud(pointcloud, cloudname))
+	{
+		window_view_projector->addPointCloud(pointcloud, cloudname);
+	}
+	window_view_projector->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, POINT_SIZE, cloudname);
+
 
 }
 
@@ -1058,7 +1157,7 @@ void ViewerWindow::ShowBinPackingTarget(bool show_container, ObjectTransformatio
 	AddPointCloudItem(item_pointcloud, cloudname);
 
 	window_view->spinOnce(100, true);
-
+	window_view_projector->spinOnce(100, true);
 	
 }
 void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float r, float g, float b, string itemname)
@@ -1096,6 +1195,16 @@ void ViewerWindow::AddRectangleHilightItem(ObjectTransformationData *item, float
 	window_view->removeShape(itemline2name);
 	window_view->addLine(p2, p4, 0.0, 0.0, 1.0, itemline2name);
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 20.0, itemline2name);
+
+
+	window_view_projector->removeShape(itemline1name);
+	window_view_projector->addLine(p1, p3, 0.0, 0.0, 1.0, itemline1name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 20.0, itemline1name);
+	//adjust line weight has no effect...
+	window_view_projector->removeShape(itemline2name);
+	window_view_projector->addLine(p2, p4, 0.0, 0.0, 1.0, itemline2name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 20.0, itemline2name);
+
 
 }
 
@@ -1280,6 +1389,17 @@ void ViewerWindow::AddSymbolIndicateDirection(
 	window_view->addPolygon<PointTypeXYZRGB>(polygon_triangle_inverse, r, g, b, polygon_minus_name);
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_minus_name);
 
+	window_view_projector->removeShape(polygon_square_name);
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_square, r, g, b, polygon_square_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_square_name);
+
+	window_view_projector->removeShape(polygon_plus_name);
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_triangle, r, g, b, polygon_plus_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_plus_name);
+
+	window_view_projector->removeShape(polygon_minus_name);
+	window_view_projector->addPolygon<PointTypeXYZRGB>(polygon_triangle_inverse, r, g, b, polygon_minus_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, polygon_minus_name);
 
 
 }
@@ -1487,9 +1607,10 @@ void ViewerWindow::ShowBinpackingIndication(bool show_container, ObjectTransform
 	//window_view->addLine(input_center_symbol, target_center_symbol, r, g, b, line_name);
 	//window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, line_name);
 
-		
-	window_view->spinOnce(100,true);
 	
+
+	window_view->spinOnce(1,true);
+	window_view_projector->spinOnce(1, true);
 	
 }
 
@@ -1576,7 +1697,7 @@ void ViewerWindow::timerEvent(QTimerEvent *event)
 		//ShowBinpackingAnimation(animate_container, animate_item);
 	}
 	window_view->spinOnce(1,true);
-
+	window_view_projector->spinOnce(1, true);
 
 }
 void ViewerWindow::ShowBinpackingAnimation(bool show_container, ObjectTransformationData *container, ObjectTransformationData* item)
@@ -1769,6 +1890,10 @@ void ViewerWindow::ShowBinpackingAnimation(bool show_container, ObjectTransforma
 	window_view->addLine(current_animate_cube_center, target_animate_cube_center, 1, 1, 1, "line_animate_center");
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "line_animate_center");
 
+	window_view_projector->removeShape("line_animate_center");
+	window_view_projector->addLine(current_animate_cube_center, target_animate_cube_center, 1, 1, 1, "line_animate_center");
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, "line_animate_center");
+
 
 
 
@@ -1784,8 +1909,8 @@ void ViewerWindow::ShowBinpackingAnimation(bool show_container, ObjectTransforma
 		
 
 
-
-	window_view->spinOnce(1,true);
+	window_view->spinOnce(1, true);
+	window_view_projector->spinOnce(1,true);
 
 	//looping move item
 	animate_begining_in = 5;
@@ -1839,6 +1964,13 @@ void ViewerWindow::AddXYZAxisAt(PointTypeXYZRGB point_position,string axisname)
 	window_view->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, z_axis_name);
 
 
+	window_view_projector->addLine(center, x_axis, 1.0f, 0.0f, 0.0f, x_axis_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, x_axis_name);
+
+	window_view_projector->addLine(center, z_axis, 0.0f, 0.0f, 1.0f, z_axis_name);
+	window_view_projector->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5.0, z_axis_name);
+
+
 	//ui_widget_viewer->update();
 
 }
@@ -1854,8 +1986,10 @@ void ViewerWindow::AddRotationSymbloAt(PointTypeXYZRGB point_position, pcl::Poly
 
 	pcl::toPCLPointCloud2(*cloud, arrowobj.cloud); // convert PointCloud<T> to PolygonMesh.pcloud
 
-
 	window_view->removePolygonMesh(objname);
 	window_view->addPolygonMesh(arrowobj, objname);
+
+	window_view_projector->removePolygonMesh(objname);
+	window_view_projector->addPolygonMesh(arrowobj, objname);
 
 }

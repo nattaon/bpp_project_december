@@ -27,7 +27,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_camera">
      <attribute name="title">
@@ -4798,7 +4798,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Show target</string>
+       <string>(P)pointcloud</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4826,7 +4826,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Indicate</string>
+       <string>(R)rotation</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4854,7 +4854,7 @@ p, li { white-space: pre-wrap; }
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Animation</string>
+       <string>(A)animation</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -6043,7 +6043,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1030</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -6250,8 +6250,8 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

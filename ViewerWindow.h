@@ -49,11 +49,12 @@ public:
 	int timer_animate;
 	//Addxxxfuntion() => did not spin a window, just Add!
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view;
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> window_view_projector;
 
     ViewerWindow();
 	void SetDataProcess(DataProcess* d);
 
-	int POINT_SIZE;
+	//int POINT_SIZE;
 	void SetPointsize(int pt);
 
 	void SetCameraParameter(
