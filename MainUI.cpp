@@ -279,6 +279,17 @@ void MainUI::ButtonTestInput3Pressed()
 }
 void MainUI::ButtonTestInput4Pressed()
 {
+	// will show all 6 orientation packing of each item
+
+	Call_LoadCameraParam("../_camera_topview_param_lab_depth3.txt");
+	Call_LoadAllItemsTextToUI("../pcd_files/12/tt_6_orientation.txt");
+	Call_LoadBinPackingInfo("../pcd_files/12/packing6orientation.txt");
+
+	ui->radioButton_packing_1->setChecked(true);
+	ui->radioButton_packing_2->setChecked(false);
+	ui->radioButton_packing_3->setChecked(false);
+
+	ButtonShowZeroPackingPressed();
 
 }
 
